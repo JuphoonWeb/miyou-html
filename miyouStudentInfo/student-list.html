@@ -1,0 +1,263 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<title>学生列表</title>
+<style>
+	
+	.pagination{
+		margin-top: 30px;
+		margin-right: 50px;
+	}
+	.upload-report{
+		padding: 20px 0 0 50px;
+	}
+	.nodata{
+		display: none;
+		margin:50px auto;
+		width:500px;
+		height:300px;
+	}
+	.nodata img{
+		width:100%;
+		height:100%;	
+	}
+</style>
+</head>
+<body  onload="init()"   >
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span> 学生列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
+		<form action="" method="post" class="form-inline" id="table-upload">
+			<span class="btn-upload form-group">
+					
+					<input class="input-text upload-url" type="text" name="uploadfile" id="uploadfile" readonly nullmsg="请添加附件！" style="width:300px" v-model="filename">
+					<a href="javascript:void();" class="btn btn-primary radius upload-btn"><i class="Hui-iconfont">&#xe642;</i> Excel导入</a>
+					<input type="file" name="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="input-file" id="file" :value="file">
+			</span>
+			<span>
+				<button class="btn btn-success radius" type="submit" id="file-upload-btn" >&nbsp;&nbsp;上传&nbsp;&nbsp;</button>	
+			</span>
+		</form>
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+	</div>
+	<div class="mt-20">
+	<table class="table table-bordered table-border table-hover table-bg " id="student-table">
+		<thead>
+			<tr class="text-c">
+				<th width="200">序号</th>
+				<th width="200">姓名</th>
+				<th width="100">性别</th>
+				<th width="200">手机</th>
+				<th width="">大学</th>
+				<th width="200">院系</th>
+				<th width="200">班级</th>
+			</tr>
+		</thead>
+		<tbody id="student-tbody">
+		</tbody>
+	</table>
+	<div class="pagination r" id="pagination"></div>
+	<div class="nodata" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/cookie.js"></script>
+ 
+
+
+<script type="text/javascript">
+	var studentData = {}
+	var isInit = false
+
+	function getData(page,size){
+        
+        // console.log('isInit',isInit)
+
+        $(document).unbind('ajaxStart')
+        $(document).ajaxStart(function(){
+			layer.load(1)
+		})
+
+        // 
+		$.ajax({
+			url: 'http://122.227.209.194:8086/miyou/admin/student',
+			// url: 'http://192.168.15.159:8086/miyou/admin/student',
+			type:'get',
+			async: isInit,
+			data: {
+				page: page || 1,
+				size: size || 12,
+			},
+			timeout: 5*1000,
+			success (response){
+				layer.closeAll()
+				console.log('success')
+				console.log(response)
+				if(response.code === 1){
+					var data = response.data
+					var list = data.list
+					var trs = ''
+					$('#student-tbody').children().remove()
+					for(let i=0; i<list.length; i++){
+						var sex = (list[i].sex === 1)? '男': '女' 
+						var sequence = (page-1)*size+i+1 
+						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+list[i].phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td></tr>'
+					}
+					// 判断数据是否取得成功
+					$('#student-tbody').append(trs)
+					$('#data-num').text(data.total)
+					if(!isInit){
+						studentData = data
+					}
+					isInit = true
+					
+
+				}else if(response.code === 0){
+					layer.open({
+						type: 0,
+						icon:7, 
+						title: '出现错误',
+						content: response.error
+					})
+				}	
+
+
+			},
+			error (xhr,status) {
+				layer.closeAll()
+				$('#nodata').show()
+			}
+		})
+
+	
+	}
+
+
+	function init(){
+		var page = 1
+		var size = 12 
+
+		getData(page,size)
+		console.log('got',studentData)
+		
+		
+		if(studentData.total > size){
+			var pages = Math.ceil(studentData.total/size)
+			laypage({
+			    cont: 'pagination',
+			    curr: 1, 
+			    pages: pages,
+			    groups: 5,
+			    jump (obj,first) {
+			    	if(!first){
+			    		console.log(obj.curr)
+				    	getData(obj.curr,size)
+					}
+			    }
+		  });
+		} 	
+	}
+
+
+	$('#file-upload-btn').click(function(event){
+		event.preventDefault()
+
+		var fileInput = $('#file')[0];
+		var fileNum = fileInput.files.length 
+		
+		if(fileNum === 0){
+			layer.open({
+				type: 0,
+				title: '提示',
+				content: '上传前请导入Excel文件'
+			})
+			return
+		}
+		form = new FormData()
+		form.append('file',fileInput.files[0])
+		console.log(form)
+		$(document).unbind('ajaxStart')
+		$(document).ajaxStart(function(){
+			layer.load(1)
+			layer.msg('上传中', {
+				  icon: 16,
+				  shade: 0.01
+			});
+		})
+
+		$.ajax({
+			url: 'http://122.227.209.194:8086/miyou/admin/uploadExcel',
+			// url: 'http://192.168.15.159:8086/miyou/admin/uploadExcel',
+			type: 'post',
+			timeout: 10*60*1000,
+			data: form,
+			cache: false,
+			processData: false,
+		    contentType: false,
+			success (response,status,xhr) {
+				layer.closeAll()
+				if(response.code === 1){
+					var data = response.data
+					if(data.repeateCount > 0){
+						var ellipses = '...'
+						if(data.repeateCount <= 3){
+							ellipses = ''
+						}
+						layer.open({
+							type: 1,
+							area: ['370px','250px'],
+							title: '文件上传情况',
+							content: '<div class="upload-report"><p>共'+data.total+'条数据</p>'+
+							'<p>上传成功：'+data.successCount+'条数据</p>'+
+							'<P>重复：'+data.repeateCount+'条数据</p>'+
+							'<p>重复数据：['+data.repeateNames+ellipses+']</p></div>',
+							btn: '确定'
+							
+						})
+					}
+				}else if(response.code === 0) {
+					layer.open({
+						type: 0,
+						icon:7, 
+						title: '上传失败',
+						content: response.error
+					})
+
+				}
+				console.log(response)
+			},
+			error (xhr,status) {
+				layer.closeAll()
+				layer.open({
+					type: 0,
+					icon:7, 
+					title: '错误',
+					content: status,
+				})
+			}
+		})
+	})
+</script> 
+</body>
+</html>

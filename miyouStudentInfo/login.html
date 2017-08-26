@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>login</title>
+	<link rel="stylesheet" href="static/h-ui/css/H-ui.css">
+	<link href='http://cdn.webfont.youziku.com/webfonts/nomal/105831/46724/599bacf2f629d80a98bc5081.css' rel='stylesheet' type='text/css' />
+	<style>
+		
+		.container{
+			position:absolute;
+			top:150px;left:50%;
+			width:500px;height: 600px;
+			transform: translateX(-50%);
+			z-index:200;
+		}
+		.title{
+			margin:0 auto 100px;
+			width:500px;
+			font-family:'TSSunOldcad44dbab19d67';
+					}
+		.title .title-1{
+			margin:0 50px -15px;
+			padding:0;
+			font-size:22px;
+			color:rgb(66, 176, 244)
+		}
+		.title .title-2{
+			font-size: 50px;
+		}
+		form{
+			width: 400px;
+			height:300px;
+			margin:200px auto;
+			z-index:1000;
+		}
+		.legend-text{
+			width:30%;
+			border-bottom: 3px rgb(66, 176, 244) solid;
+			color:rgb(66, 176, 244);
+			cursor:default; 
+		}
+		#form-popup{
+			text-align: center;
+		}
+		button.btn.size-L{
+			margin-top: 20px;
+			border-radius: 30px;
+			background-color: rgb(66, 176, 244)
+		}
+		.remember-password-box{
+			margin-top: -10px;
+		}
+	</style>
+	<style>
+		.background{
+			position: relative;
+			height:900px;
+			z-index:1;
+		}
+		.box{
+			position:absolute;
+			width:300px;
+			height:200px;
+			perspective-origin:center;	
+			perspective: 500px;
+			transform-style:preserve-3d;
+		}
+		
+		.box-1{
+			top:650px;
+			left:200px;
+		}
+		.box-2{
+			top:350px;
+			left:0px;
+			transform: scale3d(1.5,1.5,1.5);
+		}
+		.box-3{
+			top:0px;
+			left:150px;
+			animation-duration: 8s;
+		}
+		.box-4{
+			top:50px;
+			left:600px;
+			transform: rotateZ(60deg);
+			transform: scale3d(1.5,1.5,1.5);	
+		}
+		.box-5{
+			top:300px;
+			left:1500px;
+			animation-duration: 5s;
+		}
+		.box-6{
+			top:150px;
+			left:1000px;
+			transform: rotateZ(45deg);
+		}
+		.box-7{
+			top:10px;
+			left:1300px;
+			transform: scale3d(1.5,1.5,1.5);
+		}
+		.box-8{
+			top:500px;
+			left:1200px;
+		}
+		
+		.box-9{
+			top:600px;
+			left:700px;
+			transform: scale3d(1.5,1.5,1.5);
+			animation-duration: 10s;
+		}
+		.box-10{
+			top:400px;
+			left:450px;
+		}
+		.box-11{
+			top:700px;
+			left:1500px;
+		}
+		.cube{
+			position: relative;
+			width:100px;height:100px;
+			margin: 50px auto;
+			transform-style:preserve-3d;
+			animation: cube-dance 6s linear infinite both;
+						
+		}
+		.box:nth-child(even) .cube{
+			/*animation-direction: reverse;*/
+			animation-duration: 10s;
+		}
+		@keyframes cube-dance{
+			0%{
+				transform: rotate3d(100,100,100,0);
+			}
+			50%{
+				transform: rotate3d(100,100,100,180deg);
+			}
+			100%{
+				transform: rotate3d(100,100,100,360deg);
+			}
+		}
+		.side{
+			position: absolute;
+			width:100px;
+			height:100px;
+			border:1px solid rgb(207,207,207);
+			background-color: rgba(234,234,234,.1)
+		}
+		.side:hover{
+			background-color: rgb(234,234,234); 
+			/*background-color: rgba(66, 176, 244,.2)*/
+		}
+		.side-1{
+
+		}
+		.side-2{
+			transform-origin: bottom;
+			transform: rotateX(-90deg);
+		}
+		.side-3{
+			transform-origin: right;
+			transform: rotateY(90deg);
+		}
+		.side-4{
+			transform-origin: left;
+			transform: rotateY(-90deg);	
+		}
+		.side-5{
+			transform-origin: top;
+			transform: rotateX(90deg);	
+		}
+		.side-6{
+			transform: translateZ(100px);
+		}
+	</style>
+</head>
+<body>
+	<div class="background">
+		<div class="box box-1">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-2">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-3">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-4">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-5">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-6">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-7">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-8">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-9">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-10">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+		<div class="box box-11">
+			<div class="cube">	
+				<div class="side side-1"></div>
+				<div class="side side-2"></div>
+				<div class="side side-3"></div>
+				<div class="side side-4"></div>
+				<div class="side side-5"></div>
+				<div class="side side-6"></div>
+			</div>
+		</div>
+	</div>
+	<div id="login" class="container text-c">
+		<div class="title">
+			<p class="title-1 text-l" >密友</p>
+			<p class="title-2">学生信息管理系统</p>
+		</div>
+		<form action="" class="form form-horizontal"  novalidate>
+			<legend><div class="legend-text">登录</div></legend>	
+			<div class="row cl">
+				<label for="" class="form-label col-md-3 col-sm-3">用户名</label>
+				<div class="formControls col-md-9 col-sm-9">
+					<input type="text" class="input-text radius size-L" id="username" required  nullmsg="请输入用户名">
+				</div>
+			</div>
+			<div class="row cl">
+				<label for="" class="form-label col-xs-4 col-sm-3" >密码</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="password" class="input-text radius size-L" id="password" required >
+				</div>
+			</div>
+			<button id="login-btn" class="btn btn-primary radius btn-block size-L">登录 </button>
+			<div class="row cl" >
+				<div class="remember-password-box col-md-4">
+					<input type="checkbox" id="remember-password"><label for="remember-password">记住密码</label>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+<!-- <script src="lib/vue/vue.js"></script> -->
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>	
+<script type="text/javascript" src="static/js/cookie.js"></script>	
+<script type="text/javascript" src="static/js/cookie.js"></script>
+
+<script>
+	var isRememberPassword = false
+	$('#remember-password').click(function(){
+		var isRememberPassword = $('#remember-password')[0].checked
+		console.log(isRememberPassword)
+	})
+
+ 	$('#login-btn').click(function(event){
+ 		event.preventDefault()
+ 		var username = $('#username').val()
+ 		var password = $('#password').val()
+ 		if(username === ''){
+ 			layer.msg('请输入用户名')
+ 			$('#username')[0].focus()
+ 		}else if(password === ''){
+ 			layer.msg('请输入密码')
+ 			$('#password')[0].focus()
+ 		}else{
+ 			$.ajax({
+ 				url: 'http://122.227.209.194:8086/miyou/login',
+ 				type: 'post',
+ 				timeout: 5*1000,
+ 				data: {
+ 					username: username,
+ 					password: password
+ 				},
+ 				success (data,status) {
+ 					console.log('success')
+		 			console.log(data)
+		 			if(data.code === 1){
+		 				console.log('登录成功')
+		 				window.open('index.html','_self')
+
+		 			}else if(data.code === 0){
+		 				layer.msg(data.error)
+		 				
+		 				$('#password').val('')
+		 				if(data.error === '密码错误'){
+		 					$('#password').focus()
+		 				}else{
+		 					$('#username').focus()
+		 				}
+		 				
+		 			}
+		 		},
+		 		error (xhr,status){
+		 			console.log('error')
+		 			// console.log(status)
+		 		}
+ 			})
+ 		}
+ 		
+ 	})
+	
+	
+</script>
+</html>
