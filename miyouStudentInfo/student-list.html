@@ -136,6 +136,7 @@
 				}else if(response.code === 0){
 					layer.open({
 						type: 0,
+						closeBtn: 2,
 						icon:7, 
 						title: '出现错误',
 						content: response.error
@@ -157,6 +158,7 @@
 	function init(){
 		var page = 1
 		var size = 12 
+
 
 		getData(page,size)
 		console.log('got',studentData)
@@ -189,6 +191,7 @@
 		if(fileNum === 0){
 			layer.open({
 				type: 0,
+				closeBtn: 2,
 				title: '提示',
 				content: '上传前请导入Excel文件'
 			})
@@ -239,6 +242,7 @@
 				}else if(response.code === 0) {
 					layer.open({
 						type: 0,
+						closeBtn: 2,
 						icon:7, 
 						title: '上传失败',
 						content: response.error
@@ -251,6 +255,7 @@
 				layer.closeAll()
 				layer.open({
 					type: 0,
+					closeBtn: 2,
 					icon:7, 
 					title: '错误',
 					content: status,

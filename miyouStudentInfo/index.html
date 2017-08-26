@@ -20,16 +20,16 @@
 		}
 	</style>
 </head>
-<body>
+<body onload="init()">
 	<header class="navbar-wrapper">
 		<div class="navbar navbar-fixed-top">
 			<div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="">密友学生信息管理系统</a> 
 			<a class="logo navbar-logo-m f-l mr-10 visible-xs" href="">学生信息管理</a> <span class="logo navbar-slogan f-l mr-10 hidden-xs"></span> <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
 				<nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
 					<ul class="cl">
-						<li class="dropDown dropDown_hover"> <a href="#" class="dropDown_A">admin <i class="Hui-iconfont">&#xe6d5;</i></a>
+						<li class="dropDown dropDown_hover"> <a href="#" class="dropDown_A" id="username">admin <i class="Hui-iconfont">&#xe6d5;</i></a>
 							<ul class="dropDown-menu menu radius box-shadow">
-								<li><a href="#">退出</a></li>
+								<li id="logout"><a href="#">退出</a></li>
 							</ul>
 						</li>
 						<li id="Hui-skin" class="dropDown right dropDown_hover"> <a href="javascript:;" class="dropDown_A" title="换肤"><i class="Hui-iconfont" style="font-size:18px">&#xe62a;</i></a>
@@ -98,5 +98,31 @@
 <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
 <script type="text/javascript" src="lib/html5shiv.js"></script>		
 <script type="text/javascript" src="static/js/cookie.js"></script>
+
+<script>
+	function init(){
+		if(getCookie('login') === ''){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				title: '未登录',
+				icon: 7,
+				content: '请重新登录',
+				yes () {
+					window.open('login.html','_self')
+				}
+			})
+		}else{
+			$('#username').text(getCookie('username'))
+		}
+	}
+
+	$('#logout').click(function(){
+		console.log('退出登录')
+		removeCookie('login')
+	})
+		
+</script>
+
 
 </html>

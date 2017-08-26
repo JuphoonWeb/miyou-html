@@ -314,13 +314,12 @@
 			<button id="login-btn" class="btn btn-primary radius btn-block size-L">登录 </button>
 			<div class="row cl" >
 				<div class="remember-password-box col-md-4">
-					<input type="checkbox" id="remember-password"><label for="remember-password">记住密码</label>
+					<!-- <input type="checkbox" id="remember-password"><label for="remember-password">记住密码</label> -->
 				</div>
 			</div>
 		</form>
 	</div>
 </body>
-<!-- <script src="lib/vue/vue.js"></script> -->
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
@@ -359,6 +358,8 @@
 		 			console.log(data)
 		 			if(data.code === 1){
 		 				console.log('登录成功')
+		 				setCookie('login','true')
+		 				setCookie('username',username)
 		 				window.open('index.html','_self')
 
 		 			}else if(data.code === 0){

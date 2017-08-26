@@ -1,5 +1,5 @@
 function setCookie(name,value,expire,timeByMin,path,domain,secure){
-	//timeByDay传入布尔值：true按分钟计expiretime，默认为false,按天计
+	//timeByMin传入布尔值：true按分钟计expiretime，默认为false,按天计
 	var cookie = encodeURIComponent(name)+'='+encodeURIComponent(value);
 	var exdate = new Date();
 	if(!timeByMin){	
