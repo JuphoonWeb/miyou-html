@@ -95,6 +95,8 @@
 <script type="text/javascript">
 	var studentData = {}
 	var isInit = false
+	var size = 12
+	var uuid = getCookie('uuid')
 
 	//	添加
 	function studentAdd(title,url,w,h){
@@ -178,8 +180,7 @@
 
 	function init(){
 		var page = 1
-		var size = 12
-		var uuid = getCookie('uuid')
+		
 		console.log('uuid',uuid) 
 
 		$(document).ajaxStart(function(){
@@ -209,6 +210,10 @@
 
 	function addToClazzGroup(phone, clazzId, studentId){
 		console.log('clicked')
+		var currPage = $('.laypage_curr').text()
+		console.log('page',currPage)
+
+		
 		$.ajax({
 			url: 'http://112.35.24.203:8086/miyou/admin/student/addClazzGroup',
 			type: 'post',
@@ -228,7 +233,10 @@
 					layer.msg('添加成功')
 					console.log('添加成功')
 					setTimeout(function(){
-						init()
+						// init()
+						getData(currPage, size, uuid)
+						
+						
 					},2000)
 				}else if(res.code === 0){
 					layer.open({

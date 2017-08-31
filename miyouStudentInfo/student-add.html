@@ -214,6 +214,7 @@
 						</span> 
 					</div>
 				</div>`)
+
 			}else if($('#district-container').length === 1 && $('#city-container').length === 0){
 				$('#province-container').after(`<div class="row cl" id="city-container">
 					<label class="form-label col-xs-4 col-sm-3">城市：</label>
@@ -225,6 +226,7 @@
 					</div>
 				</div>`)
 			}
+			
 
 			// console.log(provinceVal)
 			var cityList = getData('getDistrict',{
@@ -242,7 +244,9 @@
 				fillSelect('select#district', districtList)					
 			})
 		}
-		 
+		$('select').click(function(){
+				layer.closeAll()
+		})
 	})
 
 	
@@ -293,14 +297,14 @@
 	})
 
 	$('#submit').click(function(event){
+
 		var province = $('select#province').children('option:checked').text()
 		var provinceId = $('select#province').val()
 		var city = $('select#city').children('option:checked').text()
-		// if(provinceId <= 4 || provinceId >= 33 && provinceId < 35 ){
-		// 	city = province
-		// 	province = ''
-		// }
 		var district = $('select#district').children('option:checked').text()
+		if(provinceId <= 4 || provinceId >= 33 && provinceId < 35 ){
+			city = district
+		}
 		var university = $('select#university').children('option:checked').text()
 		var enrolTime = $('#enrol-time').val()
 		
@@ -377,8 +381,32 @@
 					district: district
 				},
 				success (response) {
-					// console.log('updateSuccess')
-					// console.log(response)
+					console.log(response)
+					if(response.code === 1){
+						layer.msg('添加成功')
+						setTimeout(function(){
+							// layer_close()
+							parent.location.reload()
+						},1000)
+					}else if(response.code === 0){
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '添加失败',
+							content: response.error
+						})
+					}
+				},
+				error (){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '添加失败',
+						content: '请检查网络'
+					})
+
 				}
 
 			})
