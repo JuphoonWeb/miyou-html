@@ -15,7 +15,7 @@
 <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
-<title>学生列表</title>
+<title>班级群</title>
 <style>
 	
 	.pagination{
@@ -35,46 +35,34 @@
 		width:100%;
 		height:100%;	
 	}
-	#btn-add{
-		margin-left: 10px;
-	}
 </style>
 </head>
 <body  onload="init()"   >
 
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span> 学生列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span> 班级群 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
-		<form action="" method="post" class="form-inline" id="table-upload">
-			<span class="btn-upload form-group">
-					
-					<input class="input-text upload-url" type="text" name="uploadfile" id="uploadfile" readonly nullmsg="请添加附件！" style="width:300px" v-model="filename">
-					<a href="javascript:void();" class="btn btn-primary radius upload-btn"><i class="Hui-iconfont">&#xe642;</i> Excel导入</a>
-					<input type="file" name="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="input-file" id="file" :value="file">
-			</span>
-			<span>
-				<button title="上传已选Excel" class="btn btn-success radius" type="submit" id="file-upload-btn" >&nbsp;&nbsp;上传&nbsp;&nbsp;</button>
-				<a title="添加单个学生信息" href="javascript:;" onclick="studentAdd('添加学生信息','student-add.html','','650')" class="btn btn-primary-outline radius"><i class="Hui-iconfont">&#xe600;</i>单个添加</a>
-			</span>
-		</form>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
 	<table class="table table-bordered table-border table-hover table-bg " id="student-table">
 		<thead>
 			<tr class="text-c">
-				<th width="100">序号</th>
-				<th width="200">姓名</th>
-				<th width="100">性别</th>
-				<th width="200">手机</th>
-				<th width="300">大学</th>
-				<th width="150">院系</th>
-				<th width="150">班级</th>
-				<th width="150">班级群</th>
-				<th width="150">密友圈</th>
+				<th width="200">序号</th>
+				<th width="">大学</th>
+				<th width="">院系</th>
+				<th width="">班级</th>
+				<th width="">主号</th>
 			</tr>
 		</thead>
 		<tbody id="student-tbody">
+			<tr class="text-c">
+				<td width="">1</td>
+				<td width="">中山大学</td>
+				<td width="">管理学院</td>
+				<td width="">市场营销16级2班</td>
+				<td width="">13312345678</td>
+			</tr>
 		</tbody>
 	</table>
 	<div class="pagination r" id="pagination"></div>
@@ -96,13 +84,9 @@
 	var studentData = {}
 	var isInit = false
 
-	//	添加
-	function studentAdd(title,url,w,h){
-		layer_show(title,url,w,h);
-	}
 
 
-	function getData(page,size,uuid){
+	function getData(page,size){
         
         // console.log('isInit',isInit)
         $(document).unbind('ajaxStart')
@@ -114,13 +98,10 @@
 
         // 
 		$.ajax({
-			// url: 'http://122.227.209.194:8086/miyou/admin/student',
-			url: 'http://112.35.24.203:8086/miyou/admin/student',
-			type:'post',
+			url: 'http://122.227.209.194:8086/miyou/admin/student',
+			// url: 'http://192.168.15.159:8086/miyou/admin/student',
+			type:'get',
 			async: isInit,
-			headers: {
-				token: uuid
-			},
 			data: {
 				page: page || 1,
 				size: size || 12,
@@ -131,26 +112,8 @@
 				console.log('success')
 				console.log(response)
 				if(response.code === 1){
-					var data = response.data
-					var list = data.list
-					var trs = ''
-					$('#student-tbody').children().remove()
-					for(let i=0; i<list.length; i++){
-						var sex = (list[i].sex === 1)? '男': '女' 
-						var miyouGroup = list[i].miyouGroup ? '<a href="">已开通</a>' : '未开通'
-						var clazzGroup = list[i].clazzGroup ? '<a href="">已开通</a>' : '未开通'
-						var sequence = (page-1)*size+i+1 
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+list[i].phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td><td>'+clazzGroup+'</td><td>'+miyouGroup+'</td></tr>'
-					}
-					// 判断数据是否取得成功
-					$('#student-tbody').append(trs)
-					$('#data-num').text(data.total)
-					if(!isInit){
-						studentData = data
-					}
-					isInit = true
+				
 					
-
 				}else if(response.code === 0){
 					layer.open({
 						type: 0,
@@ -175,16 +138,14 @@
 
 	function init(){
 		var page = 1
-		var size = 12
-		var uuid = getCookie('uuid')
-		console.log('uuid',uuid) 
+		var size = 12 
 
 		$(document).ajaxStart(function(){
 			layer.load()
 
 		})
 	
-		getData(page, size, uuid)
+		getData(page,size)
 		console.log('got',studentData)
 			
 		if(studentData.total > size){
@@ -197,7 +158,7 @@
 			    jump (obj,first) {
 			    	if(!first){
 			    		console.log(obj.curr)
-				    	getData(obj.curr, size, uuid)
+				    	getData(obj.curr,size)
 					}
 			    }
 		  });
@@ -233,12 +194,9 @@
 		})
 
 		$.ajax({
-			// url: 'http://122.227.209.194:8086/miyou/admin/uploadExcel',
-			url: 'http://112.35.24.203:8086/miyou/admin/uploadExcel',
+			url: 'http://122.227.209.194:8086/miyou/admin/uploadExcel',
+			// url: 'http://192.168.15.159:8086/miyou/admin/uploadExcel',
 			type: 'post',
-			headers: {
-				token: getCookie('uuid')
-			},
 			timeout: 10*60*1000,
 			data: form,
 			cache: false,
@@ -269,10 +227,10 @@
 				}else if(response.code === 0) {
 					layer.open({
 						type: 0,
-						closeBtn: 0,
+						closeBtn: 2,
 						icon:7, 
-						title: '提示',
-						content: '上传失败'
+						title: '上传失败',
+						content: response.error
 					})
 
 				}

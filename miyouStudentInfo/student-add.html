@@ -1,0 +1,393 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico" >
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
+
+<title>添加学生信息</title>
+</head>
+<body>
+	<article class="page-container">
+		<form action="" method="post" class="form form-horizontal" id="form-member-add">
+			
+			<div class="row cl" id="province-container">
+				<label class="form-label col-xs-4 col-sm-3">省/直辖市：</label>
+				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+					<select class="select" size="1" name="province" id="province">
+						<option value="" selected>请选择省份/直辖市</option>
+					</select>
+					</span> 
+				</div>
+			</div>
+
+<!-- 			<div class="row cl" id="city-container">
+				<label class="form-label col-xs-4 col-sm-3">城市：</label>
+				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+					<select class="select" size="1" name="city" id="city">
+						<option value="" selected>请选择城市</option>
+					</select>
+					</span> 
+				</div>
+			</div>
+ -->
+<!-- 			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">区：</label>
+				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+					<select class="select" size="1" name="district" id="district">
+						<option value="" selected>请选择区</option>
+					</select>
+					</span> 
+				</div>
+			</div>
+ -->
+			
+			<div class="row cl" id="university-container">
+				<label class="form-label col-xs-4 col-sm-3">大学：</label>
+				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+					<select class="select" size="1" name="university"  id="university">
+						<option value="" selected>请选择大学</option>
+					</select>
+					</span> 
+				</div>
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">入学时间：</label>
+				
+				<div class="formControls col-xs-8 col-sm-9"> 
+						<input type="text" onfocus="WdatePicker({ maxDate:'\'%y-%M-%d\'}' })" id="enrol-time" class="input-text Wdate formControls" placeholder="入学时间" style="padding-left: 10px">
+				</div>
+		-
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">院系：</label>
+				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+					<select class="select" size="1" name="school"  id="school">
+						<option value="" selected>请选择院系</option>
+					</select>
+					</span> 
+				</div>
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">班级：</label>
+				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+					<select class="select" size="1" name="clazz"  id="clazz">
+						<option value="" selected>请选择班级</option>
+					</select>
+					</span> 
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">姓名：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="" id="name" name="name">
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">性别：</label>
+				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+					<div class="radio-box">
+						<input name="sex" type="radio" id="sex-1" value="1">
+						<label for="sex-1">男</label>
+					</div>
+					<div class="radio-box">
+						<input type="radio" id="sex-2" name="sex" value="0">
+						<label for="sex-2">女</label>
+					</div>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">手机：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="" id="phone" name="phone">
+				</div>
+			</div>
+
+			<div class="row cl">
+				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+					<input id="submit" class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+				</div>
+			</div>
+		</form>
+		
+	</article>
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+
+<script type="text/javascript" src="static/js/cookie.js"></script>
+
+
+<script type="text/javascript">
+
+	function  fillSelect(selectorStr,data){
+		$(selectorStr).children('option+option').remove()
+		var options = ''
+        var data = data
+		for(let i = 0; i < data.length; i++){
+			var name = data[i].name || data[i].schoolName || data[i].clazz
+			options += '<option value="'+data[i].id+'">'+name+'</option>'
+		}
+		$(selectorStr).append(options)
+	} 
+
+
+	$(document).ready(function(){
+		console.log('add student')
+
+
+		var provinceList = getData('getDistrict',{
+			parentId: 0
+		})
+		console.log('省',provinceList)
+		fillSelect('select#province', provinceList)
+
+		var universityList = getData('getUniversity')
+		console.log('大学',universityList)
+		fillSelect('select#university',universityList)
+	})
+
+	$('select#province').change(function(){
+		console.log('change')
+		var provinceVal = $(this).val()
+		if(provinceVal <= 4 || provinceVal >= 33 && provinceVal < 35 ){
+			//选择了直辖市
+			$('#city-container').remove()
+			
+			if($('#district-container').length === 0){
+				$('#province-container').after(`<div class="row cl" id="district-container">
+					<label class="form-label col-xs-4 col-sm-3">区：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+						<select class="select" size="1" name="district" id="district">
+							<option value="" selected>请选择区</option>
+						</select>
+						</span> 
+					</div>
+				</div>`)
+				
+			}
+			console.log(provinceVal)
+				var districtList = getData('getDistrict',{
+					parentId: provinceVal
+				})
+			fillSelect('select#district', districtList)			
+		}else if(provinceVal > 4 || provinceVal <= 33 && provinceVal < 35){
+			// 选择了省
+			if($('#district-container').length === 0){
+				$('#province-container').after(`<div class="row cl" id="city-container">
+					<label class="form-label col-xs-4 col-sm-3">城市：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+						<select class="select" size="1" name="city" id="city">
+							<option value="" selected>请选择城市</option>
+						</select>
+						</span> 
+					</div>
+				</div>
+				<div class="row cl" id="district-container">
+					<label class="form-label col-xs-4 col-sm-3">区：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+						<select class="select" size="1" name="district" id="district">
+							<option value="" selected>请选择区</option>
+						</select>
+						</span> 
+					</div>
+				</div>`)
+			}else if($('#district-container').length === 1 && $('#city-container').length === 0){
+				$('#province-container').after(`<div class="row cl" id="city-container">
+					<label class="form-label col-xs-4 col-sm-3">城市：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+						<select class="select" size="1" name="city" id="city">
+							<option value="" selected>请选择城市</option>
+						</select>
+						</span> 
+					</div>
+				</div>`)
+			}
+
+			console.log(provinceVal)
+			var cityList = getData('getDistrict',{
+				parentId: provinceVal
+			})
+			fillSelect('select#city', cityList)
+
+			$('select#city').change(function(){
+				console.log('city')
+				var districtList = getData('getDistrict',{
+					parentId: $(this).val()
+				})
+				console.log(districtList)
+
+				fillSelect('select#district', districtList)					
+			})
+		}
+		 
+	})
+
+	
+
+	$('select#university').change(function(){
+		console.log('change')
+		console.log($(this).val())
+		var schoolList = getData('getSchool', {
+			uid: $(this).val()
+		})
+		console.log('school', schoolList)
+		fillSelect('select#school', schoolList) 
+	})
+
+	$('select#school').change(function(){
+		console.log('schoolchange')
+		console.log($(this).val())
+		var clazzList = getData('getClazz', {
+			pid: $(this).val()
+		})
+		console.log('school', clazzList)
+		fillSelect('select#clazz', clazzList) 
+	})
+
+	function getData(purpose,data){
+		var result = {}
+		
+		$.ajax({
+			// url: 'http://192.168.11.254:8086/miyou/admin/'+purpose,
+			url: 'http://112.35.24.203:8086/miyou/admin/'+purpose,
+			type: 'get',
+			async: false,
+			headers: {
+				token: getCookie('uuid')
+			},
+			data: data,
+			success (response){
+				console.log('success', response)
+				result = response.data
+			}
+		})
+
+		return result
+	}
+
+	$('select').click(function(){
+		layer.closeAll()
+	})
+
+	$('#submit').click(function(event){
+		var province = $('select#province').children('option:checked').text()
+		var provinceId = $('select#province').val()
+		var city = $('select#city').children('option:checked').text()
+		// if(provinceId <= 4 || provinceId >= 33 && provinceId < 35 ){
+		// 	city = province
+		// 	province = ''
+		// }
+		var district = $('select#district').children('option:checked').text()
+		var university = $('select#university').children('option:checked').text()
+		var enrolTime = $('#enrol-time').val()
+		
+		var year = enrolTime.split('-')[0]
+		var month = enrolTime.split('-')[1]
+		var number = enrolTime.replace(/-/g,'')
+		var school = $('select#school').children('option:checked').text()
+		var clazz = $('select#clazz').children('option:checked').text()
+		var clazzId = $('select#clazz').val()
+		var name = $('#name').val()
+		var sex = $('input[name="sex"]:checked').val()
+		var phone = $('#phone').val() 
+
+		console.log('province',province)
+		console.log('city',city)
+		console.log('district', district)
+		console.log('university',university)
+		console.log('school',school)
+		console.log('clazz',clazz)
+		console.log('clazzId',clazzId)
+		console.log('name',name)
+		console.log('sex',sex)
+		console.log('phone',phone)
+		console.log('enrolTime',enrolTime)
+		console.log('year',year)
+		console.log('month',month)
+		console.log('number',number)
+
+		event.preventDefault()
+		if(province === '请选择省份/直辖市'){
+			layer.msg('请选择省份/直辖市')
+		}else if(city === '请选择城市'){
+			layer.msg('请选择城市')
+		}else if(district === '请选择区'){
+			layer.msg('请选择区')
+		}else if(university === '请选择大学'){
+			layer.msg('请选择大学')
+		}else if(enrolTime === ''){
+			layer.msg('请选择入学时间')
+		}else if(school === '请选择院系'){
+			layer.msg('请选择院系')
+		}else if(clazz === '请选择班级'){
+			layer.msg('请选择班级')
+		}else if(name === ''){
+			layer.msg('请填写姓名')
+		}else if(sex === undefined){
+			layer.msg('请选择性别')
+		}else if(phone === ''){
+			layer.msg('请填写手机号码')
+		}else if( !(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(phone))){
+			layer.msg('请填写正确格式的手机号码')
+		}else{
+			$.ajax({
+				// url: 'http://192.168.11.254:8086/miyou/admin/submitStudentInfo',
+				url: 'http://112.35.24.203:8086/miyou/admin/submitStudentInfo',
+				type: 'post',
+				headers: {
+					token: getCookie('uuid')
+				},
+				data: {
+					id: 0,
+					name: name,
+					phone: phone,
+					sex: sex,
+					university: university,
+					school: school,
+					clazz: clazz,
+					clazzId: clazzId,
+					number: number,
+					year: year,
+					month: month,
+					province: province,
+					city: city,
+					district: district
+				},
+				success (response) {
+					console.log('updateSuccess')
+					console.log(response)
+				}
+
+			})
+		}
+
+		
+	})
+
+</script> 
+
+</body>
+</html>

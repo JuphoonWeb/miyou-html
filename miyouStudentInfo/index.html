@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>密友学生信息管理系统</title>
+	<title>青椒校园学生信息管理</title>
 	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 	<!-- <meta http-equiv="Cache-Control" content="no-siteapp" /> -->
 
@@ -23,11 +23,11 @@
 <body onload="init()">
 	<header class="navbar-wrapper">
 		<div class="navbar navbar-fixed-top">
-			<div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="">密友学生信息管理系统</a> 
+			<div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="">青椒校园学生信息管理系统</a> 
 			<a class="logo navbar-logo-m f-l mr-10 visible-xs" href="">学生信息管理</a> <span class="logo navbar-slogan f-l mr-10 hidden-xs"></span> <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
 				<nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
 					<ul class="cl">
-						<li class="dropDown dropDown_hover"> <a href="#" class="dropDown_A" id="username">admin <i class="Hui-iconfont">&#xe6d5;</i></a>
+						<li class="dropDown dropDown_hover"> <a href="#" class="dropDown_A"><span id="username">admin</span> <i class="Hui-iconfont">&#xe6d5;</i></a>
 							<ul class="dropDown-menu menu radius box-shadow">
 								<li id="logout"><a href="#">退出</a></li>
 							</ul>
@@ -51,10 +51,12 @@
 	<aside class="Hui-aside">
 		<div class="menu_dropdown bk_2">
 			<dl id="menu-student-info">
-				<dt><i class="Hui-iconfont">&#xe60d;</i> 学生信息管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
-				<dd>
+				<dt class="selected"><i class="Hui-iconfont">&#xe60d;</i> 学生信息管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+				<dd style="display: block">
 					<ul>
-						<li><a data-href="student-list.html" data-title="添加学生信息" href="javascript:;">学生列表</a></li>
+						<li><a data-href="student-list.html" data-title="学生列表" href="javascript:;">学生列表</a></li>
+						<li><a data-href="class-group.html" data-title="班级群" href="javascript:;">班级群</a></li>
+						<li><a data-href="miyou-circle.html" data-title="密友圈" href="javascript:;">密友圈</a></li>
 					</ul>
 				</dd>
 			</dl>
@@ -105,9 +107,10 @@
 			layer.open({
 				type: 0,
 				closeBtn: 0,
+				shade: [1,'#fff'],
 				title: '未登录',
 				icon: 7,
-				content: '请重新登录',
+				content: '请登录',
 				yes () {
 					window.open('login.html','_self')
 				}
@@ -119,7 +122,30 @@
 
 	$('#logout').click(function(){
 		console.log('退出登录')
-		removeCookie('login')
+		$.ajax({
+			// url: 'http://112.35.24.203:8086/miyou/logout',
+			url: 'http://112.35.24.203:8086/miyou/logout',
+			type: 'post',
+			headers: {
+				token: getCookie('uuid')
+			},
+			success (response){
+				console.log('logoutdata',response)
+				removeCookie('login')
+				removeCookie('username')
+				window.open('login.html','_self')
+			},
+			error () {
+				layer.open({
+						type: 0,
+						closeBtn:0,
+						icon:7, 
+						title: '登出失败',
+						content: '请检查网络连接'
+					})
+			}
+
+		})
 	})
 		
 </script>
