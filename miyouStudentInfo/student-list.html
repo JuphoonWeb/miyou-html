@@ -135,12 +135,15 @@
 					var list = data.list
 					var trs = ''
 					$('#student-tbody').children().remove()
-					for(let i=0; i<list.length; i++){
+					for(let i=0; i<list.length; i++){						
 						var sex = (list[i].sex === 1)? '男': '女' 
+						var phone = list[i].phone
+						var clazzId = list[i].clazzId
+						var studentId = list[i].id
 						var miyouGroup = list[i].miyouGroup ? '<a href="">已开通</a>' : '未开通'
-						var clazzGroup = list[i].clazzGroup ? '<a href="">已开通</a>' : '未开通'
+						var clazzGroup = list[i].clazzGroup ? '<a href="">已加入</a>' : '<i class="Hui-iconfont" style="cursor:pointer" onclick="addToClazzGroup('+phone+', '+clazzId +','+studentId+')" title="添加至班级群">&#xe600;</i>'
 						var sequence = (page-1)*size+i+1 
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+list[i].phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td><td>'+clazzGroup+'</td><td>'+miyouGroup+'</td></tr>'
+						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td><td>'+clazzGroup+'</td><td>'+miyouGroup+'</td></tr>'
 					}
 					// 判断数据是否取得成功
 					$('#student-tbody').append(trs)
@@ -202,6 +205,52 @@
 			    }
 		  });
 		} 	
+	}
+
+	function addToClazzGroup(phone, clazzId, studentId){
+		console.log('clicked')
+		$.ajax({
+			url: 'http://112.35.24.203:8086/miyou/admin/student/addClazzGroup',
+			type: 'post',
+			headers: {
+				token: getCookie('uuid')
+			},
+			data:{
+				phone: phone,
+				clazzId: clazzId,
+				studentId: studentId
+			},
+			success (res) {
+				layer.closeAll()
+				console.log('success')
+				console.log(res)
+				if(res.code === 1){
+					layer.msg('添加成功')
+					console.log('添加成功')
+					setTimeout(function(){
+						init()
+					},2000)
+				}else if(res.code === 0){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '添加失败',
+						content: res.error
+					})
+				}
+			},
+			error () {
+				layer.closeAll()
+				layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '添加失败',
+						content: '请检查网络'
+					})
+			}
+		})
 	}
 
 
@@ -271,8 +320,8 @@
 						type: 0,
 						closeBtn: 0,
 						icon:7, 
-						title: '提示',
-						content: '上传失败'
+						title: '上传失败',
+						content: '请检查所选Excel文件内容'
 					})
 
 				}

@@ -155,22 +155,22 @@
 
 
 	$(document).ready(function(){
-		console.log('add student')
+		// console.log('add student')
 
 
 		var provinceList = getData('getDistrict',{
 			parentId: 0
 		})
-		console.log('省',provinceList)
+		// console.log('省',provinceList)
 		fillSelect('select#province', provinceList)
 
 		var universityList = getData('getUniversity')
-		console.log('大学',universityList)
+		// console.log('大学',universityList)
 		fillSelect('select#university',universityList)
 	})
 
 	$('select#province').change(function(){
-		console.log('change')
+		// console.log('change')
 		var provinceVal = $(this).val()
 		if(provinceVal <= 4 || provinceVal >= 33 && provinceVal < 35 ){
 			//选择了直辖市
@@ -188,7 +188,7 @@
 				</div>`)
 				
 			}
-			console.log(provinceVal)
+			// console.log(provinceVal)
 				var districtList = getData('getDistrict',{
 					parentId: provinceVal
 				})
@@ -226,18 +226,18 @@
 				</div>`)
 			}
 
-			console.log(provinceVal)
+			// console.log(provinceVal)
 			var cityList = getData('getDistrict',{
 				parentId: provinceVal
 			})
 			fillSelect('select#city', cityList)
 
 			$('select#city').change(function(){
-				console.log('city')
+				// console.log('city')
 				var districtList = getData('getDistrict',{
 					parentId: $(this).val()
 				})
-				console.log(districtList)
+				// console.log(districtList)
 
 				fillSelect('select#district', districtList)					
 			})
@@ -248,22 +248,22 @@
 	
 
 	$('select#university').change(function(){
-		console.log('change')
-		console.log($(this).val())
+		// console.log('change')
+		// console.log($(this).val())
 		var schoolList = getData('getSchool', {
 			uid: $(this).val()
 		})
-		console.log('school', schoolList)
+		// console.log('school', schoolList)
 		fillSelect('select#school', schoolList) 
 	})
 
 	$('select#school').change(function(){
-		console.log('schoolchange')
-		console.log($(this).val())
+		// console.log('schoolchange')
+		// console.log($(this).val())
 		var clazzList = getData('getClazz', {
 			pid: $(this).val()
 		})
-		console.log('school', clazzList)
+		// console.log('school', clazzList)
 		fillSelect('select#clazz', clazzList) 
 	})
 
@@ -280,7 +280,7 @@
 			},
 			data: data,
 			success (response){
-				console.log('success', response)
+				// console.log('success', response)
 				result = response.data
 			}
 		})
@@ -314,20 +314,20 @@
 		var sex = $('input[name="sex"]:checked').val()
 		var phone = $('#phone').val() 
 
-		console.log('province',province)
-		console.log('city',city)
-		console.log('district', district)
-		console.log('university',university)
-		console.log('school',school)
-		console.log('clazz',clazz)
-		console.log('clazzId',clazzId)
-		console.log('name',name)
-		console.log('sex',sex)
-		console.log('phone',phone)
-		console.log('enrolTime',enrolTime)
-		console.log('year',year)
-		console.log('month',month)
-		console.log('number',number)
+		// console.log('province',province)
+		// console.log('city',city)
+		// console.log('district', district)
+		// console.log('university',university)
+		// console.log('school',school)
+		// console.log('clazz',clazz)
+		// console.log('clazzId',clazzId)
+		// console.log('name',name)
+		// console.log('sex',sex)
+		// console.log('phone',phone)
+		// console.log('enrolTime',enrolTime)
+		// console.log('year',year)
+		// console.log('month',month)
+		// console.log('number',number)
 
 		event.preventDefault()
 		if(province === '请选择省份/直辖市'){
@@ -361,7 +361,7 @@
 					token: getCookie('uuid')
 				},
 				data: {
-					id: 0,
+					id: null,
 					name: name,
 					phone: phone,
 					sex: sex,
@@ -377,8 +377,8 @@
 					district: district
 				},
 				success (response) {
-					console.log('updateSuccess')
-					console.log(response)
+					// console.log('updateSuccess')
+					// console.log(response)
 				}
 
 			})
