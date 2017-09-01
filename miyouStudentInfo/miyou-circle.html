@@ -35,24 +35,29 @@
 		width:100%;
 		height:100%;	
 	}
+	#btn-add{
+		margin-left: 10px;
+	}
 </style>
 </head>
 <body  onload="init()"   >
 
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span> 密友圈 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span>  密友圈 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
-	<table class="table table-bordered table-border table-hover table-bg " id="student-table">
+	<table class="table table-bordered table-border table-hover table-bg " id="clazz-table">
 		<thead>
 			<tr class="text-c">
-				<th width="">序号</th>
-				<th width="">大学</th>
+				<th width="100">序号</th>
+				<th width="200">群主</th>
+				<th width="200">群主号码</th>
+				<th width="200">成员</th>
 			</tr>
 		</thead>
-		<tbody id="student-tbody">
+		<tbody id="clazz-tbody">
 		</tbody>
 	</table>
 	<div class="pagination r" id="pagination"></div>
@@ -73,10 +78,14 @@
 <script type="text/javascript">
 	var studentData = {}
 	var isInit = false
+	var size = 12
+	var uuid = getCookie('uuid')
+
+	//	添加
+	
 
 
-
-	function getData(page,size){
+	function getData(page = 1,size = 15,uuid){
         
         // console.log('isInit',isInit)
         $(document).unbind('ajaxStart')
@@ -86,123 +95,209 @@
 
 		})
 
-        
+		$.ajax({
+			url: 'http://112.35.24.81:8086/miyou/admin/getMiyou',
+			type:'get',
+			async: isInit,
+			headers: {
+				token: uuid
+			},
+			dataType : 'json',
+			data: {
+				page: page,
+				size: size,
+				pid: 0,
+			},
+			timeout: 5*1000,
+			success (response){
+				layer.closeAll()
+				console.log('success')
+				console.log(response)
+				if(response.code === 1){
+					var list = response.data.list
+					var trs = ''
+					console.log(list)
+					$('#clazz-tbody').children().remove()
+					for(let i=0; i<list.length; i++){						
+						var sequence = (page-1)*size+i+1
+						var name = list[i].miyouName
+						console.log(name)
+						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td><td><button class="btn btn-secondary-outline radius" onclick="getMiyouMember('+list[i].id+')">查看</button></td></tr>'
+					}
+					// 判断数据是否取得成功
+					$('#clazz-tbody').append(trs)
+					// $('#data-num').text(list.length)
+					if(!isInit){
+						studentData = list
+					}
+					isInit = true
+					
+
+				}
+				else if(response.code === 0){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '出现错误',
+						content: response.error
+					})
+				}else if(response.code === -1){
+						removeCookie('uuid')
+						removeCookie('login')
+						removeCookie('username')
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '重新登录',
+							content: '超过30分钟未操作，已自动登出，请重新登录',
+							yes () {
+								window.open('login.html','_self')
+							}
+						})
+
+					}		
+
+
+			},
+			error (xhr,status) {
+				console.log('error', status)
+				layer.closeAll()
+				if(!isInit){	
+					layer.closeAll()
+					$('#nodata').show()
+				}else{
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '获取数据失败',
+						content: '请检查网络'
+					})
+				}
+			}
+		})
+
 	
+	}
+
+	//申请开通班级圈
+	function applyGroup(clazzId){
+		$.ajax({
+			url: 'http://112.35.24.81:8086/miyou/admin/school/clazzGroup',
+			type: 'post',
+			headers: {
+				token: uuid
+			},
+			dataType : 'json',
+			data: {
+				clazzId: clazzId
+			},
+
+			success (response) {
+				layer.closeAll()
+				console.log('success')
+				console.log(response)
+				if(response.code === 1){
+					layer.msg('开通成功')
+					setTimeout(function(){
+						init()
+					},1000)
+				}else if(response.code === 0){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '开通失败',
+						content: response.error
+					})
+				}else if(response.code === -1){
+						removeCookie('uuid')
+						removeCookie('login')
+						removeCookie('username')
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '重新登录',
+							content: '超过30分钟未操作，已自动登出，请重新登录',
+							yes () {
+								window.open('login.html','_self')
+							}
+						})
+
+				}
+
+			},
+			error (xhr, status) {
+				layer.closeAll()
+				layer.open({
+					type: 0,
+					closeBtn: 0,
+					icon:7, 
+					title: '开通失败',
+					content: '请检查网络'
+				})
+			}
+		})
 	}
 
 
 	function init(){
+		if(getCookie('login') === ''){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				shade: [1,'#fff'],
+				title: '未登录',
+				icon: 7,
+				content: '请登录',
+				yes () {
+					window.open('login.html','_self')
+				}
+			})
+		}
+		
 		var page = 1
-		var size = 12 
+		
+		console.log('uuid',uuid) 
 
 		$(document).ajaxStart(function(){
 			layer.load()
 
 		})
 	
-		getData(page,size)
+		getData(page, size, uuid)
 		console.log('got',studentData)
 			
-		if(studentData.total > size){
-			var pages = Math.ceil(studentData.total/size)
-			laypage({
-			    cont: 'pagination',
-			    curr: 1, 
-			    pages: pages,
-			    groups: 5,
-			    jump (obj,first) {
-			    	if(!first){
-			    		console.log(obj.curr)
-				    	getData(obj.curr,size)
-					}
-			    }
-		  });
-		} 	
+		// if(studentData.total > size){
+		// 	var pages = Math.ceil(studentData.total/size)
+		// 	laypage({
+		// 	    cont: 'pagination',
+		// 	    curr: 1, 
+		// 	    pages: pages,
+		// 	    groups: 5,
+		// 	    jump (obj,first) {
+		// 	    	if(!first){
+		// 	    		console.log(obj.curr)
+		// 		    	getData(obj.curr, size, uuid)
+		// 			}
+		// 	    }
+		//   });
+		// } 	
 	}
 
+	function getMiyouMember(id){
+		console.log(id)
+		setCookie('miyouCircleId',id)
+		// var title = '群主：'+miyouInfo.miyouName 
+		// console.log(title)
+		layer_show('密友圈成员','miyou-circle-member.html','','650');
+	}
 
-	$('#file-upload-btn').click(function(event){
-		event.preventDefault()
-
-		var fileInput = $('#file')[0];
-		var fileNum = fileInput.files.length 
-		
-		if(fileNum === 0){
-			layer.open({
-				type: 0,
-				closeBtn: 2,
-				title: '提示',
-				content: '上传前请导入Excel文件'
-			})
-			return
-		}
-		form = new FormData()
-		form.append('file',fileInput.files[0])
-		console.log(form)
-		$(document).unbind('ajaxStart')
-		$(document).ajaxStart(function(){
-			layer.load(1)
-			layer.msg('上传中', {
-				  icon: 16,
-				  shade: 0.3
-			});
-		})
-
-		$.ajax({
-			url: 'http://122.227.209.194:8086/miyou/admin/uploadExcel',
-			// url: 'http://192.168.15.159:8086/miyou/admin/uploadExcel',
-			type: 'post',
-			timeout: 10*60*1000,
-			data: form,
-			cache: false,
-			processData: false,
-		    contentType: false,
-			success (response,status,xhr) {
-				layer.closeAll()
-				if(response.code === 1){
-					var data = response.data
-					if(data.repeateCount > 0){
-						var ellipses = '...'
-						if(data.repeateCount <= 3){
-							ellipses = ''
-						}
-						layer.open({
-							type: 1,
-							closeBtn: 2,
-							area: ['370px','250px'],
-							title: '文件上传情况',
-							content: '<div class="upload-report"><p>共'+data.total+'条数据</p>'+
-							'<p>上传成功：'+data.successCount+'条数据</p>'+
-							'<P>重复：'+data.repeateCount+'条数据</p>'+
-							'<p>重复数据：['+data.repeateNames+ellipses+']</p></div>',
-							btn: '确定'
-							
-						})
-					}
-				}else if(response.code === 0) {
-					layer.open({
-						type: 0,
-						closeBtn: 2,
-						icon:7, 
-						title: '上传失败',
-						content: response.error
-					})
-
-				}
-				console.log(response)
-			},
-			error (xhr,status) {
-				layer.closeAll()
-				layer.open({
-					type: 0,
-					closeBtn: 2,
-					icon:7, 
-					title: '错误',
-					content: status,
-				})
-			}
-		})
-	})
+	
+	
 </script> 
 </body>
 </html>

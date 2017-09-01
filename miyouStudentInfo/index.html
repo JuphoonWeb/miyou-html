@@ -55,7 +55,7 @@
 				<dd style="display: block">
 					<ul>
 						<li><a data-href="student-list.html" data-title="学生列表" href="javascript:;">学生列表</a></li>
-						<li><a data-href="class-group.html" data-title="班级群" href="javascript:;">班级群</a></li>
+						<li><a data-href="class-group.html" data-title="班级管理" href="javascript:;">班级管理</a></li>
 						<li><a data-href="miyou-circle.html" data-title="密友圈" href="javascript:;">密友圈</a></li>
 					</ul>
 				</dd>
@@ -123,12 +123,13 @@
 	$('#logout').click(function(){
 		console.log('退出登录')
 		$.ajax({
-			// url: 'http://112.35.24.203:8086/miyou/logout',
-			url: 'http://112.35.24.203:8086/miyou/logout',
+			// url: 'http://112.35.24.81:8086/miyou/logout',
+			url: 'http://112.35.24.81:8086/miyou/logout',
 			type: 'post',
 			headers: {
 				token: getCookie('uuid')
 			},
+			dataType : 'json',
 			success (response){
 				console.log('logoutdata',response)
 				removeCookie('login')

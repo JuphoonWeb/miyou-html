@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <html>
 <head>
 <meta charset="utf-8">
@@ -15,7 +15,7 @@
 <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
-<title>班级管理</title>
+<title>密友圈成员</title>
 <style>
 	
 	.pagination{
@@ -42,24 +42,20 @@
 </head>
 <body  onload="init()"   >
 
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span>  班级管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
-<div class="page-container" id="student-list">
+<div class="page-container" id="member-list">
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
-		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+		<span class="r">共有成员：<strong id="data-num">0</strong> 名</span> 
 	</div>
 	<div class="mt-20">
-	<table class="table table-bordered table-border table-hover table-bg " id="clazz-table">
+	<table class="table table-bordered table-border table-hover table-bg " id="member-table">
 		<thead>
 			<tr class="text-c">
 				<th width="100">序号</th>
-				<th width="200">大学</th>
-				<th width="200">学院</th>
-				<th width="200">班级</th>
-				<th width="150">班级圈</th>		
-				<th width="200">主号</th>
+				<th width="200">姓名</th>
+			    <th width="200">手机</th>
 			</tr>
 		</thead>
-		<tbody id="clazz-tbody">
+		<tbody id="member-tbody">
 		</tbody>
 	</table>
 	<div class="pagination r" id="pagination"></div>
@@ -80,14 +76,14 @@
 <script type="text/javascript">
 	var studentData = {}
 	var isInit = false
-	var size = 12
+	var size = 100
 	var uuid = getCookie('uuid')
 
 	//	添加
 	
 
 
-	function getData(page = 1,size = 15,uuid){
+	function getData(page = 0,size = 100,uuid){
         
         // console.log('isInit',isInit)
         $(document).unbind('ajaxStart')
@@ -99,7 +95,7 @@
 
         // 
 		$.ajax({
-			url: 'http://112.35.24.81:8086/miyou/admin/getAllClazz',
+			url: 'http://112.35.24.81:8086/miyou/admin/getMiyou',
 			type:'get',
 			async: isInit,
 			headers: {
@@ -109,6 +105,7 @@
 			data: {
 				page: page,
 				size: size,
+				pid: getCookie('miyouCircleId')
 			},
 			timeout: 5*1000,
 			success (response){
@@ -119,17 +116,15 @@
 					var list = response.data.list
 					var trs = ''
 					console.log(response)
-					$('#clazz-tbody').children().remove()
+					$('#member-tbody').children().remove()
 					for(let i=0; i<list.length; i++){						
-						var sequence = (page-1)*size+i+1
-						var clazzId = list[i].id
-						var hasClazzGroup = list[i].clazzGroup ? '已开通' : '未开通<button onclick="applyGroup('+clazzId+')" style="margin-left:10px" class="btn btn-secondary-outline radius">开通</button>'
-						var servnumber = list[i].servnumber || '暂无' 
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].universityName+'</td><td>'+list[i].schoolName+'</td><td>'+list[i].clazz+'</td><td>'+hasClazzGroup+'</td><td>'+servnumber+'</td></tr>'
+						var sequence = page*size+i+1
+
+						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].miyouName+'</td><td>'+list[i].memberPhone+'</td></tr>'
 					}
 					// 判断数据是否取得成功
-					$('#clazz-tbody').append(trs)
-					// $('#data-num').text(list.length)
+					$('#member-tbody').append(trs)
+					$('#data-num').text(response.data.total)
 					if(!isInit){
 						studentData = list
 					}
@@ -185,66 +180,7 @@
 	
 	}
 
-	//申请开通班级圈
-	function applyGroup(clazzId){
-		$.ajax({
-			url: 'http://112.35.24.81:8086/miyou/admin/school/clazzGroup',
-			type: 'post',
-			headers: {
-				token: uuid
-			},
-			dataType : 'json',
-			data: {
-				clazzId: clazzId
-			},
-
-			success (response) {
-				layer.closeAll()
-				console.log('success')
-				console.log(response)
-				if(response.code === 1){
-					layer.msg('开通成功')
-					setTimeout(function(){
-						init()
-					},1000)
-				}else if(response.code === 0){
-					layer.open({
-						type: 0,
-						closeBtn: 0,
-						icon:7, 
-						title: '开通失败',
-						content: response.error
-					})
-				}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
-								window.open('login.html','_self')
-							}
-						})
-
-				}
-
-			},
-			error (xhr, status) {
-				layer.closeAll()
-				layer.open({
-					type: 0,
-					closeBtn: 0,
-					icon:7, 
-					title: '开通失败',
-					content: '请检查网络'
-				})
-			}
-		})
-	}
+	
 
 
 	function init(){
@@ -262,7 +198,7 @@
 			})
 		}
 		
-		var page = 1
+		var page = 0
 		
 		console.log('uuid',uuid) 
 

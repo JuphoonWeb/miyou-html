@@ -14,7 +14,8 @@
 			width:500px;
 			font-family:'TSSunOldcad44dbab19d67';
 			z-index: 1000;
-					}
+			cursor: default;
+		}
 		.title .title-1{
 			margin:0 50px -15px;
 			padding:0;
@@ -349,13 +350,14 @@
  		}else{
  			$.ajax({
  				// url: 'http://122.227.209.194:8086/miyou/login',
- 				url: 'http://112.35.24.203:8086/miyou/login',
+ 				url: 'http://112.35.24.81:8086/miyou/login',
  				type: 'post',
  				timeout: 7*1000,
  				data: {
  					username: username,
  					password: password
  				},
+ 				dataType : 'json',
  				success (response,status) {
  					layer.closeAll()
  					console.log('success')
