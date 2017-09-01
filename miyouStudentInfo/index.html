@@ -112,7 +112,7 @@
 				icon: 7,
 				content: '请登录',
 				yes () {
-					window.open('login.html','_self')
+					window.open('login.html')
 				}
 			})
 		}else{
@@ -134,7 +134,7 @@
 				console.log('logoutdata',response)
 				removeCookie('login')
 				removeCookie('username')
-				window.open('login.html','_self')
+				window.open('login.html')
 			},
 			error () {
 				layer.open({

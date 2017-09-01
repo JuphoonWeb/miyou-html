@@ -55,6 +55,7 @@
 				<th width="200">群主</th>
 				<th width="200">群主号码</th>
 				<th width="200">成员</th>
+				<th width="200">产品类型</th>
 			</tr>
 		</thead>
 		<tbody id="clazz-tbody">
@@ -121,8 +122,9 @@
 					for(let i=0; i<list.length; i++){						
 						var sequence = (page-1)*size+i+1
 						var name = list[i].miyouName
+						var Protype = list[i].prod ? 'prod.FrendGroupQJ.0' : 'prod.FrendTriGroupQJ.0'
 						console.log(name)
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td><td><button class="btn btn-secondary-outline radius" onclick="getMiyouMember('+list[i].id+')">查看</button></td></tr>'
+						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td><td><button class="btn btn-secondary-outline radius" onclick="getMiyouMember('+list[i].id+')">查看</button></td><td>'+Protype+'</td></tr>'
 					}
 					// 判断数据是否取得成功
 					$('#clazz-tbody').append(trs)
@@ -153,7 +155,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html','_self')
+								window.open('login.html')
 							}
 						})
 
@@ -223,7 +225,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html','_self')
+								window.open('login.html')
 							}
 						})
 
@@ -254,7 +256,7 @@
 				icon: 7,
 				content: '请登录',
 				yes () {
-					window.open('login.html','_self')
+					window.open('login.html')
 				}
 			})
 		}

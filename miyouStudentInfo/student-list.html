@@ -105,6 +105,7 @@
 	var isInit = false
 	var size = 12
 	var uuid = getCookie('uuid')
+	var searchPhone = ''
 
 	//	添加
 	function studentAdd(title,url,w,h){
@@ -185,7 +186,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html','_self')
+								window.open('login.html')
 							}
 						})
 
@@ -225,7 +226,7 @@
 
 		})
 	
-		getData(page, size, uuid)
+		getData(page, size, uuid, searchPhone)
 		console.log('got',studentData)
 			
 		if(studentData.total > size){
@@ -238,7 +239,7 @@
 			    jump (obj,first) {
 			    	if(!first){
 			    		console.log(obj.curr)
-				    	getData(obj.curr, size, uuid)
+				    	getData(obj.curr, size, uuid, searchPhone)
 					}
 			    }
 		  });
@@ -272,7 +273,7 @@
 						console.log('page',currPage)
 						setTimeout(function(){
 							// init()
-							getData(currPage, size, uuid)
+							getData(currPage, size, uuid, searchPhone)
 							
 							
 						},2000)
@@ -304,7 +305,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html','_self')
+								window.open('login.html')
 							}
 						})
 
@@ -329,10 +330,6 @@
 		if(phone === ''){
 			layer.msg('查找前请输入手机号码')
 			$('#search-phone').focus()
-		}else if( !(/^1[3|4|5|7|8][0-9]\d{8}$/.test(phone))){
-			layer.msg('请输入正确格式的手机号码')
-			$('#search-phone').focus()
-
 		}else{
 			getData(1,100,uuid,phone)	
 		}
@@ -428,7 +425,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html','_self')
+								window.open('login.html')
 							}
 						})
 
