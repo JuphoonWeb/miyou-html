@@ -165,6 +165,22 @@
 					$('#data-num').text(data.total)
 					if(!isInit){
 						studentData = data
+						if(studentData.total > size){
+							$('#pagination').show()
+							var pages = Math.ceil(studentData.total/size)
+							laypage({
+							    cont: 'pagination',
+							    curr: 1, 
+							    pages: pages,
+							    groups: 5,
+							    jump (obj,first) {
+							    	if(!first){
+							    		console.log(obj.curr)
+								    	getData(obj.curr, size, uuid, searchPhone)
+									}
+							    }
+						  });
+						}
 					}
 					isInit = true
 				}else if(response.code === 0){
@@ -175,7 +191,8 @@
 						title: '出现错误',
 						content: response.error
 					})
-				}else if(response.code === -1){
+				}
+				else if(response.code === -1){
 						removeCookie('uuid')
 						removeCookie('login')
 						removeCookie('username')
@@ -186,11 +203,11 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html')
+								parent.window.open('login.html', '_self')
 							}
 						})
 
-					}	
+				}	
 			},
 			error (xhr,status) {
 				console.log('error', status)
@@ -229,21 +246,21 @@
 		getData(page, size, uuid, searchPhone)
 		console.log('got',studentData)
 			
-		if(studentData.total > size){
-			var pages = Math.ceil(studentData.total/size)
-			laypage({
-			    cont: 'pagination',
-			    curr: 1, 
-			    pages: pages,
-			    groups: 5,
-			    jump (obj,first) {
-			    	if(!first){
-			    		console.log(obj.curr)
-				    	getData(obj.curr, size, uuid, searchPhone)
-					}
-			    }
-		  });
-		} 	
+		// if(studentData.total > size){
+		// 	var pages = Math.ceil(studentData.total/size)
+		// 	laypage({
+		// 	    cont: 'pagination',
+		// 	    curr: 1, 
+		// 	    pages: pages,
+		// 	    groups: 5,
+		// 	    jump (obj,first) {
+		// 	    	if(!first){
+		// 	    		console.log(obj.curr)
+		// 		    	getData(obj.curr, size, uuid, searchPhone)
+		// 			}
+		// 	    }
+		//   });
+		// } 	
 	}
 
 	function addToClazzGroup(phone, clazzId, studentId){
@@ -305,7 +322,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html')
+								parent.window.open('login.html', '_self')
 							}
 						})
 
@@ -326,13 +343,11 @@
 
 	$('#search-btn').click(function(event){
 		event.preventDefault()
-		var phone = $('#search-phone').val()
-		if(phone === ''){
-			layer.msg('查找前请输入手机号码')
-			$('#search-phone').focus()
-		}else{
-			getData(1,100,uuid,phone)	
-		}
+		searchPhone = $('#search-phone').val()
+		$('#pagination').hide()
+		isInit = false
+		getData(1,12,uuid,searchPhone)	
+		
 	})
 
 	$('#file-upload-btn').click(function(event){
@@ -425,7 +440,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html')
+								parent.window.open('login.html', '_self')
 							}
 						})
 

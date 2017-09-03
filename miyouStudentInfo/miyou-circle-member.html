@@ -74,16 +74,13 @@
 
 
 <script type="text/javascript">
-	var studentData = {}
+	var miyouMemberData = {}
 	var isInit = false
-	var size = 100
+	var size = 500
 	var uuid = getCookie('uuid')
 
-	//	添加
-	
 
-
-	function getData(page = 0,size = 100,uuid){
+	function getData(page = 0,size = 500,uuid){
         
         // console.log('isInit',isInit)
         $(document).unbind('ajaxStart')
@@ -119,14 +116,15 @@
 					$('#member-tbody').children().remove()
 					for(let i=0; i<list.length; i++){						
 						var sequence = page*size+i+1
+						var name = list[i].miyouName || ''
 
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].miyouName+'</td><td>'+list[i].memberPhone+'</td></tr>'
+						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td></tr>'
 					}
 					// 判断数据是否取得成功
 					$('#member-tbody').append(trs)
 					$('#data-num').text(response.data.total)
 					if(!isInit){
-						studentData = list
+						miyouMemberData = list
 					}
 					isInit = true
 					
@@ -151,7 +149,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html')
+								parent.parent.window.open('login.html', '_self')
 							}
 						})
 
@@ -193,7 +191,7 @@
 				icon: 7,
 				content: '请登录',
 				yes () {
-					window.open('login.html')
+					parent.parent.window.open('login.html', '_self')
 				}
 			})
 		}
@@ -208,10 +206,10 @@
 		})
 	
 		getData(page, size, uuid)
-		console.log('got',studentData)
+		console.log('got',miyouMemberData)
 			
-		// if(studentData.total > size){
-		// 	var pages = Math.ceil(studentData.total/size)
+		// if(miyouMemberData.total > size){
+		// 	var pages = Math.ceil(miyouMemberData.total/size)
 		// 	laypage({
 		// 	    cont: 'pagination',
 		// 	    curr: 1, 

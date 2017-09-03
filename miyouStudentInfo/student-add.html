@@ -285,8 +285,25 @@
 			},
 			data: data,
 			success (response){
-				// console.log('success', response)
-				result = response.data
+				console.log('response', response)
+				if(response.code === 1){
+					result = response.data
+				}else if(response.code === -1){
+					removeCookie('uuid')
+						removeCookie('login')
+						removeCookie('username')
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '重新登录',
+							content: '超过30分钟未操作，已自动登出，请重新登录',
+							yes () {
+								parent.parent.window.open('login.html', '_self')
+							}
+						})
+
+				} 
 			}
 		})
 
@@ -409,7 +426,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html')
+								parent.parent.window.open('login.html', '_self')
 							}
 						})
 

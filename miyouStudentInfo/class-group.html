@@ -78,16 +78,13 @@
 
 
 <script type="text/javascript">
-	var studentData = {}
+	var clazzData = {}
 	var isInit = false
-	var size = 12
+	var size = 13
 	var uuid = getCookie('uuid')
 
-	//	添加
 	
-
-
-	function getData(page = 1,size = 15,uuid){
+	function getData(page = 1,size = 13,uuid){
         
         // console.log('isInit',isInit)
         $(document).unbind('ajaxStart')
@@ -116,7 +113,9 @@
 				console.log('success')
 				console.log(response)
 				if(response.code === 1){
-					var list = response.data.list
+					var data = response.data
+					var list = data.list
+
 					var trs = ''
 					console.log(response)
 					$('#clazz-tbody').children().remove()
@@ -129,9 +128,9 @@
 					}
 					// 判断数据是否取得成功
 					$('#clazz-tbody').append(trs)
-					// $('#data-num').text(list.length)
+					$('#data-num').text(data.total)
 					if(!isInit){
-						studentData = list
+						clazzData = data
 					}
 					isInit = true
 					
@@ -156,7 +155,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html')
+								parent.window.open('login.html', '_self')
 							}
 						})
 
@@ -226,7 +225,7 @@
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
 							yes () {
-								window.open('login.html')
+								parent.window.open('login.html', '_self')
 							}
 						})
 
@@ -257,7 +256,7 @@
 				icon: 7,
 				content: '请登录',
 				yes () {
-					window.open('login.html')
+					parent.window.open('login.html', '_self')
 				}
 			})
 		}
@@ -272,23 +271,23 @@
 		})
 	
 		getData(page, size, uuid)
-		console.log('got',studentData)
+		console.log('got',clazzData)
 			
-		// if(studentData.total > size){
-		// 	var pages = Math.ceil(studentData.total/size)
-		// 	laypage({
-		// 	    cont: 'pagination',
-		// 	    curr: 1, 
-		// 	    pages: pages,
-		// 	    groups: 5,
-		// 	    jump (obj,first) {
-		// 	    	if(!first){
-		// 	    		console.log(obj.curr)
-		// 		    	getData(obj.curr, size, uuid)
-		// 			}
-		// 	    }
-		//   });
-		// } 	
+		if(clazzData.total > size){
+			var pages = Math.ceil(clazzData.total/size)
+			laypage({
+			    cont: 'pagination',
+			    curr: 1, 
+			    pages: pages,
+			    groups: 5,
+			    jump (obj,first) {
+			    	if(!first){
+			    		console.log(obj.curr)
+				    	getData(obj.curr, size, uuid)
+					}
+			    }
+		  });
+		} 	
 	}
 
 	
