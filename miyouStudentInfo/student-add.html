@@ -138,9 +138,58 @@
 <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
 
 <script type="text/javascript" src="static/js/cookie.js"></script>
+<script type="text/javascript" src="static/js/ajax.js"></script>
+
 
 
 <script type="text/javascript">
+	var tempData = {}
+
+	var successFunc = function (response){
+				console.log('response', response)
+				if(response.code === 1){
+					tempData = response.data
+				}else if(response.code === 0){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '出现错误',
+						content: response.error
+					})
+				}else if(response.code === -1){
+					removeCookie('uuid')
+						removeCookie('login')
+						removeCookie('username')
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '重新登录',
+							content: '超过30分钟未操作，已自动登出，请重新登录',
+							yes () {
+								parent.parent.window.open('login.html', '_self')
+							}
+						})
+
+				}
+			}
+
+	var errorFunc = function(xhr, status){
+		if(!isPageInit){	
+			layer.closeAll()
+			$('#nodata').show()
+		}else{
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				icon:7, 
+				title: '获取数据失败',
+				content: '请检查网络'
+			})
+		}
+	}
+
 
 	function  fillSelect(selectorStr,data){
 		$(selectorStr).children('option+option').remove()
@@ -155,16 +204,27 @@
 
 
 	$(document).ready(function(){
-		// console.log('add student')
-
-
-		var provinceList = getData('getDistrict',{
-			parentId: 0
+		ajax({
+			url: 'admin/getDistrict',
+			async: false,
+			data: {
+				parentId: 0,
+			},
+			successFunc: successFunc,
+			errorFunc: errorFunc
 		})
-		// console.log('省',provinceList)
+		var provinceList = tempData
+		console.log('省',provinceList)
 		fillSelect('select#province', provinceList)
 
-		var universityList = getData('getUniversity')
+		
+		ajax({
+			url: 'admin/getUniversity',
+			async: false,
+			successFunc: successFunc,
+			errorFunc: errorFunc
+		})
+		var universityList = tempData 
 		// console.log('大学',universityList)
 		fillSelect('select#university',universityList)
 	})
@@ -188,10 +248,16 @@
 				</div>`)
 				
 			}
-			// console.log(provinceVal)
-				var districtList = getData('getDistrict',{
-					parentId: provinceVal
-				})
+			ajax({
+				url: 'admin/getDistrict',
+				async: false,
+				data: {
+					parentId: provinceVal,
+				},
+				successFunc: successFunc,
+				errorFunc: errorFunc
+			})
+			districtList = tempData
 			fillSelect('select#district', districtList)			
 		}else if(provinceVal > 4 || provinceVal <= 33 && provinceVal < 35){
 			// 选择了省
@@ -226,19 +292,37 @@
 					</div>
 				</div>`)
 			}
-			
-
-			// console.log(provinceVal)
-			var cityList = getData('getDistrict',{
-				parentId: provinceVal
+						
+			ajax({
+				url: 'admin/getDistrict',
+				async: false,
+				data: {
+					parentId: provinceVal,
+				},
+				successFunc: successFunc,
+				errorFunc: errorFunc
 			})
+
+			cityList = tempData
 			fillSelect('select#city', cityList)
 
+			
+
+
 			$('select#city').change(function(){
-				// console.log('city')
-				var districtList = getData('getDistrict',{
-					parentId: $(this).val()
+
+				ajax({
+					url: 'admin/getDistrict',
+					async: false,
+					data: {
+						parentId: $(this).val(),
+					},
+					successFunc: successFunc,
+					errorFunc: errorFunc
 				})
+				districtList = tempData				
+
+
 				// console.log(districtList)
 
 				fillSelect('select#district', districtList)					
@@ -252,63 +336,36 @@
 	
 
 	$('select#university').change(function(){
-		// console.log('change')
-		// console.log($(this).val())
-		var schoolList = getData('getSchool', {
-			uid: $(this).val()
+		ajax({
+			url: 'admin/getSchool',
+			async: false,
+			data: {
+				uid: $(this).val(),
+			},
+			successFunc: successFunc,
+			errorFunc: errorFunc
 		})
+		var schoolList = tempData
 		// console.log('school', schoolList)
 		fillSelect('select#school', schoolList) 
 	})
 
 	$('select#school').change(function(){
-		// console.log('schoolchange')
-		// console.log($(this).val())
-		var clazzList = getData('getClazz', {
-			pid: $(this).val()
+
+		ajax({
+			url: 'admin/getClazz',
+			async: false,
+			data: {
+				pid: $(this).val(),
+			},
+			successFunc: successFunc,
+			errorFunc: errorFunc
 		})
+		var clazzList = tempData
 		// console.log('school', clazzList)
 		fillSelect('select#clazz', clazzList) 
 	})
 
-	function getData(purpose,data){
-		var result = {}
-		
-		$.ajax({
-			// url: 'http://192.168.11.254:8086/miyou/admin/'+purpose,
-			url: 'http://112.35.24.81:8086/miyou/admin/'+purpose,
-			type: 'get',
-			async: false,
-			dataType : 'json',
-			headers: {
-				token: getCookie('uuid')
-			},
-			data: data,
-			success (response){
-				console.log('response', response)
-				if(response.code === 1){
-					result = response.data
-				}else if(response.code === -1){
-					removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
-								parent.parent.window.open('login.html', '_self')
-							}
-						})
-
-				} 
-			}
-		})
-
-		return result
-	}
 
 	$('select').click(function(){
 		layer.closeAll()
@@ -375,14 +432,9 @@
 		}else if( !(/^1[3|4|5|7|8][0-9]\d{8}$/.test(phone))){
 			layer.msg('请填写正确格式的手机号码')
 		}else{
-			$.ajax({
-				// url: 'http://192.168.11.254:8086/miyou/admin/submitStudentInfo',
-				url: 'http://112.35.24.81:8086/miyou/admin/submitStudentInfo',
-				type: 'post',
-				headers: {
-					token: getCookie('uuid')
-				},
-				dataType : 'json',
+			ajax({
+				url: 'admin/submitStudentInfo',
+				method: 'post',
 				data: {
 					id: null,
 					name: name,
@@ -399,7 +451,7 @@
 					city: city,
 					district: district
 				},
-				success (response) {
+				successFunc (response) {
 					console.log(response)
 					if(response.code === 1){
 						layer.msg('添加成功')
@@ -432,7 +484,7 @@
 
 					}	
 				},
-				error (){
+				errorFunc () {
 					layer.open({
 						type: 0,
 						closeBtn: 0,
@@ -441,9 +493,11 @@
 						content: '请检查网络'
 					})
 
-				}
+				} 
 
 			})
+
+			
 		}
 
 		

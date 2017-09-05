@@ -59,8 +59,9 @@
 		</tbody>
 	</table>
 	<div class="pagination r" id="pagination"></div>
-	<div class="nodata" id="nodata">
-		<img src="static/images/nodata.svg" alt="">
+	<div class="nodata text-c" id="nodata">
+		<h3>该密友圈内暂无成员</h3>
+		<!-- <img src="static/images/nodata.svg" alt=""> -->
 	</div>
 </div>
 
@@ -70,61 +71,60 @@
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
 <script type="text/javascript" src="static/js/cookie.js"></script>
+<script type="text/javascript" src="static/js/ajax.js"></script>
  
-
-
 <script type="text/javascript">
-	var miyouMemberData = {}
 	var isInit = false
-	var size = 500
-	var uuid = getCookie('uuid')
+	var url = 'admin/getMiyou'
+	var size = 10
+	var currPage = 1	
 
-
-	function getData(page = 0,size = 500,uuid){
-        
-        // console.log('isInit',isInit)
-        $(document).unbind('ajaxStart')
-
-        $(document).ajaxStart(function(){
-			layer.load()
-
-		})
-
-        // 
-		$.ajax({
-			url: 'http://112.35.24.81:8086/miyou/admin/getMiyou',
-			type:'get',
-			async: isInit,
-			headers: {
-				token: uuid
-			},
-			dataType : 'json',
-			data: {
-				page: page,
-				size: size,
-				pid: getCookie('miyouCircleId')
-			},
-			timeout: 5*1000,
-			success (response){
-				layer.closeAll()
-				console.log('success')
-				console.log(response)
+	var successFunc = function (response){
 				if(response.code === 1){
-					var list = response.data.list
+					var data = response.data
+					var list = data.list
+					if(data.total === 0){
+						$('#nodata').show()
+						return
+					}else{
+						$('#nodata').hide()
+					}
 					var trs = ''
-					console.log(response)
 					$('#member-tbody').children().remove()
 					for(let i=0; i<list.length; i++){						
-						var sequence = page*size+i+1
+						var sequence = i+1
+						console.log(list[i])
 						var name = list[i].miyouName || ''
 
 						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td></tr>'
 					}
 					// 判断数据是否取得成功
 					$('#member-tbody').append(trs)
-					$('#data-num').text(response.data.total)
-					if(!isInit){
-						miyouMemberData = list
+					$('#data-num').text(data.total)
+					if(!isInit && data.total > size){
+						var pages = Math.ceil(data.total/size)
+						laypage({
+						    cont: 'pagination',
+						    curr: 1, 
+						    pages: pages,
+						    groups: 5,
+						    jump (obj,first) {
+						    	if(!first){
+						    		console.log(obj.curr)
+						    		currPage = obj.curr
+							    	ajax({
+										url: url,
+										data: {
+											page: currPage,
+											size: size,
+											pid: getCookie('miyouCircleId'),
+										},
+										successFunc: successFunc,
+										errorFunc: errorFunc
+									})
+								}
+						    }
+					  });
 					}
 					isInit = true
 					
@@ -154,10 +154,9 @@
 						})
 
 					}		
+			} 
 
-
-			},
-			error (xhr,status) {
+	var errorFunc = function (xhr,status) {
 				console.log('error', status)
 				layer.closeAll()
 				if(!isInit){	
@@ -173,12 +172,6 @@
 					})
 				}
 			}
-		})
-
-	
-	}
-
-	
 
 
 	function init(){
@@ -196,33 +189,19 @@
 			})
 		}
 		
-		var page = 0
-		
-		console.log('uuid',uuid) 
-
-		$(document).ajaxStart(function(){
-			layer.load()
-
-		})
 	
-		getData(page, size, uuid)
-		console.log('got',miyouMemberData)
+		ajax({
+			url: url,
+			data: {
+				page: currPage,
+				size: size,
+				pid: getCookie('miyouCircleId'),
+			},
+			successFunc: successFunc,
+			errorFunc: errorFunc
+		})
 			
-		// if(miyouMemberData.total > size){
-		// 	var pages = Math.ceil(miyouMemberData.total/size)
-		// 	laypage({
-		// 	    cont: 'pagination',
-		// 	    curr: 1, 
-		// 	    pages: pages,
-		// 	    groups: 5,
-		// 	    jump (obj,first) {
-		// 	    	if(!first){
-		// 	    		console.log(obj.curr)
-		// 		    	getData(obj.curr, size, uuid)
-		// 			}
-		// 	    }
-		//   });
-		// } 	
+		 	
 	}
 
 	

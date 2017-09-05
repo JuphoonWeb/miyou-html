@@ -56,24 +56,20 @@
 	</div>
 </footer>
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
-<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script> 
 <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
 <script type="text/javascript" src="lib/html5shiv.js"></script>
 <script type="text/javascript" src="static/js/cookie.js"></script>
-
+<script type="text/javascript" src="static/js/ajax.js"></script>
 <script>
 
+
+
 	$(document).ready(function(){
-		$.ajax({
-			// url: 'http://192.168.11.254:8086/miyou/admin/'+purpose,
-			url: 'http://112.35.24.81:8086/miyou/admin/getUniversity',
-			type: 'get',
-			dataType : 'json',
-			headers: {
-				token: getCookie('uuid')
-			},
-			success (response){
-				console.log('response', response)
+		ajax({
+			url: 'admin/getUniversity',
+			successFunc: function(response){
 					if(response.code === -1){
 						removeCookie('uuid')
 						removeCookie('login')

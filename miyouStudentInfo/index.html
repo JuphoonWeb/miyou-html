@@ -100,6 +100,7 @@
 <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
 <script type="text/javascript" src="lib/html5shiv.js"></script>		
 <script type="text/javascript" src="static/js/cookie.js"></script>
+<script type="text/javascript" src="static/js/ajax.js"></script>
 
 <script>
 	function init(){
@@ -120,32 +121,32 @@
 		}
 	}
 
-	$('#logout').click(function(){
-		console.log('退出登录')
-		$.ajax({
-			// url: 'http://112.35.24.81:8086/miyou/logout',
-			url: 'http://112.35.24.81:8086/miyou/logout',
-			type: 'post',
-			headers: {
-				token: getCookie('uuid')
-			},
-			dataType : 'json',
-			success (response){
+	var successFunc = function(response){
 				console.log('logoutdata',response)
 				removeCookie('login')
 				removeCookie('username')
 				window.open('login.html', '_self')
-			},
-			error () {
+			}
+
+	var errorFunc = function(){
 				layer.open({
 						type: 0,
 						closeBtn:0,
 						icon:7, 
 						title: '登出失败',
 						content: '请检查网络连接'
-					})
+					}) 
 			}
 
+
+	$('#logout').click(function(){
+		console.log('退出登录')
+		
+		ajax({
+			url: 'logout',
+			method: 'post',
+			successFunc: successFunc,
+			errorFunc: errorFunc
 		})
 	})
 		

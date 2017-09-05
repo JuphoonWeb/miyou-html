@@ -74,130 +74,120 @@
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
 <script type="text/javascript" src="static/js/cookie.js"></script>
- 
+<script type="text/javascript" src="static/js/ajax.js"></script> 
 
 
 <script type="text/javascript">
 	var clazzData = {}
-	var isInit = false
+	var url = 'admin/getAllClazz'
+	var isPageInit = false
+	var currPage = 1
 	var size = 13
 	var uuid = getCookie('uuid')
 
-	
-	function getData(page = 1,size = 13,uuid){
-        
-        // console.log('isInit',isInit)
-        $(document).unbind('ajaxStart')
+	var successFunc = function(response){
+						layer.closeAll()
+						console.log('success')
+						console.log(response)
+						if(response.code === 1){
+							var data = response.data
+							var list = data.list
 
-        $(document).ajaxStart(function(){
-			layer.load()
-
-		})
-
-        // 
-		$.ajax({
-			url: 'http://112.35.24.81:8086/miyou/admin/getAllClazz',
-			type:'get',
-			async: isInit,
-			headers: {
-				token: uuid
-			},
-			dataType : 'json',
-			data: {
-				page: page,
-				size: size,
-			},
-			timeout: 5*1000,
-			success (response){
-				layer.closeAll()
-				console.log('success')
-				console.log(response)
-				if(response.code === 1){
-					var data = response.data
-					var list = data.list
-
-					var trs = ''
-					console.log(response)
-					$('#clazz-tbody').children().remove()
-					for(let i=0; i<list.length; i++){						
-						var sequence = (page-1)*size+i+1
-						var clazzId = list[i].id
-						var hasClazzGroup = list[i].clazzGroup ? '已开通' : '未开通<button onclick="applyGroup('+clazzId+')" style="margin-left:10px" class="btn btn-secondary-outline radius">开通</button>'
-						var servnumber = list[i].servnumber || '暂无' 
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].universityName+'</td><td>'+list[i].schoolName+'</td><td>'+list[i].clazz+'</td><td>'+hasClazzGroup+'</td><td>'+servnumber+'</td></tr>'
-					}
-					// 判断数据是否取得成功
-					$('#clazz-tbody').append(trs)
-					$('#data-num').text(data.total)
-					if(!isInit){
-						clazzData = data
-					}
-					isInit = true
-					
-
-				}
-				else if(response.code === 0){
-					layer.open({
-						type: 0,
-						closeBtn: 0,
-						icon:7, 
-						title: '出现错误',
-						content: response.error
-					})
-				}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
-								parent.window.open('login.html', '_self')
+							var trs = ''
+							console.log(response)
+							$('#clazz-tbody').children().remove()
+							for(let i=0; i<list.length; i++){						
+								var sequence = (currPage-1)*size+i+1
+								var clazzId = list[i].id
+								var hasClazzGroup = list[i].clazzGroup ? '已开通' : '未开通<button onclick="applyGroup('+clazzId+')" style="margin-left:10px" class="btn btn-secondary-outline radius">开通</button>'
+								var servnumber = list[i].servnumber || '暂无' 
+								trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].universityName+'</td><td>'+list[i].schoolName+'</td><td>'+list[i].clazz+'</td><td>'+hasClazzGroup+'</td><td>'+servnumber+'</td></tr>'
 							}
-						})
+							// 判断数据是否取得成功
+							$('#clazz-tbody').append(trs)
+							$('#data-num').text(data.total)
+							if(!isPageInit && data.total > size){
+								var pages = Math.ceil(data.total/size)
+								laypage({
+								    cont: 'pagination',
+								    curr: 1, 
+								    pages: pages,
+								    groups: 5,
+								    jump (obj,first) {
+								    	if(!first){
+								    		console.log(obj.curr)
+								    		currPage = obj.curr
+									    	ajax({
+												url: url,
+												data: {
+													page: currPage, 
+													size: size,
+												},
+												successFunc: successFunc,
+												errorFunc: errorFunc
+											})
+										}
+								    }
+							  })
+							}
+							isPageInit = true
+							
 
-					}		
+						}
+						else if(response.code === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '出现错误',
+								content: response.error
+							})
+						}else if(response.code === -1){
+								removeCookie('uuid')
+								removeCookie('login')
+								removeCookie('username')
+								layer.open({
+									type: 0,
+									closeBtn: 0,
+									icon:7, 
+									title: '重新登录',
+									content: '超过30分钟未操作，已自动登出，请重新登录',
+									yes () {
+										parent.window.open('login.html', '_self')
+									}
+								})
 
+						}		
+			    	}
 
-			},
-			error (xhr,status) {
-				console.log('error', status)
-				layer.closeAll()
-				if(!isInit){	
-					layer.closeAll()
-					$('#nodata').show()
-				}else{
-					layer.open({
-						type: 0,
-						closeBtn: 0,
-						icon:7, 
-						title: '获取数据失败',
-						content: '请检查网络'
-					})
-				}
-			}
-		})
-
-	
-	}
+	var errorFunc = function(xhr,status) {
+						console.log('error', status)
+						layer.closeAll()
+						if(!isPageInit){	
+							layer.closeAll()
+							$('#nodata').show()
+						}else{
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '获取数据失败',
+								content: '请检查网络'
+							})
+						}
+				    } 
+		
 
 	//申请开通班级圈
 	function applyGroup(clazzId){
-		$.ajax({
-			url: 'http://112.35.24.81:8086/miyou/admin/school/clazzGroup',
-			type: 'post',
-			headers: {
-				token: uuid
-			},
-			dataType : 'json',
+		ajax({
+			url: 'admin/school/clazzGroup',
+			method: 'post',
 			data: {
 				clazzId: clazzId
 			},
 
-			success (response) {
+			successFunc (response) {
 				layer.closeAll()
 				console.log('success')
 				console.log(response)
@@ -232,7 +222,7 @@
 				}
 
 			},
-			error (xhr, status) {
+			errorFunc (xhr, status) {
 				layer.closeAll()
 				layer.open({
 					type: 0,
@@ -261,33 +251,27 @@
 			})
 		}
 		
-		var page = 1
+		currPage = 1
 		
 		console.log('uuid',uuid) 
 
-		$(document).ajaxStart(function(){
-			layer.load()
+		// $(document).ajaxStart(function(){
+		// 	layer.load()
 
-		})
+		// })
 	
-		getData(page, size, uuid)
-		console.log('got',clazzData)
+		ajax({
+			url: url,
+
+			data: {
+				page: currPage, 
+				size: size,
+			},
+			successFunc: successFunc,
+			errorFunc: errorFunc
+		})
 			
-		if(clazzData.total > size){
-			var pages = Math.ceil(clazzData.total/size)
-			laypage({
-			    cont: 'pagination',
-			    curr: 1, 
-			    pages: pages,
-			    groups: 5,
-			    jump (obj,first) {
-			    	if(!first){
-			    		console.log(obj.curr)
-				    	getData(obj.curr, size, uuid)
-					}
-			    }
-		  });
-		} 	
+		 	
 	}
 
 	

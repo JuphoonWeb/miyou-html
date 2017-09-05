@@ -323,45 +323,14 @@
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>	
 <script type="text/javascript" src="static/js/cookie.js"></script>	
-<script type="text/javascript" src="static/js/cookie.js"></script>
+<script type="text/javascript" src="static/js/ajax.js"></script>
+
 
 <script>
 	var isRememberPassword = false
-	$('#remember-password').click(function(){
-		var isRememberPassword = $('#remember-password')[0].checked
-		console.log(isRememberPassword)
-	})
+	var username = ''
 
-	$(document).ajaxStart(function(){
-		layer.closeAll()
-		layer.load()
-	})
-
- 	$('#login-btn').click(function(event){
- 		event.preventDefault()
- 		var username = $('#username').val()
- 		var password = $('#password').val()
- 		if(username === ''){
- 			layer.msg('请输入用户名')
- 			$('#username')[0].focus()
- 		}else if(password === ''){
- 			layer.msg('请输入密码')
- 			$('#password')[0].focus()
- 		}else{
- 			$.ajax({
- 				// url: 'http://122.227.209.194:8086/miyou/login',
- 				url: 'http://112.35.24.81:8086/miyou/login',
- 				type: 'post',
- 				timeout: 7*1000,
- 				data: {
- 					username: username,
- 					password: password
- 				},
- 				dataType : 'json',
- 				success (response,status) {
- 					layer.closeAll()
- 					console.log('success')
-		 			console.log(response)
+	var successFunc = function(response,status) {
 		 			if(response.code === 1){
 		 				console.log('登录成功')
 		 				console.log('loginData',response)
@@ -381,8 +350,9 @@
 		 				}
 		 				
 		 			}
-		 		},
-		 		error (xhr,status){
+		 		}
+
+    var errorFunc = function(xhr,status){
 		 			layer.closeAll()
 		 			console.log('error')
 		 			console.log(status)
@@ -394,7 +364,43 @@
 		 				layer.msg(status)
 		 			}
 		 		}
+
+
+
+	$('#remember-password').click(function(){
+		var isRememberPassword = $('#remember-password')[0].checked
+		console.log(isRememberPassword)
+	})
+
+	// $(document).ajaxStart(function(){
+	// 	layer.closeAll()
+	// 	layer.load()
+	// })
+
+ 	$('#login-btn').click(function(event){
+ 		event.preventDefault()
+ 		username = $('#username').val()
+ 		var password = $('#password').val()
+ 		if(username === ''){
+ 			layer.msg('请输入用户名')
+ 			$('#username')[0].focus()
+ 		}else if(password === ''){
+ 			layer.msg('请输入密码')
+ 			$('#password')[0].focus()
+ 		}else{
+
+ 			ajax({
+ 				url: 'login',
+ 				method: 'post',
+ 				timeout: 7*1000,
+ 				data: {
+	 				username: username,
+	 				password: password,
+	 			},
+ 				successFunc: successFunc,
+ 				errorFunc: errorFunc
  			})
+
  		}
  		
  	})

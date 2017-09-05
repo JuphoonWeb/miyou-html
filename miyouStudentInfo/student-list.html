@@ -61,8 +61,8 @@
 		</form>
 
 		<form action="" class="form-inline" style="margin-top: 10px" class="search-box">
-				<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据手机号查找学生">
-				<button id="search-btn" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i> 查找</button>
+				<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据手机号查询学生(支持模糊查询)">
+				<button id="search-btn" title="根据手机号码查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i> 查找</button>
 		</form>
 
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
@@ -97,187 +97,159 @@
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
 <script type="text/javascript" src="static/js/cookie.js"></script>
- 
-
+<script type="text/javascript" src="static/js/ajax.js"></script>
 
 <script type="text/javascript">
-	var studentData = {}
-	var isInit = false
+	var isPageInit = false
+	var currPage = 1
 	var size = 12
 	var uuid = getCookie('uuid')
 	var searchPhone = ''
+	var url = 'admin/student'
 
 	//	添加
 	function studentAdd(title,url,w,h){
 		layer_show(title,url,w,h);
 	}
 
-
-	function getData(page = 1,size = 12,uuid,phone = ''){
-        
-        // console.log('isInit',isInit)
-        $(document).unbind('ajaxStart')
-
-        $(document).ajaxStart(function(){
-			layer.load()
-
-		})
-
-        // 
-		$.ajax({
-			// url: 'http://122.227.209.194:8086/miyou/admin/student',
-			url: 'http://112.35.24.81:8086/miyou/admin/student',
-			type:'post',
-			async: isInit,
-			headers: {
-				token: uuid
-			},
-			dataType : 'json',
-			data: {
-				page: page || 1,
-				size: size || 12,
-				phone: phone
-			},
-			dataType : 'json',
-			timeout: 5*1000,
-			success (response){
-				layer.closeAll()
-				console.log('success')
-				console.log(response)
-				console.log('code', response.code)
-				if(response.code === 1){
-					var data = response.data
-					var list = data.list
-					var trs = ''
-					$('#student-tbody').children().remove()
-					for(let i=0; i<list.length; i++){						
-						var sex = (list[i].sex === 1)? '男': '女' 
-						var phone = list[i].phone
-						var clazzId = list[i].clazzId
-						var studentId = list[i].id
-						var miyouGroup = list[i].miyouGroup ? '<a href="">已开通</a>' : '未开通'
-						var clazzGroup = list[i].clazzGroup ? '<a href="">已加入</a>' : '<button class="btn btn-secondary-outline radius" style="cursor:pointer" onclick="addToClazzGroup('+phone+', '+clazzId +','+studentId+')" title="添加至班级群"><i class="Hui-iconfont" >&#xe600;</i></button>'
-						var sequence = (page-1)*size+i+1 
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td><td>'+clazzGroup+'</td><td>'+miyouGroup+'</td></tr>'
-					}
-					// 判断数据是否取得成功
-					$('#student-tbody').append(trs)
-					$('#data-num').text(data.total)
-					if(!isInit){
-						studentData = data
-						if(studentData.total > size){
-							$('#pagination').show()
-							var pages = Math.ceil(studentData.total/size)
-							laypage({
-							    cont: 'pagination',
-							    curr: 1, 
-							    pages: pages,
-							    groups: 5,
-							    jump (obj,first) {
-							    	if(!first){
-							    		console.log(obj.curr)
-								    	getData(obj.curr, size, uuid, searchPhone)
-									}
-							    }
-						  });
-						}
-					}
-					isInit = true
-				}else if(response.code === 0){
-					layer.open({
-						type: 0,
-						closeBtn: 0,
-						icon:7, 
-						title: '出现错误',
-						content: response.error
-					})
+	var successFunc = function(response){
+		if(response.code === 1){
+			var data = response.data
+			var list = data.list
+			var trs = ''
+			$('#student-tbody').children().remove()
+			if(data.total === 0){
+				$('#nodata').show()
+			}else{
+				$('#nodata').hide()
+				for(let i=0; i<list.length; i++){						
+					var sex = (list[i].sex === 1)? '男': '女' 
+					var phone = list[i].phone
+					var clazzId = list[i].clazzId
+					var studentId = list[i].id
+					var miyouGroup = list[i].miyouGroup ? '<a href="">已开通</a>' : '未开通'
+					var clazzGroup = list[i].clazzGroup ? '<span>已加入</span>' : '<button class="btn btn-secondary-outline radius size-MINI" style="cursor:pointer;width:40px;height:18px" onclick="addToClazzGroup('+phone+', '+clazzId +','+studentId+')" title="添加至班级群"><i class="Hui-iconfont" >&#xe600;</i></button>'
+					var sequence = (currPage-1)*size+i+1 
+					trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td><td>'+clazzGroup+'</td><td>'+miyouGroup+'</td></tr>'
 				}
-				else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
-								parent.window.open('login.html', '_self')
-							}
-						})
-
-				}	
-			},
-			error (xhr,status) {
-				console.log('error', status)
-				layer.closeAll()
-				if(!isInit){	
-					layer.closeAll()
-					$('#nodata').show()
-				}else{
-					layer.open({
-						type: 0,
-						closeBtn: 0,
-						icon:7, 
-						title: '获取数据失败',
-						content: '请检查网络'
-					})
-				}
-
+				// 判断数据是否取得成功
+				$('#student-tbody').append(trs)
+				$('#data-num').text(data.total)
 			}
-		})
 
-	
+			if(!isPageInit){
+				if(data.total > size){
+					$('#pagination').show()
+					var pages = Math.ceil(data.total/size)
+					laypage({
+					    cont: 'pagination',
+					    curr: 1, 
+					    pages: pages,
+					    groups: 5,
+					    jump (obj,first) {
+					    	if(!first){
+					    		currPage = obj.curr
+					    		console.log(obj.curr)
+						    	ajax({
+									url: url,
+									method: 'post',
+									data: {
+										page: currPage,
+										phone: searchPhone,
+									},
+									successFunc: successFunc,
+									errorFunc: errorFunc
+								})
+							}
+					    }
+				  });
+				}
+			}
+			isPageInit = true
+		}else if(response.code === 0){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				icon:7, 
+				title: '出现错误',
+				content: response.error
+			})
+		}else if(response.code === -1){
+				removeCookie('uuid')
+				removeCookie('login')
+				removeCookie('username')
+				layer.open({
+					type: 0,
+					closeBtn: 0,
+					icon:7, 
+					title: '重新登录',
+					content: '超过30分钟未操作，已自动登出，请重新登录',
+					yes () {
+						parent.window.open('login.html', '_self')
+					}
+				})
+		}	
 	}
+
+	var errorFunc = function(xhr, status){
+		if(!isPageInit){	
+			layer.closeAll()
+			$('#nodata').show()
+		}else{
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				icon:7, 
+				title: '获取数据失败',
+				content: '请检查网络'
+			})
+		}
+	}
+
+	var dataObj = {
+			url: url,
+			method: 'post',
+			page: currPage,
+			phone: searchPhone,
+			successFunc: successFunc,
+			errorFunc: errorFunc
+		}
+
+
 
 
 	function init(){
 
-		var page = 1
+		currPage = 1
 		
 		console.log('uuid',uuid) 
-
-		$(document).ajaxStart(function(){
-			layer.load()
-
-		})
 	
-		getData(page, size, uuid, searchPhone)
-		console.log('got',studentData)
+		ajax({
+			url: url,
+			method: 'post',
+			data: {
+				page: currPage,
+				phone: searchPhone,
+			},
+			successFunc: successFunc,
+			errorFunc: errorFunc
+		})
 			
-		// if(studentData.total > size){
-		// 	var pages = Math.ceil(studentData.total/size)
-		// 	laypage({
-		// 	    cont: 'pagination',
-		// 	    curr: 1, 
-		// 	    pages: pages,
-		// 	    groups: 5,
-		// 	    jump (obj,first) {
-		// 	    	if(!first){
-		// 	    		console.log(obj.curr)
-		// 		    	getData(obj.curr, size, uuid, searchPhone)
-		// 			}
-		// 	    }
-		//   });
-		// } 	
 	}
 
 	function addToClazzGroup(phone, clazzId, studentId){
 		console.log('clicked')
-		$.ajax({
-			url: 'http://112.35.24.81:8086/miyou/admin/student/addClazzGroup',
-			type: 'post',
-			headers: {
-				token: getCookie('uuid')
-			},
-			dataType : 'json',
-			data:{
+		
+
+		ajax({
+			url: 'admin/student/addClazzGroup',
+			method: 'post',
+			data: {
 				phone: phone,
 				clazzId: clazzId,
-				studentId: studentId
+				studentId: studentId,
 			},
-			success (res) {
+			successFunc  (res) {
 				layer.closeAll()
 				console.log('success')
 				console.log(res)
@@ -289,8 +261,16 @@
 						var currPage = $('.laypage_curr').text()
 						console.log('page',currPage)
 						setTimeout(function(){
-							// init()
-							getData(currPage, size, uuid, searchPhone)
+							ajax({
+								url: url,
+								method: 'post',
+								data: {	
+									page: currPage,
+									phone: searchPhone,
+								},
+								successFunc: successFunc,
+								errorFunc: errorFunc
+							})
 							
 							
 						},2000)
@@ -328,7 +308,7 @@
 
 					}
 			},
-			error () {
+			errorFunc () {
 				layer.closeAll()
 				layer.open({
 						type: 0,
@@ -338,15 +318,17 @@
 						content: '请检查网络'
 					})
 			}
+
 		})
 	}
 
 	$('#search-btn').click(function(event){
 		event.preventDefault()
-		searchPhone = $('#search-phone').val()
+		
 		$('#pagination').hide()
-		isInit = false
-		getData(1,12,uuid,searchPhone)	
+		isPageInit = false
+		searchPhone = $('#search-phone').val()
+		init()
 		
 	})
 
@@ -377,20 +359,15 @@
 			});
 		})
 
-		$.ajax({
-			// url: 'http://122.227.209.194:8086/miyou/admin/uploadExcel',
-			url: 'http://112.35.24.81:8086/miyou/admin/uploadExcel',
-			type: 'post',
-			headers: {
-				token: getCookie('uuid')
-			},
-			dataType : 'json',
+		ajax({
+			url: 'admin/uploadExcel',
+			method: 'post',
 			timeout: 10*60*1000,
 			data: form,
 			cache: false,
 			processData: false,
 		    contentType: false,
-			success (response,status,xhr) {
+		    successFunc (response,status,xhr) {
 				layer.closeAll()
 				if(response.code === 1){
 					var data = response.data
@@ -447,7 +424,8 @@
 					}	
 				console.log(response)
 			},
-			error (xhr,status) {
+
+			errorFunc (xhr,status) {
 				layer.closeAll()
 				layer.open({
 					type: 0,
@@ -458,6 +436,8 @@
 				})
 			}
 		})
+
+		
 	})
 </script> 
 </body>
