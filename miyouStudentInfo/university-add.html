@@ -29,16 +29,16 @@
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3">学校：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" value="" placeholder="请输入学校名称" id="name" name="name">
+					<input type="text" class="input-text" value="" placeholder="请输入学校名称" id="university-name" name="university-name">
 				</div>
 			</div>
 
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3">校徽图片：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<span class="btn-upload form-group">
-					  <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly><a href="javascript:void();" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe646;</i> 浏览文件</a>
-					  <input type="file" multiple name="file-1" accept="image/*" class="input-file">
+					<span class="btn-upload form-group" style="width:100%">
+					  <input class="input-text upload-url radius"type="text" name="uploadfile-1" id="uploadfile-1" readonly  style="width:82%" ><a href="javascript:void();" class="btn btn-primary radius" style="width:18%" ><i class="Hui-iconfont">&#xe646;</i> 浏览文件</a>
+					  <input type="file" id="school-emblem" name="file-1" accept="image/*" class="input-file">
 					</span>
 				</div>
 			</div>
@@ -58,10 +58,21 @@
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
 
 <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
-
-<script type="text/javascript" src="static/js/cookie.js"></script>
 <script type="text/javascript" src="static/js/ajax.js"></script>
+<script>
+	$('#submit').click(function(event){
+		event.preventDefault()
+		var universityName = $('#university-name').val()
+		var fileInput = $('#school-emblem')[0];
+		var fileNum = fileInput.files.length 
 
+		if(universityName === ''){
+			layer.msg('请输入学校名称')
+		}else if(fileNum === 0){
+			layer.msg('请导入校徽图片')
+		}
+	})
+</script>
 
 </body>
 </html>

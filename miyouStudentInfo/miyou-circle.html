@@ -1,44 +1,22 @@
 ﻿<!DOCTYPE HTML>
 <html>
 <head>
-<meta charset="utf-8">
-<meta name="renderer" content="webkit|ie-comp|ie-stand">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-<!--[if lt IE 9]>
-<script type="text/javascript" src="lib/html5shiv.js"></script>
-<script type="text/javascript" src="lib/respond.min.js"></script>
-<![endif]-->
-<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
-<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
-<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
-<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
-<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
-<title>密友圈</title>
-<style>
-	
-	.pagination{
-		margin-top: 30px;
-		margin-right: 50px;
-	}
-	.upload-report{
-		padding: 20px 0 0 50px;
-	}
-	.nodata{
-		display: none;
-		margin:50px auto;
-		width:500px;
-		height:300px;
-	}
-	.nodata img{
-		width:100%;
-		height:100%;	
-	}
-	#btn-add{
-		margin-left: 10px;
-	}
-</style>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="lib/html5shiv.js"></script>
+	<script type="text/javascript" src="lib/respond.min.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+	<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="static/css/main.css" />
+	<title>密友圈</title>
 </head>
 <body  onload="init()"   >
 
@@ -78,6 +56,7 @@
 
 
 <script type="text/javascript">
+	var miyouList = []
 	var url = 'admin/getMiyou'
 	var isPageInit = false
 	var currPage = 1
@@ -91,18 +70,19 @@
 				if(response.code === 1){
 					var data = response.data
 					var list = data.list
-					
+					miyouList = list
+					$('#nodata').hide()
+
 					var trs = ''
 
-					console.log(response)
-					console.log(list)
+					console.log('miyouList:',miyouList)
 					$('#miyou-tbody').children().remove()
 					for(let i=0; i<list.length; i++){						
 						var sequence = (currPage-1)*size+i+1
 						var name = list[i].miyouName || ''
 						var Protype = list[i].prod ? 'prod.FrendGroupQJ.0' : 'prod.FrendTriGroupQJ.0'
 						console.log(name)
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td><td><button class="btn btn-secondary-outline radius" onclick="getMiyouMember('+list[i].id+')">查看</button></td><td>'+Protype+'</td></tr>'
+						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td><td><button class="btn btn-secondary-outline radius" onclick="getMiyouMember('+i+')">查看</button></td><td>'+Protype+'</td></tr>'
 					}
 					// 判断数据是否取得成功
 					$('#miyou-tbody').append(trs)
@@ -211,12 +191,15 @@
 		 	
 	}
 
-	function getMiyouMember(id){
-		console.log(id)
+	function getMiyouMember(index){
+		var id = miyouList[index].id
+		var name = miyouList[index].miyouName || ''
+		console.log('id:', id)
+		console.log('name', name)
 		setCookie('miyouCircleId',id)
-		// var title = '群主：'+miyouInfo.miyouName 
+		var title = name ? '密友圈成员 （群主：'+name+'）': '密友圈成员 （群主：匿名）'
 		// console.log(title)
-		layer_show('密友圈成员','miyou-circle-member.html','','650');
+		layer_show(title,'miyou-circle-member.html','','650');
 	}
 
 	

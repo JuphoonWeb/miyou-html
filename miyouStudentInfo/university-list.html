@@ -15,78 +15,35 @@
 <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css" />
 <title>学校管理</title>
-<style>
-	
-	.pagination{
-		margin-top: 30px;
-		margin-right: 50px;
-	}
-	.upload-report{
-		padding: 20px 0 0 50px;
-	}
-	.nodata{
-		display: none;
-		margin:50px auto;
-		width:500px;
-		height:300px;
-	}
-	.nodata img{
-		width:100%;
-		height:100%;	
-	}
-	#btn-add{
-		margin-left: 10px;
-	}
-
-	td{
-		position: relative;
-	}
-	td .thumbnails{
-		display: inline-block; 
-		width:22px;
-		height:22px
-	}
-	td .thumbnails:hover{
-		position: absolute;
-		top:50%;left:50%;
-		transform: translate(-50%, -50%);
-		display: inline-block;
-		width:220px;
-		height:220px;
-		z-index: 100;
-		border:1px rgb(133,133,133) solid;
-	}
-
-	
-</style>
 </head>
 <body  onload="init()"   >
 
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span>  学校管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
-<div class="page-container" id="student-list">
+	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span>  学校管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+	<div class="page-container" id="student-list">
 
-	<div class="cl pd-5 bg-1 bk-gray mt-20">
-		<a title="添加学校" href="javascript:;" onclick="universityAdd('添加学校','university-add.html','','300')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>添加学校</a> 
-		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+		<div class="cl pd-5 bg-1 bk-gray mt-20">
+			<a title="添加学校" href="javascript:;" onclick="universityAdd('添加学校','university-add.html','','300')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>添加学校</a> 
+			<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+		</div>
+		<div class="mt-20">
+		<table class="table table-bordered table-border table-hover table-bg " id="university-table">
+			<thead>
+				<tr class="text-c">
+					<th width="100">序号</th>
+					<th width="200">大学</th>
+					<th width="200">校徽<span style="color:rgb(153,153,153)">(鼠标浮上可预览)</span></th>
+				</tr>
+			</thead>
+			<tbody id="university-tbody" class="text-c">
+			</tbody>
+		</table>
+		<div class="pagination r" id="pagination"></div>
+		<div class="nodata" id="nodata">
+			<img src="static/images/nodata.svg" alt="">
+		</div>
 	</div>
-	<div class="mt-20">
-	<table class="table table-bordered table-border table-hover table-bg " id="university-table">
-		<thead>
-			<tr class="text-c">
-				<th width="100">序号</th>
-				<th width="200">大学</th>
-				<th width="200">校徽<span style="color:rgb(153,153,153)">(鼠标浮上可预览)</span></th>
-			</tr>
-		</thead>
-		<tbody id="university-tbody" class="text-c">
-		</tbody>
-	</table>
-	<div class="pagination r" id="pagination"></div>
-	<div class="nodata" id="nodata">
-		<img src="static/images/nodata.svg" alt="">
-	</div>
-</div>
 
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
@@ -98,6 +55,7 @@
 
 
 <script type="text/javascript">
+	var isPageInit = false 
 
 	function universityAdd(title,url,w,h){
 		layer_show(title,url,w,h);
@@ -109,6 +67,7 @@
 						console.log(response)
 						if(response.code === 1){
 							var list = response.data
+							$('#nodata').hide()
 							// var list = data.list
 							var trs = ''
 							for(let i = 0; i < list.length; i++){
@@ -211,9 +170,7 @@
 			url: '/admin/getUniversity',
 			successFunc: successFunc,
 			errorFunc: errorFunc
-		})
-			
-		 	
+		})	 	
 	}
 
 	

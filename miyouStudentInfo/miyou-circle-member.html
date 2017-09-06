@@ -15,28 +15,12 @@
 <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
 <title>密友圈成员</title>
 <style>
-	
-	.pagination{
-		margin-top: 30px;
-		margin-right: 50px;
-	}
-	.upload-report{
-		padding: 20px 0 0 50px;
-	}
-	.nodata{
+	.nomember{
 		display: none;
-		margin:50px auto;
-		width:500px;
-		height:300px;
-	}
-	.nodata img{
-		width:100%;
-		height:100%;	
-	}
-	#btn-add{
-		margin-left: 10px;
+		margin:30px auto;
 	}
 </style>
 </head>
@@ -59,9 +43,12 @@
 		</tbody>
 	</table>
 	<div class="pagination r" id="pagination"></div>
+	
 	<div class="nodata text-c" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+	<div class="text-c nomember" id="nomember">
 		<h3>该密友圈内暂无成员</h3>
-		<!-- <img src="static/images/nodata.svg" alt=""> -->
 	</div>
 </div>
 
@@ -83,11 +70,13 @@
 				if(response.code === 1){
 					var data = response.data
 					var list = data.list
+					console.log('data:',data)
+					$('#nodata').hide()
 					if(data.total === 0){
-						$('#nodata').show()
+						$('#nomember').show()
 						return
 					}else{
-						$('#nodata').hide()
+						$('#nomember').hide()
 					}
 					var trs = ''
 					$('#member-tbody').children().remove()
