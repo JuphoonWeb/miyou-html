@@ -153,16 +153,16 @@
 			}
 
 	var errorFunc = function(xhr, status){
-		if(!isPageInit){	
-			layer.closeAll()
-			$('#nodata').show()
-		}else{
+		{
 			layer.open({
 				type: 0,
 				closeBtn: 0,
 				icon:7, 
 				title: '获取数据失败',
-				content: '请检查网络'
+				content: '请检查网络',
+				yes () {
+					layer_close()
+				}
 			})
 		}
 	}
