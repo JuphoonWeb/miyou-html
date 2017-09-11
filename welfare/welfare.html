@@ -1,0 +1,131 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>领福利</title>
+	<link rel="stylesheet" type="text/css" href="./static/reset.css">
+</head>
+<style type="text/css">
+	.welfare-item{
+		height: 110px;
+		margin-top: 10px;
+		box-shadow: 0px 4px 6px rgba(214,214,214,0.5);
+		position: relative;
+	}
+	.welfare-item .icon,.welfare-item .info,.welfare-item .btn{
+		position: relative;
+		top: 50%;
+		transform:translateY(-50%);
+		-webkit-transform:translateY(-50%);
+		float: left;
+		width: 25%;
+	}
+	.welfare-item .icon img{
+		display: block;
+		margin:0 auto;
+	}
+	.welfare-item .info{
+		width: 50%;
+	}
+	.welfare-item .info p{
+		margin-bottom: 3px;
+	}
+	.welfare-item .info .title{
+		font-size: 18px;
+		color: rgb(255,87,113);
+	}
+	.welfare-item .info .desc{
+		font-size: 14px;
+		color: rgb(136,136,136);
+	}
+	.welfare-item .btn{
+		text-align: right;
+	}
+	.welfare-item .btn .wait-to-receive,.welfare-item .btn .had-receive{
+		display: inline-block;
+		width: 77px;
+		height: 34px;
+		line-height: 34px;
+		text-align: center;
+		font-size: 14px;
+		color: #fff;
+		text-decoration: none;
+	}
+	.welfare-item .btn .wait-to-receive{
+		background: url('./images/wait_to_receive.png') no-repeat center;
+		background-size: 100%;
+	}
+	.welfare-item .btn .had-receive{
+		background: url('./images/had_receive.png') no-repeat center;
+		background-size: 100%;
+	}
+	.welfare-item .progress-bar{
+		height: 2px;
+		border-radius: 1.5px;
+		background-color: rgb(216,216,216);
+	}
+	.welfare-item .progress-bar .bar{
+		width: 50%;
+		height: 2px;
+		border-radius: 1.5px;
+		background-color: rgb(245,172,44);	
+		position: relative;	
+		margin-top: 15px;
+	}
+	.welfare-item .progress-bar .bar span{
+		position: absolute;
+		right: 0;
+		transform:translate(50%,-50%);
+		-webkit-transform:translate(50%,-50%);
+		min-width: 50px;
+		padding: 3px 0;
+		text-align: center;
+		font-size: 12px;
+		border: rgb(242,170,25) 1px solid;
+		border-radius: 4px;
+		color: rgb(242,170,25);
+		background-color: #fff;
+	}
+</style>
+
+<body class="z_body">
+	<div class="welfare-items J_items">
+		
+	</div>
+<script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="./static/common.js"></script>
+<script type="text/javascript">
+	var phone = '13822260016';
+	_ajax('get','/api/h5/getWelfares',{'page':1,'size':10,'phone':phone},function(data){
+		var str = '';
+		$.each(data.data.list,function(index,ele){
+			var btnStr = '',
+				allDays = getTimeDifference(ele.startTime,ele.endTime),
+				remainDays = getTimeDifference(new Date(),ele.endTime),
+				remainPer = remainDays/allDays*100,
+				remainStr = '剩余'+remainDays+'天';
+			if(remainDays==0){
+				remainStr = '今天结束';
+			}
+			if(ele.isReceive==0){
+				btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="wait-to-receive">待领取</a>';
+			}
+			else if(ele.isReceive==1){
+				btnStr = '<a href="javascript:void(0)" class="had-receive">已领取</a>';
+			}
+
+			str +=  '<div class="welfare-item">'+
+						'<div class="icon"><img src="./images/icon_1.png"></img></div>'+
+						'<div class="info">'+
+							'<p class="title">'+ele.welfareName+'</p>'+
+							'<p class="desc">任务：'+ele.welfareDesc+'</p>'+
+							'<div class="progress-bar"><div class="bar" style="width:'+remainPer+'%"><span>'+remainStr+'</span></div></div>'+
+						'</div>'+
+						'<div class="btn">'+btnStr+'</div>'+
+					'</div>'
+		})
+		$('.J_items').html(str);
+	})
+</script>
+</body>
+</html>
