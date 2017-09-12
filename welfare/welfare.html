@@ -68,8 +68,8 @@
 		width: 50%;
 		height: 2px;
 		border-radius: 1.5px;
-		background-color: rgb(245,172,44);	
-		position: relative;	
+		background-color: rgb(245,172,44);
+		position: relative;
 		margin-top: 15px;
 	}
 	.welfare-item .progress-bar .bar span{
@@ -90,12 +90,30 @@
 
 <body class="z_body">
 	<div class="welfare-items J_items">
-		
+
 	</div>
+
 <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="./static/common.js"></script>
 <script type="text/javascript">
-	var phone = '13822260016';
+	var phone = GetQueryString('phone');
+	if(phone){
+        _ajax('get','/api/h5/userAuthStatus/'+phone,{},function(data){
+			switch(data.data.type){
+				case 0://未认证
+                    authPop('您还未成为认证用户','完成学生身份认证即可</br>添加10个免费通话联系人并领取8G流量','立即认证','javascript:void(0)');
+				    break;
+				case 1://未审核
+                    warnAlert('认证信息正在审核，请在</br>“认证信息-认证记录”里查看进度');
+				    break;
+				case 2://审核拒绝
+				    break;
+				case 3://已认证
+				    break;
+			}
+        });
+	}
+
 	_ajax('get','/api/h5/getWelfares',{'page':1,'size':10,'phone':phone},function(data){
 		var str = '';
 		$.each(data.data.list,function(index,ele){
@@ -115,7 +133,7 @@
 			}
 
 			str +=  '<div class="welfare-item">'+
-						'<div class="icon"><img src="./images/icon_1.png"></img></div>'+
+						'<div class="icon"><img src="./images/icon_1.png"></div>'+
 						'<div class="info">'+
 							'<p class="title">'+ele.welfareName+'</p>'+
 							'<p class="desc">任务：'+ele.welfareDesc+'</p>'+
@@ -123,9 +141,9 @@
 						'</div>'+
 						'<div class="btn">'+btnStr+'</div>'+
 					'</div>'
-		})
+		});
 		$('.J_items').html(str);
-	})
+	});
 </script>
 </body>
 </html>

@@ -24,7 +24,7 @@ body {
 }
 
 :focus {
-	outline: 1;
+	outline: none;
 }
 
 article,aside,canvas,details,figcaption,figure,
@@ -95,8 +95,116 @@ input, select {
     vertical-align:middle;
 }
 
+input, textarea, button{
+    border:none;
+}
+
 .z_body{
     width:100%;
     max-width: 414px;
     margin:0 auto;
+}
+
+.pop{
+    width: 100%;
+    position: fixed;
+    top:0;
+    bottom:0;
+}
+.pop .pop-content,.pop .pop-close{
+    position: absolute;
+    top:50%;
+    left:50%;
+    z-index:9;
+}
+.pop .pop-content{
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    width: 250px;
+    height: 270px;
+    background: url("../images/detail_bg.png") no-repeat center;
+    background-size: 100%;
+    border-radius: 10px;
+    text-align: center;
+}
+.pop .pop-content .wrong{
+    margin:20px 0;
+}
+.pop .pop-content h5{
+    font-size: 14px;
+    color: rgb(51,51,51);
+}
+.pop .pop-content p{
+    margin:20px 0;
+    font-size: 12px;
+    color: rgb(102,102,102);
+    line-height:1.5;
+}
+.pop .pop-content a{
+    display: inline-block;
+    width: 103px;
+    height: 32px;
+    line-height:32px;
+    font-size: 14px;
+    color: #fff;
+    background: rgb(250,174,68);
+    border-radius: 16px;
+    text-decoration: none;
+}
+.pop .pop-close{
+    top:75%;
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,0);
+}
+.pop .pop-bg{
+    width: 100%;
+    position: absolute;
+    top:0;
+    bottom:0;
+    background: rgba(0,0,0,0.4);
+}
+.pop .alert-content{
+    position: absolute;
+    left:50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    width: 270px;
+    height: 122px;
+    border-radius: 12px;
+    background: rgba(252,252,252,0.9);
+    z-index: 9;
+    text-align: center;
+}
+.pop .alert-content p{
+    width: 250px;
+    height:48.5px;
+    line-height:1.5;
+    padding: 15px 10px;
+    font-size: 16px;
+}
+.pop .alert-content .alert-close{
+    display: inline-block;
+    width: 100%;
+    height: 43.5px;
+    line-height:43.5px;
+    font-size: 17px;
+    color: rgb(0,118,255);
+    text-decoration: none;
+    border-top:1px solid rgba(77,77,77,0.1);
+}
+
+.toast{
+    position: absolute;
+    left:50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    background: rgba(0,0,0,0.4);
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 3px;
+    font-size: 14px;
+    line-height: 1.5;
 }

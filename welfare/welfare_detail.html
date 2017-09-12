@@ -37,7 +37,7 @@
 		background: url('./images/receive_btn.png') no-repeat center;
 	}
 	.validity{
-		width: 140px;
+		width: 170px;
 		margin: 0 auto;
 		color: rgb(255,87,113);
 		padding: 10px 0;
@@ -63,25 +63,27 @@
 	<div class="receive J_receive">立即领取</div>
 	<p class="validity">
 		<img class="icon" src="./images/icon_3.png">
-		活动有效期:<span class="J_remain"></span>天
+		活动有效期:还剩<span class="J_remain"></span>天
 	</p>
 	<p class="role-title">业务规则</p>
-	<p class="role-content J_role">p>
+	<p class="role-content J_role"><p>
 <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="./static/common.js"></script>
 <script type="text/javascript">
 	var id = GetQueryString('id'),
 		phone = GetQueryString('phone');
 	_ajax('get','/api/h5/getWelfare/'+id+'/'+phone,{},function(data){
-		var remainDays = getTimeDifference(new Date(),data.data.endTime);
-		$('.J_desc').html(data.data.welfareDesc);
-		$('.J_remain').text(remainDays);
-		$('.J_role').html(data.data.welfareRole);
-		$('.J_receive').addClass('enable').attr({
-			'data-proid':data.data.welfareProId,
-			'data-proname':data.data.welfareProName
-		});
-	})
+	    if(data.code == 1){
+            var remainDays = getTimeDifference(new Date(),data.data.endTime);
+            $('.J_desc').html(data.data.welfareDesc);
+            $('.J_remain').text(remainDays);
+            $('.J_role').html(data.data.welfareRole);
+            $('.J_receive').addClass('enable').attr({
+                'data-proid':data.data.welfareProId,
+                'data-proname':data.data.welfareProName
+            });
+		}
+	});
 	$(document).on('click','.J_receive.enable',function(){
 		_ajax('post','/api/h5/eaopPro',{
 			'phone':phone,
@@ -89,7 +91,12 @@
 			'welfareProId':$('.J_receive').attr('data-proid'),
 			'welfareProName':$('.J_receive').attr('data-proname')
 		},function(data){
-			console.log('领取成功');
+			if(data.code==1){
+                toast('福利已领取</br>请留言稍后短信通知',2000);
+			}else{
+                toast('福利领取失败，请重试',2000);
+			}
+
 		})
 	})
 </script>
