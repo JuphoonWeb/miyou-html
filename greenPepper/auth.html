@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<title>认证信息</title>
+	
+	
+
+	<style>
+		*{
+			padding:0;margin:0;
+			box-sizing: border-box;
+			font-family: 'Heiti SC';
+			font-size: 16px;
+		}
+		#un-auth {
+			text-align: center;
+		}
+		#un-auth button{
+			border:none;
+		}
+		#un-auth img.notice{
+			display: block;
+			margin:71px auto 6px;
+		}
+		#un-auth .msg{
+			display: inline-block;
+			margin-bottom: 28px;
+			width:90%;
+			text-align: center;
+		}
+		#un-auth .msg .primary-msg{
+			font-size:20px;
+		}
+		#un-auth .msg .secondary-msg{
+			margin-top:14px;
+			color:rgb(136, 136, 136);
+		}
+		#un-auth button#auth-btn{
+			width:43%;
+			height:50px;
+			border-radius: 30px;
+			font-size:18px;
+			color:rgb(255, 255, 255);
+			background-color: rgb(250, 174, 68);
+			box-shadow: 0 2px 5px 0 rgba(231, 119, 22, 0.44)
+		}
+	</style>
+
+	<style>
+		*{
+			padding:0;margin:0;
+			box-sizing: border-box;
+			font-family: 'Heiti SC';
+			font-size: 16px;
+		}
+		button{
+			border:none;
+		}
+		li{
+			list-style: none
+		}
+		.content{
+			width:95%;
+			height: 300px;
+			margin:20px 10px;
+			padding-top: 20px;
+			border-radius: 8px;
+			box-shadow: 0 2px 4px 3px rgba(227, 227, 227, .5);
+			font-size: 16px;
+		}
+		.content-head{
+			position:relative;
+			width:100%;
+			height:62px;
+			margin:0 11px 10px;
+		}
+		img#school-badge{
+			width:62px;
+			height:62px;
+		}
+		.basic-info{
+			position:absolute;
+			top:2px;
+			left: 80px;
+		}
+		.content-body{
+			margin:0 8px;
+		}
+		.content-list li{
+			height:40px;
+			line-height: 40px;
+			border-bottom:1px solid rgb(230, 230, 230);
+			color:rgb(115, 115, 115);
+		}
+		.content-list li:last-of-type{
+			border-bottom: none;
+		}
+		.content-list li .value{
+			float:right;
+			color:rgb(54, 54, 54);
+		}
+		#school-badge-bg{
+			position:absolute;
+			top:180px;left:131px;
+			width:234px;
+			height:140px;
+			overflow: hidden;
+			opacity: .1;
+		}
+		#school-badge-bg img{
+			width:260px;
+			height:260px;
+		}
+		#auth-info div.btn-container{
+			width:37%;
+			margin: 60px auto;
+		}
+		#change-btn{
+			width:100%;
+			height:50px;
+			border-radius: 25px;
+			font-size:16px;
+			color:rgb(255, 255, 255);
+			background-color: rgb(250, 174, 68);
+			box-shadow: 0 2px 5px 0 rgba(231, 119, 22, 0.44)
+		}
+	</style>
+
+	
+
+	<style>
+		#un-auth{
+			display: none;
+		}
+		#auth-info{
+			display: none;
+		}
+	</style>
+
+</head>
+<body>
+	<div id="un-auth">
+		<img src="img/imgNotice.png" alt="" class="notice">
+		<div class="msg" id="msg">
+		</div>
+		<div class="btn-container">
+			<button id="auth-btn">马上认证</button>
+		</div>
+	</div>
+
+	<div id="auth-info">
+		<div class="content">
+			<div class="content-head">
+				<img src="img/imgZhongshan.png" alt="" class="school-badge" id="school-badge">
+				<div class="basic-info">
+					<div class="name">
+						<span class="name" id="name" style="font-size:20px"></span>
+						<span class="auth-badge"><img id="school-badge" src="img/icRenzheng.png" alt=""></span>
+					</div>
+					<div class="university" id="university"></div>
+				</div>
+			</div>
+			<div class="content-body">
+				<ul class="content-list">
+				  <li class="">在读学历
+					  <span class="value" id="graduate">本科</span>
+				  </li>
+				  <li class="">学院
+				  	   <span class="value" id="school"></span>
+				  </li>
+				  <li class="">班级
+					   <span class="value" id="clazz"></span>
+				  </li>
+				  <li class="">学号
+					   <span class="value" id="number"></span>
+				  </li>
+				  <li class="">入学年份
+					   <span class="value" id="year"></span>
+				  </li>
+				</ul>
+				<div class="school-badge-bg" id="school-badge-bg">
+					<img src="img/imgZhongshan@3x.png" alt="">
+				</div>
+			</div>	
+		</div>
+		<div class="btn-container">
+			<button id="change-btn">申请修改信息</button>
+		</div>
+	</div>
+
+
+	<script src="js/zepto.min.js"></script>
+	<script src="js/ajax.js"></script>
+	<script src="js/dialog.min.js"></script>
+	<script src="js/cookie.js"></script>
+	<script>
+
+		function getInfo(){
+			ajax({
+				url: 'student/info/'+getCookie('phone'),
+				success (response){
+					if(response.code === 1){
+						var data = response.data
+						$('#name').text(data.name)
+						$('#university').text(data.university)
+						$('#school-badge').attr('src',data.schoolBadgeUrl)
+						$('#school').text(data.school)
+						$('#clazz').text(data.clazz)
+						$('#number').text(data.number)
+						$('year').text(data.year)
+					}
+				}
+			})
+		}
+
+		function GetQueryString(name){
+		     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		     var r = window.location.search.substr(1).match(reg);
+		     if(r!=null)return  unescape(r[2]); return null;
+		}
+	
+		$(document).ready(function(){
+			var phone = GetQueryString('phone')
+			setCookie('phone',phone)
+			ajax({
+				url: 'h5/userAuthStatus/'+phone,
+				success (response) {
+					if(response.code === 1){
+						var data = response.data
+						setCookie('api_token', data.api_token)
+
+						if(data.type === 3){
+							$('#un-auth').hide()
+							$('#auth-info').show()
+							getInfo()
+						}else if(data.type < 3){
+							$('#un-auth').show()
+							$('#auth-info').hide()
+							
+							var msgHtml = '<p class="primary-msg">您的信息还未通过认证</p>'
+							if(data.isGzMobile){
+								msgHtml += '<p class="secondary-msg" id="secondary-msg">完成学生身份认证即可<br>添加10个免费通话联系人并领取8G流量</p>'
+							}else{
+								msgHtml += '<p class="secondary-msg">完成学生身份认证即可解锁“逛一逛”所有功能</p>'
+							}
+							$('#msg').append(msgHtml)
+						}
+					}
+				}
+			})
+		})
+		$('#auth-btn, #change-btn').click(function(){
+			window.open('basic-info.html','_self')
+		})
+	</script>
+</body>
+</html>

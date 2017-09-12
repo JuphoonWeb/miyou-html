@@ -1,7 +1,8 @@
 
 function ajax(obj){
 
-    var url = 'http://122.227.209.194:8086/miyou/api/' 
+	
+    var url = 'http://112.35.7.96:8086/miyou/api/' 
 
     url += obj.url
 	
@@ -12,12 +13,20 @@ function ajax(obj){
 	    errorFunc = function(xhr, status){
 	    	console.log('error',status)
 	    	obj.error && obj.error(xhr, status)
+	    },
+	    beforeSendFunc = function(xhr, settings){
+	    	console.log('beforesend')
+	    	obj.beforeSend && obj.beforeSend(xhr, settings)
 	    }
+
 
 	$.ajax({
 		
 		url: url,
 		type: obj.type,
+		headers: {
+			token: getCookie('api_token')
+		},
 		async: obj.async,
 		cache: obj.cache,
 		processData: obj.processData,
@@ -25,6 +34,7 @@ function ajax(obj){
 		dataType : 'json',
 		data: obj.data,
 		timeout: obj.timeout,
+		beforeSend: beforeSendFunc,
 		success: successFunc,
 		error: errorFunc 
 	})

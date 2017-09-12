@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 	<title>2.学生证信息</title>
+	<link rel="stylesheet" href="css/dialog.css">
 	<style>
 		*{
 			padding:0;margin:0;
@@ -11,44 +12,53 @@
 			font-family: 'Heiti SC';
 			font-size: 16px;
 		}
-		.upload{
-			position: relative;
-			width:100%;
-			border-radius: 8px;
-			padding-top: 37px;
-			text-align: center;
+		body,html{
+			height:100%;
 		}
-		.upload .title{
-			margin-bottom: 20px;
+		.container{
+			text-align: center;
+			height:100%;
+		}
+		.title{
+			margin:37px auto 20px;
 			color:rgb(255, 168, 11);
 		}
-		.upload img{
-			width:310px;
-			height:190px;
+		#upload-1{
+			position: relative;
+			width:100%;
+			height:28%;
+			border-radius: 8px;
+			text-align: center;
+		}
+		#image-example-1{
+			width:82%;
+			height:100%;
 			border-radius: 8px;
 		}
-		#image-upload-1,#upload-btn{
-			position: absolute;
-			top:226px;left:118px;
-			width:135px;
-			height:28px;
-		}
 		input[type="file"]#image-upload-1{
+			position: absolute;
+			width:100%;height:100%;
+			top:0;left:0;
 			z-index:100;
 			opacity: 0;
 		}
 		#upload-btn{
+			position: absolute;
+			top:77%;left:28%;
+			width:44%;
+			height:15%;
+			line-height: 15%;
 			z-index:99;
-			line-height: 28px;
 			color:rgb(255, 255, 255);
 			background-color: rgb(255, 173, 26);
 			border:none;
 			border-radius: 41px;
 		}
 		#upload-2{
+			display: none;
 			position:relative;
-			width: 310px;
-			height:190px;
+			width: 82%;
+			height:28%;
 			margin:20px 33px;
 			border-radius:8px;
 		}
@@ -61,9 +71,9 @@
 			margin: 0;
 		}
 		#upload-2 img{
-			width:54px;
-			height:43px;
-			margin:50px 129px 0px;
+			width:18%;
+			height:23%;
+			margin:13% 41% 0px;
 		}
 
 		#upload-2 .info-text{
@@ -81,9 +91,13 @@
 		}
 
 		.btn-container{
+			position: absolute;
 			width:120px;
 			height:50px;
-			margin:30px auto 0;
+			bottom:42px;
+			left:50%;
+			transform: translateX(-50%);
+			/*margin:30px auto 0;*/
 			color:rgb(255, 255, 255);
 			font-size:18px;
 			text-align: center;
@@ -98,9 +112,9 @@
 </head>
 <body>
 	<div class="container">
-		<form action="">
+		<!-- <form action=""> -->
+		<p class="title">手持学生证照片及个人信息页</p>
 			<div class="upload" id="upload-1">
-				<p class="title">手持学生证照片及个人信息页</p>
 				<img id="image-example-1" src="img/imgExample.png" alt="">
 				<button id="upload-btn">点击上传照片</button>
 				<input type="file" id="image-upload-1" accept="image/*">
@@ -115,15 +129,16 @@
 				<input type="file" accept="image/*" id="image-upload-2">
 			</div>
 			<div class="btn-container" id="submit"><p>提交</p></div>
-		</form>
+		<!-- </form> -->
 	</div>
 	<script src="js/zepto.min.js"></script>
+	<script src="js/dialog.min.js"></script>
 	<script src="js/ajax.js"></script>
 	<script src="js/cookie.js"></script>
 	<script>
 
 		var data = JSON.parse(getCookie('data'))
-		data.phone = ''
+		data.phone = getCookie('phone')
 
 		function getObjectURL(file){
 			var url = null;
@@ -137,6 +152,32 @@
 		    return url;
 		}
 
+		function beforeSendFunc(xhr){
+
+	    	var dialog = $(document).dialog({
+						type: 'toast',
+						infoIcon: 'img/loading.gif',
+						infoText: '上传中 0%',
+					})
+	    	console.log('xhr',xhr)
+	    	xhr.upload.addEventListener('progress',function(e){
+	    		var percent = Math.floor(e.loaded/e.total*100);
+				if(percent % 5 < 3){
+					dialog.update({
+						infoText: '上传中'+percent+'%'
+					})
+				}
+	    			
+			    		
+	    		if(percent >= 100){
+	    			dialog.close()
+	    		}
+
+	    		console.log('上传中',percent)
+	    	})
+	    
+		}
+
 		$('#image-upload-1').change(function(){
 			var fileInput = $('#image-upload-1')[0];
 			var file = fileInput.files[0]
@@ -146,24 +187,12 @@
 			$('#image-example-1').attr('src', imgUrl)
 			$('#upload-btn').hide()
 			
-			$('#submit').css('background-image','url(img/btnOkNor.png)')
-			$('#submit').click(function(e){
-				e.preventDefault()
-				ajax({
-					url: 'upload/authStudent',
-					type: 'post',
-					data: data,
-					success (){
-
-					},
-					error (){
-
-					}
-				})
-			})
-
+			
+			
 
 			var form = new FormData()
+
+
 			form.append('file',file)
 			ajax({
 					url: 'upload/studentImage',
@@ -172,17 +201,45 @@
 					cache: false,
 					processData: false,
 				    contentType: false,
+				    beforeSend: beforeSendFunc,
 					success (response){
+						
 						if(response.code === 1){
-							
-							data.stuCardUrl = response.data 
+							$(document).dialog({
+								type: 'toast',
+								infoIcon: 'img/success.png',
+								infoText: '上传成功',
+								autoClose: 1500
+							})
+							data.stuCardUrl = response.data
+
+							$('#upload-2').show()
+							$('#submit').css('background-image','url(img/btnOkNor.png)')
+							$('#submit').click(function(e){
+								e.preventDefault()
+								ajax({
+									url: 'h5/authStudent',
+									type: 'post',
+									data: data,
+									success (response){
+										if(response.code === 1){
+											window.open('submit-success.html', '_self')
+										}
+									}
+								})
+							})
 						}
 					},
-					error () {
-
+					error (xhr, status){
+						$(document).dialog({
+							type: 'toast',
+							infoIcon: 'img/fail.png',
+							infoText: '上传失败:'+error,
+							autoClose: 1500
+						})
 					}
-				})	
-		})
+				})
+			})		
 
 		$('#image-upload-2').change(function(){
 			var fileInput = $('#image-upload-2')[0];
@@ -202,9 +259,15 @@
 					cache: false,
 					processData: false,
 				    contentType: false,
+				    beforeSend: beforeSendFunc,
 					success (response){
 						if(response.code === 1){
-							
+							$(document).dialog({
+								type: 'toast',
+								infoIcon: 'img/success.png',
+								infoText: '上传成功',
+								autoClose: 1500
+							})
 							data.identityUrl = response.data 
 						}
 					},
