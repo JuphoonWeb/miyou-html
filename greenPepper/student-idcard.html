@@ -154,7 +154,7 @@
 
 		function beforeSendFunc(xhr){
 
-	    	var dialog = $(document).dialog({
+	    	dialog = $(document).dialog({
 						type: 'toast',
 						infoIcon: 'img/loading.gif',
 						infoText: '上传中 0%',
@@ -166,9 +166,7 @@
 					dialog.update({
 						infoText: '上传中'+percent+'%'
 					})
-				}
-	    			
-			    		
+				}	    		
 	    		if(percent >= 100){
 	    			dialog.close()
 	    		}
@@ -176,6 +174,16 @@
 	    		console.log('上传中',percent)
 	    	})
 	    
+		}
+
+		function errorFunc(xhr, status){
+					dialog.close()
+					$(document).dialog({
+						type: 'toast',
+						infoIcon: 'img/fail.png',
+						infoText: '上传失败\n请检查网络',
+						autoClose: 1500
+					})
 		}
 
 		$('#image-upload-1').change(function(){
@@ -228,16 +236,16 @@
 									}
 								})
 							})
+						}else if(response.code === 0){
+							$(document).dialog({
+									type: 'toast',
+									infoIcon: 'img/fail.png',
+									infoText: '服务器错误',
+									autoClose: 1500
+								})
 						}
 					},
-					error (xhr, status){
-						$(document).dialog({
-							type: 'toast',
-							infoIcon: 'img/fail.png',
-							infoText: '上传失败:'+error,
-							autoClose: 1500
-						})
-					}
+					error: errorFunc, 
 				})
 			})		
 
@@ -269,11 +277,16 @@
 								autoClose: 1500
 							})
 							data.identityUrl = response.data 
+						}else if(response.code === 0){
+							$(document).dialog({
+									type: 'toast',
+									infoIcon: 'img/fail.png',
+									infoText: '服务器错误',
+									autoClose: 1500
+								})
 						}
 					},
-					error () {
-
-					}
+					error: errorFunc
 				})
 		})
 		

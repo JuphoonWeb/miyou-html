@@ -1,7 +1,6 @@
 
 function ajax(obj){
 
-	
     var url = 'http://112.35.7.96:8086/miyou/api/' 
 
     url += obj.url
