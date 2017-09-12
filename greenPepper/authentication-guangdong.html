@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<title>认证信息</title>
+	<style>
+		*{
+			padding:0;margin:0;
+			box-sizing: border-box;
+			font-family: 'Heiti SC';
+			font-size: 16px;
+		}
+		body{
+			text-align: center;
+		}
+		button{
+			border:none;
+		}
+		img.notice{
+			display: block;
+			margin:71px auto 6px;
+		}
+		.msg{
+			display: inline-block;
+			width:278px;
+			margin-bottom: 28px;
+		}
+		.msg .primary-msg{
+			font-size:20px;
+		}
+		.msg .secondary-msg{
+			margin-top:14px;
+			color:rgb(136, 136, 136);
+		}
+		button#auth-btn{
+			width:160px;
+			height:50px;
+			border-radius: 30px;
+			font-size:18px;
+			color:rgb(255, 255, 255);
+			background-color: rgb(250, 174, 68);
+			box-shadow: 0 2px 5px 0 rgba(231, 119, 22, 0.44)
+		}
+	</style>
+</head>
+<body>
+	<img src="img/imgNotice.png" alt="" class="notice">
+	<div class="msg">
+		<p class="primary-msg">您的信息还未通过认证</p>
+		<pre class="secondary-msg">完成学生身份认证即可
+ 添加10个免费通话联系人并领取8G流量</pre>
+	</div>
+	<div class="btn-container">
+		<button id="auth-btn">马上认证</button>
+	</div>
+	<script src="js/zepto.min.js"></script>
+	<script>
+		$('#auth-btn').click(function(){
+			window.open('basic-info.html','_self')
+		})
+	</script>
+</body>
+</html>

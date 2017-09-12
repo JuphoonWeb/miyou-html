@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<title>1.基本信息</title>
+	<style>
+		*{
+			padding:0;margin:0;
+			box-sizing: border-box;
+			font-family: 'Heiti SC';
+			font-size: 16px;
+		}
+		body{
+			background-color: rgb(246, 246, 246)
+		}
+		.fieldset{
+			width:375px;
+			margin-top: 10px;
+			padding: 0 10px;
+			background-color: rgb(255, 255, 255);
+			border-top:1px solid rgb(230, 230, 230);
+			border-bottom: 1px solid rgb(230, 230, 230);
+		}
+		.form-group{
+			position: relative;
+			width:355px;
+			height:50px;
+			border-bottom:2px solid rgb(230, 230, 230);
+		}
+		.form-group label{
+			display: inline-block;
+			height:50px;
+			line-height:50px;
+			width:20%;
+		}
+		.form-group input[type="text"]{
+			height:40px;
+			line-height:40px;
+			width:75%;
+			border:none;
+			text-align: right;
+		}
+		.form-group select{
+			position:absolute;
+			width:80%;
+			height:40px;
+			border:none;
+			color:rgba(255, 255, 255, 1);
+			opacity: 0;
+			z-index: 100;
+		}
+		.form-group select option{
+			color:rgb(0, 0, 0);
+		}
+		.form-group option:first-child{
+			display: none;
+		}
+		.arrow-box{
+			position: absolute;
+			top:20px;
+			right:10px;
+			z-index: 98;
+		}
+		.result{
+			position:absolute;
+			top:5px;right:10px;
+			width:80%;height:40px;
+			line-height:40px; 
+			text-align: right;
+			color:rgb(199, 199, 204); 
+			z-index:99;
+		}
+		.arrow{
+			width:16px;
+			height:16px;
+			background-image: url(img/arrow.svg);
+		}
+		.form-group:last-of-type{
+			border:none;
+		}
+		div.seperator{
+			width:375px;
+			height:10px;
+			background-color: rgb(246, 246, 246)
+		}
+		.btn-container{
+			width:120px;
+			height:50px;
+			margin:19px auto;
+			background-image: url(img/btnNextDis.png);
+			color:rgb(255, 255, 255);
+			font-size:18px;
+			text-align: center;
+		}
+		.btn-container p{
+			height:45px;
+			line-height: 45px;
+		} 
+	</style>
+</head>
+<body>
+	
+	<div class="cotainer" id="basic-info">
+		<form action="">
+			<div class="fieldset">
+				<div class="form-group">
+					<label for="name">真实姓名</label>
+					<input type="text" id="name" placeholder="请输入姓名" >
+				</div>
+				<div class="form-group">
+					<label for="sex">性别</label>	
+					<select name="sex" id="sex" >
+						<option value="" selected=""></option>
+						<option value="1">男</option>
+						<option value="0">女</option>
+					</select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="sex-result"></div>
+				</div>	
+			</div>
+			<div class="fieldset">
+				<div class="form-group">
+					<label for="city">城市</label>
+					<select name="city" id="city"></select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="sex-result"></div>
+				</div>
+				<div class="form-group">
+					<label for="university">学校</label>
+					<select name="university" id="university"  ></select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="sex-result"></div>
+				</div>
+				<div class="form-group">
+					<label for="graduate">在读学历</label>
+					<select name="graduate" id="graduate" >
+						<option value=""></option>
+						<option value="0">本科</option>
+						<option value="1">专科</option>
+						<option value="2">硕士</option>
+						<option value="3">博士</option>
+					</select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="sex-result"></div>
+				</div>
+				<div class="form-group">
+					<label for="school">学院</label>
+					<select name="school" id="school" ></select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="sex-result"></div>
+				</div>
+				<div class="form-group">
+					<label for="enrol-year">入学年份</label>
+					<select name="enrol-year" id="enrol-year">
+					</select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="sex-result"></div>
+				</div>
+				<div class="form-group">
+					<label for="clazz">班级</label>
+					<select name="clazz" id="clazz"></select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="sex-result"></div>
+				</div>
+				<div class="form-group">
+					<label for="student-id">学号</label>
+					<input type="text" id="student-id" placeholder="请输入学号">
+				</div>
+			</div>
+			<div class="btn-container" id="next-btn">
+				<p>下一步</p>
+			</div>
+		</form>
+	</div>
+	<script src="js/zepto.min.js"></script>
+	<script src="js/ajax.js"></script>
+	<script src="js/cookie.js"></script>
+	<script>
+		var isFinish = false
+			data = {	
+			    name: $('#name').val(),
+			    sex: $('#sex').children('option:checked').val(),
+			    city: $('#city').children('option:checked').text(),
+			    university: $('#university').children('option:checked').text(),
+			    graduate: $('#graduate').children('option:checked').val(),
+				school: $('#school').children('option:checked').text(),
+				enrolYear: $('#enrol-year').children('option:checked').text(),
+				clazz: $('#clazz').children('option:checked').text(),
+				clazzId: $('#clazz').children('option:checked').val(),
+				studentId: $('#student-id').val()
+			}	
+
+		function fillSelect(queryStr, data){
+			$(queryStr).children().remove()
+			var options = '<option value=""></option>'
+			for(let i = 0; i<data.length; i++){
+				var val = data[i].id
+				var name = data[i].name || data[i].schoolName || data[i].clazz
+				options += '<option value="'+val+'">'+name+'</option>'
+			}
+			$(queryStr).append(options)
+		}
+
+		$(document).ready(function(){
+			
+			ajax({
+				url: 'h5/getCity',
+				type: 'get',
+				success (response) {
+					if(response.code === 1){
+						fillSelect('select#city',response.data)
+					}
+				},
+				error (xhr, status){
+					console.log('error', status)
+				}
+			})
+			var nowYear = (new Date()).getFullYear()
+			var yearsOption ='<option value=""></option>'
+			for(let i = 4; i >= 0; i--){
+				var year = nowYear - i 
+				yearsOption += '<option value="'+year+'">'+year+'</option>'
+			}
+			$('select#enrol-year').append(yearsOption)
+
+			var arrowList = $('.arrow-box')
+			var resultList = $('.result')
+			var dataList = []
+			for(i in data){
+				dataList.push(data[i])
+			}
+			for(let i = 0 ;i < resultList.length; i++){
+				if(dataList[i+1]){
+					arrowList[i].innerHTML = ''
+					resultList[i].innerHTML = dataList[i+1]  
+				}
+			}
+		})
+
+		$('input')
+			.focus(function(){
+				$(this).css('text-align', 'left')
+			})
+			.blur(function(){
+				$(this).css('text-align', 'right')  
+			})
+
+
+		$(document).on('change', 'input, select', function(){
+			var tagName = $(this).prop('tagName')
+			if(tagName === 'INPUT'){
+				var inputId = $(this).attr('id')
+				if(inputId === 'name'){
+					data.name = $(this).val()
+				}else{
+					data.studentId = $(this).val()
+				}
+			}else{
+				$(this).next().hide()
+				var text = $(this).children('option:checked').text()
+				var resultEl = $(this).parent().children('.result')
+				resultEl.text(text)
+
+				var selectId = $(this).attr('id')
+				if(selectId === 'sex'){
+					data.sex = $(this).children('option:checked').val()
+				}else if(selectId === 'city'){
+					var selected = $(this).children('option:checked')
+					data.city = selected.text()
+					ajax({
+						url: 'h5/getUniversity',
+						type: 'get',
+						data: {
+							cityId: selected.val()
+						},
+						success (response){
+							if(response.code === 1){
+								fillSelect('select#university', response.data )
+							}
+						},
+						error (xhr, status){
+
+						}
+
+					})
+				}else if(selectId === 'university'){
+					var selected = $(this).children('option:checked')
+					data.university = selected.text()
+					ajax({
+						url: 'h5/getSchool',
+						type: 'get',
+						data: {
+							uid: selected.val()
+						},
+						success (response){
+							if(response.code === 1){
+								fillSelect('select#school', response.data )
+							}
+						},
+						error (xhr, status){
+
+						}
+
+					})
+				}else if(selectId === 'graduate'){
+					data.graduate = $(this).children('option:checked').val()
+				}else if(selectId === 'school'){
+					var selected = $(this).children('option:checked')
+					data.school = selected.text()	
+					ajax({
+						url: 'h5/getClazz',
+						data: {
+							pid: selected.val()
+						},
+						success (response){
+							if(response.code === 1){
+								fillSelect('select#clazz', response.data )
+							}
+						},
+						error (xhr, status){
+
+						}
+
+					})
+				}else if(selectId === 'enrol-year'){
+					data.enrolYear = $(this).children('option:checked').text()
+				}else if(selectId === 'clazz'){
+					data.clazz = $(this).children('option:checked').text()
+					data.clazzId = $(this).children('option:checked').val()
+				}
+			
+			}
+		
+			console.log('data', data)
+			isFinish = true
+			for(i in data){
+				if(!data[i]){
+					isFinish = false
+					break
+				}
+				if(i === 'studentId'){
+					if(!(/\d+/.test(data[i]))){
+						isFinish = false
+					}
+				}
+			}
+
+			if(isFinish){
+				$('#next-btn').children().hide()
+				$('#next-btn')
+					.css('background-image','url(img/btnNextNor.png)')
+					.click(function(){
+						var dataJson = JSON.stringify(data)
+						setCookie('data', dataJson)
+						window.open('student-idcard.html', '_self')
+					})
+
+			}else{
+				$('#next-btn').children().show()
+				$('#next-btn')
+					.css('background-image','url(img/btnNextDis.png)')
+					.off()
+			}
+			console.log(isFinish)
+		})	
+
+		$(document).on('blur', 'input, select',function(){
+			console.log('data', data)
+			isFinish = true
+			for(i in data){
+				if(data[i] === ''){
+					isFinish = false
+					break
+				}
+				if(i === 'studentId'){
+					if(!(/\d+/.test(data[i]))){
+						isFinish = false
+					}
+				}
+			}
+
+			if(isFinish){
+				$('#next-btn').children().hide()
+				$('#next-btn')
+					.css('background-image','url(img/btnNextNor.png)')
+					.click(function(){
+						var dataJson = JSON.stringify(data)
+						setCookie('data', dataJson)
+						window.open('student-idcard.html', '_self')
+					})
+
+			}else{
+				$('#next-btn').children().show()
+				$('#next-btn')
+					.css('background-image','url(img/btnNextDis.png)')
+					.off()
+			}
+			console.log(isFinish)
+		})
+
+
+	</script>
+</body>
+</html>
