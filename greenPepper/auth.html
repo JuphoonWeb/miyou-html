@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 	<title>认证信息</title>
-	
+	<link rel="stylesheet" href="css/dialog.css">
 	
 
 	<style>
@@ -131,9 +131,7 @@
 	
 
 	<style>
-		#un-auth{
-			display: none;
-		}
+		
 		#auth-info{
 			display: none;
 		}
@@ -195,6 +193,7 @@
 	<script src="js/ajax.js"></script>
 	<script src="js/dialog.min.js"></script>
 	<script src="js/cookie.js"></script>
+	<script src="js/index.js"></script>
 	<script>
 
 		function getInfo(){
@@ -210,7 +209,14 @@
 						$('#clazz').text(data.clazz)
 						$('#number').text(data.number)
 						$('#year').text(data.year)
+					}else if(response.code === 0){
+						notice(response.error)
+					}else{
+						notice('网络错误')	
 					}
+				},
+				error () {
+					notice('网络错误')
 				}
 			})
 		}
@@ -230,7 +236,7 @@
 					if(response.code === 1){
 						var data = response.data
 						setCookie('api_token', data.api_token)
-
+						
 						if(data.type === 3){
 							$('#un-auth').hide()
 							$('#auth-info').show()
@@ -246,8 +252,24 @@
 								msgHtml += '<p class="secondary-msg">完成学生身份认证即可解锁“逛一逛”所有功能</p>'
 							}
 							$('#msg').append(msgHtml)
+							if(data.type === 1){
+								dialog({
+									text: '<p style="margin:0">你有认证信息正在审核<br>点击页面右上角查看进度</p>',
+									ok () {
+										native.dismissWebView()
+									}
+								})
+							}
+
 						}
+					}else if(response.code === 0){
+						notice(response.error)
+					}else{
+						notice('网络错误')	
 					}
+				},
+				error (){
+					notice('网络错误')
 				}
 			})
 		})

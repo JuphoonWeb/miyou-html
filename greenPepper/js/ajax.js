@@ -5,6 +5,7 @@ function ajax(obj){
 
     url += obj.url
 	
+
 	var successFunc = function(res){
 	    	console.log('success',res)
 	    	obj.success && obj.success(res)
@@ -27,6 +28,7 @@ function ajax(obj){
 			token: getCookie('api_token')
 		},
 		async: obj.async,
+		timeout: obj.timeout || 5*1000,
 		cache: obj.cache,
 		processData: obj.processData,
 	    contentType: obj.contentType,

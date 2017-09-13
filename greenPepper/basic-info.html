@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 	<title>1.基本信息</title>
+	<link rel="stylesheet" href="css/dialog.css">
 	<style>
 		*{
 			padding:0;margin:0;
@@ -136,7 +137,7 @@
 					<div class="arrow-box">
 						<div class="arrow"></div>
 					</div>
-					<div class="result" id="sex-result"></div>
+					<div class="result" id="city-result"></div>
 				</div>
 				<div class="form-group">
 					<label for="university">学校</label>
@@ -144,7 +145,7 @@
 					<div class="arrow-box">
 						<div class="arrow"></div>
 					</div>
-					<div class="result" id="sex-result"></div>
+					<div class="result" id="university-result"></div>
 				</div>
 				<div class="form-group">
 					<label for="graduate">在读学历</label>
@@ -158,7 +159,7 @@
 					<div class="arrow-box">
 						<div class="arrow"></div>
 					</div>
-					<div class="result" id="sex-result"></div>
+					<div class="result" id="graduate-result"></div>
 				</div>
 				<div class="form-group">
 					<label for="school">学院</label>
@@ -166,7 +167,7 @@
 					<div class="arrow-box">
 						<div class="arrow"></div>
 					</div>
-					<div class="result" id="sex-result"></div>
+					<div class="result" id="school-result"></div>
 				</div>
 				<div class="form-group">
 					<label for="enrol-year">入学年份</label>
@@ -175,7 +176,7 @@
 					<div class="arrow-box">
 						<div class="arrow"></div>
 					</div>
-					<div class="result" id="sex-result"></div>
+					<div class="result" id="year-result"></div>
 				</div>
 				<div class="form-group">
 					<label for="clazz">班级</label>
@@ -183,7 +184,7 @@
 					<div class="arrow-box">
 						<div class="arrow"></div>
 					</div>
-					<div class="result" id="sex-result"></div>
+					<div class="result" id="clazz-result"></div>
 				</div>
 				<div class="form-group">
 					<label for="student-id">学号</label>
@@ -198,6 +199,8 @@
 	<script src="js/zepto.min.js"></script>
 	<script src="js/ajax.js"></script>
 	<script src="js/cookie.js"></script>
+	<script src="js/dialog.min.js"></script>
+	<script src="js/index.js"></script>
 	<script>
 		var isFinish = false
 			data = {	
@@ -215,7 +218,20 @@
 				number: $('#student-id').val()
 			}	
 
-		function fillSelect(queryStr, data){
+		function fillSelect(selectId, data){
+			var queryStr = 'select#'+selectId
+			console.log('children',$(queryStr).children())
+			
+			if(selectId === 'university'){
+				$('#university-result, #school-result, #clazz-result').text('')
+				$('select#school, select#clazz').attr('disabled', true)
+			}else if(selectId === 'school'){
+				$('#school-result, #clazz-result').text('')
+				$('select#clazz').attr('disabled', true)
+			}else if(selectId === 'clazz'){
+				$('#clazz-result').text('')
+			}	
+
 			$(queryStr).children().remove()
 			var options = '<option value=""></option>'
 			for(let i = 0; i<data.length; i++){
@@ -227,17 +243,23 @@
 		}
 
 		$(document).ready(function(){
+
+			$('select#university, select#school, select#clazz').attr('disabled',true)
 			
 			ajax({
 				url: 'h5/getCity',
 				type: 'get',
 				success (response) {
 					if(response.code === 1){
-						fillSelect('select#city',response.data)
+						fillSelect('city',response.data)
+					}else if(response.code === 0){
+						notice(response.error)
+					}else{
+						notice('出现错误')
 					}
 				},
 				error (xhr, status){
-					console.log('error', status)
+					notice(status)
 				}
 			})
 			var nowYear = (new Date()).getFullYear()
@@ -300,11 +322,23 @@
 						},
 						success (response){
 							if(response.code === 1){
-								fillSelect('select#university', response.data )
+								var list = response.data
+								fillSelect('university', list )
+
+								if(list.length > 0){
+									$('select#university').removeAttr('disabled')
+								}else if(list.length === 0){
+									notice('所选城市没有大学')
+									$('select#university').attr('disabled',true)
+								}
+							}else if(response.code === 0){
+								notice(response.error)
+							}else{
+								notice('出现错误')
 							}
 						},
 						error (xhr, status){
-
+							notice(status)
 						}
 
 					})
@@ -319,11 +353,21 @@
 						},
 						success (response){
 							if(response.code === 1){
-								fillSelect('select#school', response.data )
+								var list = response.data
+								fillSelect('school', list )
+								if(list.length > 0){
+									$('select#school').removeAttr('disabled')
+								}else if(list.length === 0){
+									$('select#school').attr('disabled', true)
+								}
+							}else if(response.code === 0){
+								notice(response.error)
+							}else{
+								notice('出现错误')
 							}
 						},
-						error (xhr, status){
-
+						error (xhr, status){	
+							notice(status)
 						}
 
 					})
@@ -339,11 +383,21 @@
 						},
 						success (response){
 							if(response.code === 1){
-								fillSelect('select#clazz', response.data )
+								var list = response.data
+								fillSelect('clazz', list )
+								if(list.length > 0){
+									$('select#clazz').removeAttr('disabled')
+								}else if(list.length === 0){
+									$('select#clazz').attr('disabled', true)
+								}
+							}else if(response.code === 0){
+								notice(response.error)
+							}else{
+								notice('出现错误')
 							}
 						},
 						error (xhr, status){
-
+							notice(status)
 						}
 
 					})
