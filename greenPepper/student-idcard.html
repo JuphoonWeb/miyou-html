@@ -135,6 +135,7 @@
 	<script src="js/dialog.min.js"></script>
 	<script src="js/ajax.js"></script>
 	<script src="js/cookie.js"></script>
+	<script src="js/index.js"></script>
 	<script>
 
 		var data = JSON.parse(getCookie('data'))
@@ -149,12 +150,12 @@
 		    } else if (window.webkitURL != undefined) { // webkit or chrome
 		        url = window.webkitURL.createObjectURL(file);
 		    }
-		    return url;
+		    return url;	
 		}
 
-		function beforeSendFunc(xhr){
+		var  beforeSendFunc = function(xhr){
 
-	    	dialog = $(document).dialog({
+	    	popup = $(document).dialog({
 						type: 'toast',
 						infoIcon: 'img/loading.gif',
 						infoText: '上传中 0%',
@@ -163,55 +164,19 @@
 	    	xhr.upload.addEventListener('progress',function(e){
 	    		var percent = Math.floor(e.loaded/e.total*100);
 				if(percent % 5 < 3){
-					dialog.update({
+					popup.update({
 						infoText: '上传中'+percent+'%'
 					})
 				}	    		
 	    		if(percent >= 100){
-	    			dialog.close()
+	    			popup.close()
 	    		}
 
 	    		console.log('上传中',percent)
 	    	})
 	    
 		}
-
-		function errorFunc(xhr, status){
-					dialog.close()
-					$(document).dialog({
-						type: 'toast',
-						infoIcon: 'img/fail.png',
-						infoText: '上传失败\n请检查网络',
-						autoClose: 1500
-					})
-		}
-
-		$('#image-upload-1').change(function(){
-			var fileInput = $('#image-upload-1')[0];
-			var file = fileInput.files[0]
-			console.log('file',file)
-			var imgUrl = getObjectURL(file)
-			console.log('url', imgUrl)
-			$('#image-example-1').attr('src', imgUrl)
-			$('#upload-btn').hide()
-			
-			
-			
-
-			var form = new FormData()
-
-
-			form.append('file',file)
-			ajax({
-					url: 'upload/studentImage',
-					type: 'post',
-					timeout: 20*1000,
-					data: form,
-					cache: false,
-					processData: false,
-				    contentType: false,
-				    beforeSend: beforeSendFunc,
-					success (response){
+		var successFunc1 = function (response){
 						
 						if(response.code === 1){
 							$(document).dialog({
@@ -259,32 +224,8 @@
 						}else{
 							toast('出现错误', 'fail')
 						}
-					},
-					error: errorFunc, 
-				})
-			})		
-
-		$('#image-upload-2').change(function(){
-			var fileInput = $('#image-upload-2')[0];
-			var file = fileInput.files[0]
-			console.log(file)
-			var imgUrl = getObjectURL(file)
-			console.log('url', imgUrl)
-			$('#image-example-2').attr('src', imgUrl)	
-			$('#info-container').hide()
-			var form = new FormData()
-			form.append('file',file)
-
-			ajax({
-					url: 'upload/studentImage',
-					type: 'post',
-					timeout: 20*1000,
-					data: form,
-					cache: false,
-					processData: false,
-				    contentType: false,
-				    beforeSend: beforeSendFunc,
-					success (response){
+					}
+		var successFunc2 = function(response){
 						if(response.code === 1){
 							$(document).dialog({
 								type: 'toast',
@@ -298,9 +239,58 @@
 						}else{
 							toast('出现错误', 'fail')
 						} 
-					},
-					error: errorFunc
-				})
+					}
+		var  errorFunc = function(xhr, status){
+					popup.close()
+					dialog({
+						text: '上传失败,请重新上传',
+						type: 'confirm'
+					})
+		}
+
+		function upload(url, formData, success, error){
+			ajax({
+					url: url,
+					type: 'post',
+					timeout: 20*1000,
+					data: formData,
+					cache: false,
+					processData: false,
+				    contentType: false,
+				    beforeSend: beforeSendFunc,
+				    success: success,
+				    error: error,
+			})
+		}
+
+		$('#image-upload-1').change(function(){
+			var fileInput = $('#image-upload-1')[0];
+			var file = fileInput.files[0]
+			console.log('file',file)
+			var imgUrl = getObjectURL(file)
+			console.log('url', imgUrl)
+			$('#image-example-1').attr('src', imgUrl)
+			$('#upload-btn').hide()
+			
+			var form = new FormData()
+			form.append('file',file)
+
+			upload('upload/studentImage', form, successFunc1, errorFunc)
+			
+			})		
+
+		$('#image-upload-2').change(function(){
+			var fileInput = $('#image-upload-2')[0];
+			var file = fileInput.files[0]
+			console.log(file)
+			var imgUrl = getObjectURL(file)
+			console.log('url', imgUrl)
+			$('#image-example-2').attr('src', imgUrl)	
+			$('#info-container').hide()
+			var form = new FormData()
+			form.append('file',file)
+
+			upload('upload/studentImage', form, successFunc2, errorFunc)
 		})
 		
 

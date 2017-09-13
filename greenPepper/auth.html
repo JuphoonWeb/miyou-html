@@ -253,9 +253,9 @@
 							}
 							$('#msg').append(msgHtml)
 							if(data.type === 1){
-								var dialog1 = dialog({
+								dialog({
 									text: '<p style="margin:0">你有认证信息正在审核<br>点击页面右上角查看进度</p>',
-									onClickConfirmBtn () {
+									ok () {
 										native.dismissWebView()
 									}
 								})

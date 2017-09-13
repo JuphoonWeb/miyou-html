@@ -19,11 +19,11 @@ function toast(text, status){
 
 function dialog(obj){
 	 var dialog = $(document).dialog({
-        type : 'alert',
+        type : obj.type || 'alert',
         style: 'default',  // default、ios、android
         // titleText: title,
         content: obj.text,
-        onClickConfirmBtn: obj.onClickConfirmBtn
+        onClickConfirmBtn: obj.ok
     });
 	return dialog
 }
