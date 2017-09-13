@@ -7,11 +7,11 @@ function _ajax(type,url,param,success){
             data:param,
             async : false,
             success:function(data){
-                if(data.code){
+                if(data.code!=null){
                     if(data.code == 1){
                         success&&success(data);
                     }else{
-                        alert(data.errorMessage);
+                        alert(data.error);
                     }
                 }else{
                     success&&success(data);

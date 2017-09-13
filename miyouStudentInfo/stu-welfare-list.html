@@ -24,7 +24,7 @@
 <div class="page-container" id="student-list">
 
     <div class="cl pd-5 bg-1 bk-gray mt-20">
-        <a title="添加福利" href="javascript:;" onclick="layer_show('添加福利','welfare-add.html','','500')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>添加福利</a>
+        <a title="添加福利" href="javascript:;" onclick="layer_show('添加福利','stu-welfare-add.html','','500')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>添加福利</a>
         <form action="" class="form-inline" style="margin-top: 10px" class="search-box">
             <input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据名字查询">
             <button id="search-btn" title="根据名字查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
@@ -72,8 +72,8 @@
                 $('#nodata').hide()
                 var trs = '';
                 for(var i = 0; i < list.length; i++){
-                    var options = '<a title="查看福利" href="javascript:;" onclick="layer_show(\'查看福利\',\'welfare-detail.html#'+list[i].id+'\',\'\',\'500\')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>查看</a>' +
-                        '<a title="编辑福利" href="javascript:;" onclick="layer_show(\'编辑福利\',\'welfare-add.html#'+encodeURI(JSON.stringify(list[i]))+'\',\'\',\'500\')" class="btn btn-secondary-outline radius ml-10"><i class="Hui-iconfont">&#xe665;</i>编辑</a>';
+                    var options = '<a title="查看福利" href="javascript:;" onclick="layer_show(\'查看福利\',\'stu-welfare-detail.html#'+list[i].id+'\',\'\',\'500\')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>查看</a>' +
+                        '<a title="编辑福利" href="javascript:;" onclick="layer_show(\'编辑福利\',\'stu-welfare-add.html#'+encodeURI(JSON.stringify(list[i]))+'\',\'\',\'500\')" class="btn btn-secondary-outline radius ml-10"><i class="Hui-iconfont">&#xe665;</i>编辑</a>';
                     trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].welfareName+'</td><td>'+list[i].welfareTask+'</td><td>'+options+'</td></tr>'
                 }
 
