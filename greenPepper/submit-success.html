@@ -11,32 +11,38 @@
 			font-family: 'Heiti SC';
 			font-size: 16px;
 		}
-		body{
+		.container{
+			padding-top:70px;
 			text-align: center;
+			height:480px;
 		}
 		button{
 			border:none;
 		}
 		img.notice{
-			display: block;
-			margin:140px auto 6px;
+			display: inline-block;
 		}
 		.msg{
 			display: inline-block;
-			width:278px;
+			width:74%;
 			margin-bottom: 28px;
+			color:rgb(136, 136, 136);
 		}
 		.msg .primary-msg{
 			font-size:20px;
+			color:rgb(51, 51, 51);
 		}
 		.msg .secondary-msg{
 			margin-top:14px;
-			color:rgb(136, 136, 136);
+		}
+		.msg .extra-msg{
+			margin-top: 5px;
+			font-size: 14px;
 		}
 		#btn-complete{
 			width:120px;
 			height:50px;
-			margin:214px auto;
+			margin:38% auto;
 			background-image: url(img/btnDoneNor.png);
 		}
 		#btn-complete p{
@@ -48,11 +54,17 @@
 	</style>
 </head>
 <body>
-	<img src="img/imgRight.png" alt="" class="notice">
-	<div class="msg">
-		<p class="primary-msg">认证信息提交成功</p>
-		<pre class="secondary-msg">工作人员将在3个工作日内进行审核</pre>
+	<div class="container">
+		<img src="img/imgRight.png" alt="" class="notice">
+		<div class="msg">
+			<p class="primary-msg">认证信息提交成功</p>
+			<p class="secondary-msg">工作人员将在3个工作日内进行审核
+			</p> 
+			<p class="extra-msg">
+			可在认证信息-认证记录里查看进度
+			</p>
+		</div>
+		<div onclick="native.dismissWebView()" id="btn-complete"><p>完成</p></div>
 	</div>
-	<div id="btn-complete"><p>完成</p></div>
 </body>
 </html>
