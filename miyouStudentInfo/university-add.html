@@ -25,11 +25,21 @@
 <body>
 	<article class="page-container">
 		<form action="" method="post" class="form form-horizontal" id="form-member-add">
+
+			<div class="row cl" id="city-container">
+				<label class="form-label col-xs-4 col-sm-3">城市：</label>
+				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+					<select class="select" size="1" name="proId" id="city">
+						<option value="" selected>请选择学校所在城市</option>
+					</select>
+					</span> 
+				</div>
+			</div>
 			
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3">学校：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" value="" placeholder="请输入学校名称" id="university-name" name="university-name">
+					<input type="text" class="input-text" value="" placeholder="请输入学校名称" id="university-name" name="name">
 				</div>
 			</div>
 
@@ -38,7 +48,7 @@
 				<div class="formControls col-xs-8 col-sm-9">
 					<span class="btn-upload form-group" style="width:100%">
 					  <input class="input-text upload-url radius"type="text" name="uploadfile-1" id="uploadfile-1" readonly  style="width:82%" ><a href="javascript:void();" class="btn btn-primary radius" style="width:18%" ><i class="Hui-iconfont">&#xe646;</i> 浏览文件</a>
-					  <input type="file" id="school-emblem" name="file-1" accept="image/*" class="input-file">
+					  <input type="file" id="school-emblem" name="file" accept="image/*" class="input-file">
 					</span>
 				</div>
 			</div>
@@ -58,18 +68,99 @@
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
 
 <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="static/js/cookie.js"></script>
 <script type="text/javascript" src="static/js/ajax.js"></script>
 <script>
+
+	$(document).ready(function(){
+		ajax({
+			url: 'admin/getDistrict',
+			data: {
+				parentId: 20
+			},
+			successFunc (response){
+				if(response.code === 1){
+					fillSelect('select#city', response.data)
+				}else if(response.code === 0){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '获取城市列表失败',
+						content: response.error
+					})
+				}else if(response.code === -1){
+					removeCookie('uuid')
+						removeCookie('login')
+						removeCookie('username')
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '重新登录',
+							content: '超过30分钟未操作，已自动登出，请重新登录',
+							yes () {
+								parent.parent.window.open('login.html', '_self')
+							}
+						})
+
+				}
+			},
+			errorFunc(){
+				layer.open({
+					type: 0,
+					closeBtn: 0,
+					icon:7, 
+					title: '获取城市列表失败',
+					content: '请检查网络',
+					yes () {
+						layer_close()
+					}
+				})
+			}
+		})
+	})
+
+	function  fillSelect(selectorStr,data){
+		$(selectorStr).children('option+option').remove()
+		var options = ''
+        var data = data
+		for(let i = 0; i < data.length; i++){
+			var name = data[i].name || data[i].schoolName || data[i].clazz
+			options += '<option value="'+data[i].id+'">'+name+'</option>'
+		}
+		$(selectorStr).append(options)
+	}
+
+
 	$('#submit').click(function(event){
 		event.preventDefault()
+		var proId = $('select#city').val()
 		var universityName = $('#university-name').val()
 		var fileInput = $('#school-emblem')[0];
 		var fileNum = fileInput.files.length 
-
-		if(universityName === ''){
+		var file = fileInput.files[0]
+		console.log(proId)
+		if(!proId){
+			layer.msg('请选择学校所在城市')
+		}else if(universityName === ''){
 			layer.msg('请输入学校名称')
 		}else if(fileNum === 0){
 			layer.msg('请导入校徽图片')
+		}else{
+			
+			var form = new FormData()
+			form.append('proId', proId)
+			form.append('name', universityName)
+			form.append('file', file)
+			ajax({
+				url: '/admin/submitUniversityInfo',
+				method: 'post',
+				data: form,
+				cache: false,
+				processData: false,
+			    contentType: false,
+			})
 		}
 	})
 </script>

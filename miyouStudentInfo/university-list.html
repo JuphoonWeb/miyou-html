@@ -53,6 +53,7 @@
 					<th width="100">序号</th>
 					<th width="200">大学</th>
 					<th width="200">校徽<span style="color:rgb(153,153,153)">(鼠标浮上可预览)</span></th>
+					<th width="100">操作</th>
 				</tr>
 			</thead>
 			<tbody id="university-tbody" class="text-c">
@@ -94,7 +95,7 @@
 							var list = data.list
 							var trs = ''
 							for(let i = 0; i < list.length; i++){
-								trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td class="school-badge-container"><img class="school-badge" src="'+list[i].schoolBadgeUrl+'" alt="" /></td></tr>'
+								trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td class="school-badge-container"><img class="school-badge" src="'+list[i].schoolBadgeUrl+'" alt="" /></td><td><button class="btn btn-secondary radius">编辑</button></td></tr>'
 							}
 
 						

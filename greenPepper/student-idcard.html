@@ -129,6 +129,7 @@
 				<input type="file" accept="image/*" id="image-upload-2">
 			</div>
 			<div class="btn-container" id="submit"><p>提交</p></div>
+
 		<!-- </form> -->
 	</div>
 	<script src="js/zepto.min.js"></script>
@@ -153,7 +154,7 @@
 		    return url;	
 		}
 
-		var  beforeSendFunc = function(xhr){
+		function  beforeSendFunc(xhr){
 
 	    	popup = $(document).dialog({
 						type: 'toast',
@@ -165,6 +166,7 @@
 	    		var percent = Math.floor(e.loaded/e.total*100);
 				if(percent % 5 < 3){
 					popup.update({
+						infoIcon: 'img/loading.gif',
 						infoText: '上传中'+percent+'%'
 					})
 				}	    		

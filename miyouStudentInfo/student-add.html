@@ -209,6 +209,7 @@
 	$('select#province').change(function(){
 		// console.log('change')
 		var provinceVal = $(this).val()
+		console.log('proId', provinceVal )
 		if(provinceVal <= 4 || provinceVal >= 33 && provinceVal < 35 ){
 			//选择了直辖市
 			$('#city-container').remove()
