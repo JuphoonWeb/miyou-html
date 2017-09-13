@@ -16,9 +16,28 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css" />
+<style>
+	.school-badge-container{
+		position: relative;
+	}
+	img.school-badge{
+		width:20px;
+		height:20px;
+	}
+	img.school-badge:hover{
+		position: absolute;
+		width:140px;
+		height:140px;
+		top:-70px;
+		left:50%;transform: translateX(-50%);
+		z-index: 100;
+		border: 2px solid rgb(210, 210, 210);
+		box-shadow: 2px 2px 3px rgb(210, 210, 210)
+	}
+</style>	
 <title>学校管理</title>
 </head>
-<body  onload="init()"   >
+<body  onload="init()" >
 
 	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span>  学校管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 	<div class="page-container" id="student-list">
@@ -55,7 +74,10 @@
 
 
 <script type="text/javascript">
+	var url = '/admin/getUniversity'
 	var isPageInit = false 
+	var currPage = 1
+	var size = 13
 
 	function universityAdd(title,url,w,h){
 		layer_show(title,url,w,h);
@@ -66,43 +88,44 @@
 						console.log('success')
 						console.log(response)
 						if(response.code === 1){
-							var list = response.data
+							$('#university-tbody').children().remove()
+							var data = response.data
 							$('#nodata').hide()
-							// var list = data.list
+							var list = data.list
 							var trs = ''
 							for(let i = 0; i < list.length; i++){
-								trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td></td></tr>'
+								trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td class="school-badge-container"><img class="school-badge" src="'+list[i].schoolBadgeUrl+'" alt="" /></td></tr>'
 							}
 
 						
 							// 判断数据是否取得成功
 							$('#university-tbody').append(trs)
-							$('#data-num').text(list.length)
-							// if(!isPageInit && data.total > size){
-							// 	var pages = Math.ceil(data.total/size)
-							// 	laypage({
-							// 	    cont: 'pagination',
-							// 	    curr: 1, 
-							// 	    pages: pages,
-							// 	    groups: 5,
-							// 	    jump (obj,first) {
-							// 	    	if(!first){
-							// 	    		console.log(obj.curr)
-							// 	    		currPage = obj.curr
-							// 		    	ajax({
-							// 					url: url,
-							// 					data: {
-							// 						page: currPage, 
-							// 						size: size,
-							// 					},
-							// 					successFunc: successFunc,
-							// 					errorFunc: errorFunc
-							// 				})
-							// 			}
-							// 	    }
-							//   })
-							// }
-							// isPageInit = true
+							$('#data-num').text(data.total)
+							if(!isPageInit && data.total > size){
+								var pages = Math.ceil(data.total/size)
+								laypage({
+								    cont: 'pagination',
+								    curr: 1, 
+								    pages: pages,
+								    groups: 5,
+								    jump (obj,first) {
+								    	if(!first){
+								    		console.log(obj.curr)
+								    		currPage = obj.curr
+									    	ajax({
+												url: url,
+												data: {
+													page: currPage, 
+													size: size,
+												},
+												successFunc: successFunc,
+												errorFunc: errorFunc
+											})
+										}
+								    }
+							  })
+							}
+							isPageInit = true
 							
 
 						}
@@ -167,7 +190,11 @@
 		currPage = 1
 			
 		ajax({
-			url: '/admin/getUniversity',
+			url: url,
+			data: {
+				page: currPage,
+				size: size
+			},
 			successFunc: successFunc,
 			errorFunc: errorFunc
 		})	 	
