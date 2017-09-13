@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 	<title>1.基本信息</title>
+	<link rel="stylesheet" href="css/dialog.css">
 	<style>
 		*{
 			padding:0;margin:0;
@@ -198,6 +199,8 @@
 	<script src="js/zepto.min.js"></script>
 	<script src="js/ajax.js"></script>
 	<script src="js/cookie.js"></script>
+	<script src="js/dialog.min.js"></script>
+	<script src="js/index.js"></script>
 	<script>
 		var isFinish = false
 			data = {	
@@ -234,10 +237,14 @@
 				success (response) {
 					if(response.code === 1){
 						fillSelect('select#city',response.data)
+					}else if(response.code === 0){
+						notice(response.error)
+					}else{
+						notice('出现错误')
 					}
 				},
 				error (xhr, status){
-					console.log('error', status)
+					notice(status)
 				}
 			})
 			var nowYear = (new Date()).getFullYear()
@@ -301,10 +308,14 @@
 						success (response){
 							if(response.code === 1){
 								fillSelect('select#university', response.data )
+							}else if(response.code === 0){
+								notice(response.error)
+							}else{
+								notice('出现错误')
 							}
 						},
 						error (xhr, status){
-
+							notice(status)
 						}
 
 					})
@@ -320,10 +331,14 @@
 						success (response){
 							if(response.code === 1){
 								fillSelect('select#school', response.data )
+							}else if(response.code === 0){
+								notice(response.error)
+							}else{
+								notice('出现错误')
 							}
 						},
-						error (xhr, status){
-
+						error (xhr, status){	
+							notice(status)
 						}
 
 					})
@@ -340,10 +355,14 @@
 						success (response){
 							if(response.code === 1){
 								fillSelect('select#clazz', response.data )
+							}else if(response.code === 0){
+								notice(response.error)
+							}else{
+								notice('出现错误')
 							}
 						},
 						error (xhr, status){
-
+							notice(status)
 						}
 
 					})
