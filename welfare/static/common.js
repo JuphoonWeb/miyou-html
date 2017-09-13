@@ -11,14 +11,14 @@ function _ajax(type,url,param,success){
                     if(data.code == 1){
                         success&&success(data);
                     }else{
-                        alert(data.error);
+                        toast(data.error,2000);
                     }
                 }else{
                     success&&success(data);
                 }
             },
             error:function(error,errormsg,q){
-                alert('error:'+error.status);
+                toast('error:'+error.status,2000);
             }
         })
 }
