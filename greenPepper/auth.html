@@ -131,9 +131,7 @@
 	
 
 	<style>
-		#un-auth{
-			display: none;
-		}
+		
 		#auth-info{
 			display: none;
 		}
@@ -238,7 +236,7 @@
 					if(response.code === 1){
 						var data = response.data
 						setCookie('api_token', data.api_token)
-
+						
 						if(data.type === 3){
 							$('#un-auth').hide()
 							$('#auth-info').show()
@@ -254,6 +252,15 @@
 								msgHtml += '<p class="secondary-msg">完成学生身份认证即可解锁“逛一逛”所有功能</p>'
 							}
 							$('#msg').append(msgHtml)
+							if(data.type === 1){
+								var dialog1 = dialog({
+									text: '<p style="margin:0">你有认证信息正在审核<br>点击页面右上角查看进度</p>',
+									onClickConfirmBtn () {
+										native.dismissWebView()
+									}
+								})
+							}
+
 						}
 					}else if(response.code === 0){
 						notice(response.error)

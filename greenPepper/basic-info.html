@@ -224,8 +224,10 @@
 			
 			if(selectId === 'university'){
 				$('#university-result, #school-result, #clazz-result').text('')
+				$('select#school, select#clazz').attr('disabled', true)
 			}else if(selectId === 'school'){
 				$('#school-result, #clazz-result').text('')
+				$('select#clazz').attr('disabled', true)
 			}else if(selectId === 'clazz'){
 				$('#clazz-result').text('')
 			}	
