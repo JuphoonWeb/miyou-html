@@ -123,15 +123,14 @@
             data = JSON.parse(string);
         $.each($('.input-text'),function(index,ele){
             var ele = $(ele);
-            if(ele.is('input')){
-                ele.val(data[ele.attr('name')]);
-            }
-            else if(ele.is('div')){
+            if(ele.is('div')){
                 if(ele.attr('name')=='endTime'){
                     ele.text(new Date(data[ele.attr('name')]-1).Format("yyyy-MM-dd"));
                 }else {
                     ele.text(new Date(data[ele.attr('name')]).Format("yyyy-MM-dd"));
                 }
+            }else{
+                ele.val(data[ele.attr('name')]);
             }
         });
         $('#id').val(data.id);
@@ -142,19 +141,18 @@
         var indata = {};
         $.each($('.input-text'),function(index,ele){
             var ele = $(ele);
-            if(ele.is('input')){
-                if(ele.val()==''){
-                    $.Huimodalalert('请输入完整福利信息',2000);
-                    return false;
-                }
-                indata[ele.attr('name')] = ele.val();
-            }
-            else if(ele.is('div')){
+            if(ele.is('div')){
                 if(ele.text()==''){
                     $.Huimodalalert('请选择对应福利时间',2000);
                     return false;
                 }
                 indata[ele.attr('name')] = ele.text()+ele.attr('data-time');
+            }else{
+                if(ele.val()==''){
+                    $.Huimodalalert('请输入完整福利信息',2000);
+                    return false;
+                }
+                indata[ele.attr('name')] = ele.val();
             }
         });
         if(Object.keys(indata).length!=8)return false;
