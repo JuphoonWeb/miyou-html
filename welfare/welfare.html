@@ -89,10 +89,7 @@
 </style>
 
 <body class="z_body">
-	<div class="welfare-items J_items">
-
-	</div>
-
+	<div class="welfare-items J_items"></div>
 <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="./static/common.js"></script>
 <script type="text/javascript">
@@ -101,10 +98,10 @@
         _ajax('get','/api/h5/userAuthStatus/'+phone,{},function(data){
 			switch(data.data.type){
 				case 0://未认证
-                    authPop('您还未成为认证用户','完成学生身份认证即可</br>添加10个免费通话联系人并领取8G流量','立即认证','javascript:void(0)');
+                    authPop('您还未成为认证用户','完成学生身份认证即可<br>添加10个免费通话联系人并领取8G流量','立即认证','../greenPepper/auth.html?phone='+phone);
 				    break;
 				case 1://未审核
-                    warnAlert('认证信息正在审核，请在</br>“认证信息-认证记录”里查看进度');
+                    warnAlert('认证信息正在审核，请在<br>“认证信息-认证记录”里查看进度');
 				    break;
 				case 2://审核拒绝
 				    break;

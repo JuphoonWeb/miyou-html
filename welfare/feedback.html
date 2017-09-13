@@ -39,8 +39,8 @@
 
 <body class="z_body">
     <div class="container">
-        <textarea name="feedback" id="feedback" cols="30" rows="10" class="text-area J_feedback" placeholder="感谢您对青椒校园的支持！可在此处反馈产品使用建议，举报不良信息内容。"></textarea>
-        <button class="submit" disabled>提交</button>
+        <textarea name="feedback" id="feedback" cols="30" rows="10" class="text-area J_feedback" maxlength="200" placeholder="感谢您对青椒校园的支持！可在此处反馈产品使用建议，举报不良信息内容。"></textarea>
+        <button class="submit">提交</button>
     </div>
 
     <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
@@ -49,12 +49,13 @@
         var phone = GetQueryString('phone');
         $(document).on('click','.submit',function(){
 //            toast('意见反馈提交中',2000);
-            _ajax('post','/api/h5/eaopPro',{
+            _ajax('post','/api/h5/submitFeedback',{
                 'phone':phone,
                 'content':$('.J_feedback').val().trim()
             },function(data){
                 if(data.code==1){
                     toast('意见反馈提交成功',2000);
+                    location.reload();
                 }else{
                     toast('意见反馈</br>提交失败，请重试',2000);
                 }

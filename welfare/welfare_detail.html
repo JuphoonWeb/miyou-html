@@ -22,7 +22,8 @@
 		text-align: center;
 		line-height: 1.3;
 	}
-	.desc .pink{
+	.desc i,.role-content i{
+		font-style: normal;
 		color: rgb(255,87,113);
 	}
 	.receive{
@@ -34,6 +35,9 @@
 		text-align: center;
 		font-size: 20px;
 		color: #fff;
+		background: #ddd;
+	}
+	.receive.enable{
 		background: url('./images/receive_btn.png') no-repeat center;
 	}
 	.validity{
@@ -73,30 +77,35 @@
 	var id = GetQueryString('id'),
 		phone = GetQueryString('phone');
 	_ajax('get','/api/h5/getWelfare/'+id+'/'+phone,{},function(data){
-	    if(data.code == 1){
-            var remainDays = getTimeDifference(new Date(),data.data.endTime);
-            $('.J_desc').html(data.data.welfareDesc);
-            $('.J_remain').text(remainDays);
-            $('.J_role').html(data.data.welfareRole);
+		var remainDays = getTimeDifference(new Date(),data.data.endTime);
+		$('.J_desc').html(data.data.welfareDesc);
+		$('.J_remain').text(remainDays);
+		$('.J_role').html(data.data.welfareRole);
+		if(data.data.isReceive==0){
             $('.J_receive').addClass('enable').attr({
                 'data-proid':data.data.welfareProId,
                 'data-proname':data.data.welfareProName
             });
+		}else{
+            $('.J_receive').text('已领取');
 		}
+
 	});
 	$(document).on('click','.J_receive.enable',function(){
+        $('.J_receive').removeClass('enable');
 		_ajax('post','/api/h5/eaopPro',{
 			'phone':phone,
 			'id':id,
 			'welfareProId':$('.J_receive').attr('data-proid'),
 			'welfareProName':$('.J_receive').attr('data-proname')
 		},function(data){
-			if(data.code==1){
-                toast('福利已领取</br>请留言稍后短信通知',2000);
+			if(data.data.rettype=="0"){
+                $('.J_receive').text('已领取');
+				toast('福利已领取</br>请留言稍后短信通知',2000);
 			}else{
-                toast('福利领取失败，请重试',2000);
+                $('.J_receive').addClass('enable');
+                toast(data.data.retmsg,2000);
 			}
-
 		})
 	})
 </script>
