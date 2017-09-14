@@ -93,7 +93,63 @@
 	}
 
 	function deleteUniversity(index){
-		
+		var name  = universityList[index].name
+		var id = universityList[index].id
+		layer.confirm('确定删除'+name+'的信息吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes () {
+				ajax({
+					url: '/admin/deleteUniversity',
+					data: {
+						id: id
+					},
+					successFunc (response) {
+						if(response.code === 1){
+							layer.msg('已删除'+name)
+							setTimeout(function(){
+								parent.location.reload()
+							},1000)
+						}else if(response.code === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '删除失败',
+								content: response.error
+							})
+						}else if(response.code === -1){
+							removeCookie('uuid')
+							removeCookie('login')
+							removeCookie('username')
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '重新登录',
+								content: '超过30分钟未操作，已自动登出，请重新登录',
+								yes () {
+									parent.parent.window.open('login.html', '_self')
+								}
+							})
+
+						}
+				    },
+				    errorFunc () {
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '删除失败',
+							content: '请检查网络'
+						})
+ 
+					}
+
+				})
+			}
+		});
 	}
 
 	var successFunc = function(response){
