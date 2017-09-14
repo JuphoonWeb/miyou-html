@@ -34,23 +34,23 @@
 		}
 		.msg .secondary-msg{
 			margin-top:14px;
+			font-size: 14px
 		}
 		.msg .extra-msg{
 			margin-top: 5px;
-			font-size: 14px;
+			font-size: 12px;
 		}
 		#btn-complete{
 			width:120px;
 			height:50px;
-			margin:38% auto;
-			background-image: url(img/btnDoneNor.png);
-		}
-		#btn-complete p{
-			height:45px;
-			line-height:45px;
+			line-height: 50px;
+			margin:35% auto;
+			background-color:rgb(250, 174, 68);
 			color: rgb(255, 255, 255);
 			font-size: 18px;
+			border-radius: 25px;
 		}
+		
 	</style>
 </head>
 <body>
@@ -64,7 +64,8 @@
 			可在认证信息-认证记录里查看进度
 			</p>
 		</div>
-		<div onclick="native.dismissWebView()" id="btn-complete"><p>完成</p></div>
+		<button onclick="native.dismissWebView()" id="btn-complete">完成</button>
 	</div>
+	
 </body>
 </html>

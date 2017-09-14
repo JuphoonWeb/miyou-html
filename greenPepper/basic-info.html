@@ -11,9 +11,10 @@
 			box-sizing: border-box;
 			font-family: 'Heiti SC';
 			font-size: 16px;
+			-webkit-tap-highlight-color: transparent;
 		}
 		html,body{
-			height:100%;
+			/*height:100%;*/
 		}
 		body{
 			background-color: rgb(246, 246, 246)
@@ -43,12 +44,16 @@
 		.form-group input{
 			position:absolute;
 			top:5px;
-			padding-left: 10px;
+			padding: 10px 5px;
 			height:40px;
 			line-height:40px;
 			width:70%;
 			border:none;
 			text-align: right;
+		}
+		.form-group input:focus{
+			outline: none;
+			background-color:rgb(255, 255, 255);
 		}
 		.form-group select{
 			position:absolute;
@@ -179,7 +184,7 @@
 					<div class="result" id="year-result"></div>
 				</div>
 				<div class="form-group">
-					<label for="clazz">班级</label>
+					<label for="clazz">专业</label>
 					<select name="clazz" id="clazz"></select>
 					<div class="arrow-box">
 						<div class="arrow"></div>
@@ -236,8 +241,11 @@
 			var options = '<option value=""></option>'
 			for(let i = 0; i<data.length; i++){
 				var val = data[i].id
-				var name = data[i].name || data[i].schoolName || data[i].clazz
+				var name = data[i].name || data[i].schoolName || data[i].major
 				options += '<option value="'+val+'">'+name+'</option>'
+			}
+			if(selectId === 'clazz'){
+				options += '<option value="-1">其他-不在列表内</option>'
 			}
 			$(queryStr).append(options)
 		}
@@ -327,8 +335,10 @@
 
 								if(list.length > 0){
 									$('select#university').removeAttr('disabled')
-								}else if(list.length === 0){
-									notice('所选城市没有大学')
+								}else if(list.length === 0 ){
+									if($('#city-result').text() != ''){
+										notice('所选城市没有大学')
+									}
 									$('select#university').attr('disabled',true)
 								}
 							}else if(response.code === 0){
