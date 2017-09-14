@@ -1,4 +1,4 @@
-var domain = 'http://112.35.7.96:8086/miyou';
+var domain = 'http://122.227.209.194:8086/miyou';
 
 function _ajax(type,url,param,success){
 	$.ajax({
@@ -66,6 +66,7 @@ function toast(text,time,callback){
     if($('.J_toast').length!=0)return false;
     $('body').append(str);
     $('.J_toast').fadeIn(300);
+    if(!time) return false;
     setTimeout(function(){
         $('.J_toast').fadeOut(300);
         setTimeout(function(){

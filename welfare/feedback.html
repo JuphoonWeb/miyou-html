@@ -33,14 +33,14 @@
         color: #fff;
     }
     .submit:disabled{
-        background: rgb(250,170,25);
+        background: #9d9d9d;
     }
 </style>
 
 <body class="z_body">
     <div class="container">
         <textarea name="feedback" id="feedback" cols="30" rows="10" class="text-area J_feedback" maxlength="200" placeholder="感谢您对青椒校园的支持！可在此处反馈产品使用建议，举报不良信息内容。"></textarea>
-        <button class="submit">提交</button>
+        <button class="submit" disabled>提交</button>
     </div>
 
     <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
@@ -48,19 +48,33 @@
     <script type="text/javascript">
         var phone = GetQueryString('phone');
         $(document).on('click','.submit',function(){
-//            toast('意见反馈提交中',2000);
+            if(!phone){
+                toast('获取手机号码失败',2000);
+                return false;
+            }
+            toast('意见反馈提交中');
             _ajax('post','/api/h5/submitFeedback',{
                 'phone':phone,
                 'content':$('.J_feedback').val().trim()
             },function(data){
+                $('.J_toast').remove();
                 if(data.code==1){
-                    toast('意见反馈提交成功',2000);
-                    location.reload();
+                    toast('意见反馈提交成功',2000,function(){
+                        location.reload();
+                    });
                 }else{
                     toast('意见反馈</br>提交失败，请重试',2000);
                 }
 
             })
+        }).on('keyup','.J_feedback',function(){
+            var value = $(this).val(),
+                submit = $('.submit');
+            if(value){
+                submit.attr('disabled',false);
+            }else{
+                submit.attr('disabled',true);
+            }
         })
     </script>
 </body>

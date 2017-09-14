@@ -26,7 +26,7 @@
     <div class="cl pd-5 bg-1 bk-gray mt-20">
         <a title="添加福利" href="javascript:;" onclick="layer_show('添加福利','stu-welfare-add.html','','500')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>添加福利</a>
         <form action="" class="form-inline" style="margin-top: 10px" class="search-box">
-            <input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据名字查询">
+            <input id="search-name" type="text" style="width:300px" class="input-text radius" placeholder="根据名字查询">
             <button id="search-btn" title="根据名字查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
         </form>
         <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
@@ -64,6 +64,7 @@
         var currPage = 1
         var size = 12
         var url = '/admin/welfare/getWelfares'
+        var searchName = ''
 
         var successFunc = function(response){
             layer.closeAll()
@@ -98,6 +99,7 @@
                  					data: {
                  						page: currPage,
                  						size: size,
+                                        welfareName:searchName
                  					},
                  					successFunc: successFunc,
                  					errorFunc: errorFunc
@@ -174,7 +176,8 @@
                 url: url,
                 data:{
                     'page':currPage,
-                    'size':12
+                    'size':12,
+                    'welfareName':searchName
                 },
                 successFunc: successFunc,
                 errorFunc: errorFunc
@@ -186,7 +189,7 @@
 
 //            $('#pagination').hide()
             isPageInit = false
-            searchPhone = $('#search-phone').val()
+            searchName = $('#search-name').val()
             init()
 
         })
