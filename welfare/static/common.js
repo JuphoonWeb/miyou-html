@@ -1,4 +1,4 @@
-var domain = 'http://112.35.7.96:8086/miyou';
+var domain = 'http://122.227.209.194:8086/miyou';
 
 function _ajax(type,url,param,success){
 	$.ajax({

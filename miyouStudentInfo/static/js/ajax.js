@@ -6,7 +6,7 @@ function ajax(dataObj){
 		layer.load()
 
 	})
-    var url = 'http://112.35.7.96:8086/miyou/'
+    var url = 'http://122.227.209.194:8086/miyou/'
 
     url += dataObj.url
 	var method = dataObj.method || 'get',
