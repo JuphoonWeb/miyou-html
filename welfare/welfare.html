@@ -86,14 +86,27 @@
 		color: rgb(242,170,25);
 		background-color: #fff;
 	}
+	.loading{
+		width: 100%;
+		height: 50px;
+		line-height:50px;
+		text-align: center;
+		color: #999;
+		font-size: 14px;
+	}
 </style>
 
 <body class="z_body">
 	<div class="welfare-items J_items"></div>
+	<p class="loading">上拉加载更多...</p>
 <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="./static/common.js"></script>
 <script type="text/javascript">
-	var phone = GetQueryString('phone');
+	var phone = GetQueryString('phone'),
+        constPage = 1,
+		constSize = 10,
+		constTotal = null,
+		totalPage = null;
 	if(phone){
         _ajax('get','/api/h5/userAuthStatus/'+phone,{},function(data){
 			switch(data.data.type){
@@ -111,36 +124,63 @@
         });
 	}
 
-	_ajax('get','/api/h5/getWelfares',{'page':1,'size':10,'phone':phone},function(data){
-		var str = '';
-		$.each(data.data.list,function(index,ele){
-			var btnStr = '',
-				allDays = getTimeDifference(ele.startTime,ele.endTime),
-				remainDays = getTimeDifference(new Date(),ele.endTime),
-				remainPer = remainDays/allDays*100,
-				remainStr = '剩余'+remainDays+'天';
-			if(remainDays==0){
-				remainStr = '今天结束';
+	function load (page){
+        _ajax('get','/api/h5/getWelfares',{'page':page,'size':constSize,'phone':phone},function(data){
+            var str = '';
+            constTotal = data.data.total;
+            if(constTotal%constSize==0){
+                totalPage = constTotal/constSize;
+			}else{
+                totalPage = (constTotal-constTotal%constSize)/constSize + 1;
 			}
-			if(ele.isReceive==0){
-				btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="wait-to-receive">待领取</a>';
-			}
-			else if(ele.isReceive==1){
-				btnStr = '<a href="javascript:void(0)" class="had-receive">已领取</a>';
-			}
+            if(constPage==totalPage){
+                $('.loading').text('已加载全部');
+            }
+            $.each(data.data.list,function(index,ele){
+                var btnStr = '',
+                    allDays = getTimeDifference(ele.startTime,ele.endTime),
+                    remainDays = getTimeDifference(new Date(),ele.endTime),
+                    remainPer = remainDays/allDays*100,
+                    remainStr = '剩余'+remainDays+'天';
+                if(remainDays==0){
+                    remainStr = '今天结束';
+                }
+                if(ele.isReceive==0){
+                    btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="wait-to-receive">待领取</a>';
+                }
+                else if(ele.isReceive==1){
+                    btnStr = '<a href="javascript:void(0)" class="had-receive">已领取</a>';
+                }
 
-			str +=  '<div class="welfare-item">'+
-						'<div class="icon"><img src="./images/icon_1.png"></div>'+
-						'<div class="info">'+
-							'<p class="title">'+ele.welfareName+'</p>'+
-							'<p class="desc">任务：'+ele.welfareDesc+'</p>'+
-							'<div class="progress-bar"><div class="bar" style="width:'+remainPer+'%"><span>'+remainStr+'</span></div></div>'+
-						'</div>'+
-						'<div class="btn">'+btnStr+'</div>'+
-					'</div>'
-		});
-		$('.J_items').html(str);
-	});
+                str +=  '<div class="welfare-item">'+
+                    '<div class="icon"><img src="./images/icon_1.png"></div>'+
+                    '<div class="info">'+
+                    '<p class="title">'+ele.welfareName+'</p>'+
+                    '<p class="desc">任务：'+ele.welfareDesc+'</p>'+
+                    '<div class="progress-bar"><div class="bar" style="width:'+remainPer+'%"><span>'+remainStr+'</span></div></div>'+
+                    '</div>'+
+                    '<div class="btn">'+btnStr+'</div>'+
+                    '</div>'
+            });
+            $('.J_items').append(str);
+        });
+	}
+
+    load(constPage);
+
+	$(window).scroll(function(){
+        var viewH =document.body.clientHeight,//可见高度
+            contentH =$(this).height(),//内容高度
+            scrollTop =$(this).scrollTop();//滚动高度
+        if(contentH - viewH == scrollTop){ //到达底部100px时,加载新内容
+            // 这里加载数据..
+			if(constPage<totalPage){
+                constPage++;
+                load(constPage);
+			}
+        }
+	})
+
 </script>
 </body>
 </html>
