@@ -66,6 +66,7 @@ function toast(text,time,callback){
     if($('.J_toast').length!=0)return false;
     $('body').append(str);
     $('.J_toast').fadeIn(300);
+    if(!time) return false;
     setTimeout(function(){
         $('.J_toast').fadeOut(300);
         setTimeout(function(){
