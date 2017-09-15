@@ -6,7 +6,7 @@ function ajax(dataObj){
 		layer.load()
 
 	})
-    var url = 'http://122.227.209.194:8086/miyou/'
+    var url = 'http://218.204.254.209:28812/miyou/'
 
     url += dataObj.url
 	var method = dataObj.method || 'get',
@@ -29,7 +29,7 @@ function ajax(dataObj){
 
 	    var data = dataObj.data
 
-	    if(data){
+	    if(data&&dataObj.z_type!=0){
 			data.page = data.page || 1
 			data.size = data.size || 12
 		}

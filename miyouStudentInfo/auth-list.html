@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="lib/lightbox2/2.8.1/css/lightbox.css">
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/main.css" />
+    <title>学校管理</title>
+</head>
+<body  onload="init()"   >
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 用户认证管理 <span class="c-gray en">&gt;</span>  用户认证列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form action="" class="form-inline" style="margin-top: 10px" class="search-box">
+            <input id="search-name" type="text" style="width:150px" class="input-text radius" placeholder="根据名字查询">
+            <input id="search-phone" type="text" style="width:150px" class="input-text radius" placeholder="根据手机号查询">
+            <span class="select-box" style="width: 100px">
+                <select class="select J_select">
+                    <option value="0">未审核</option>
+                    <option value="1">审核未通过</option>
+                    <option value="2">审核通过</option>
+                </select>
+            </span>
+            <button id="search-btn" title="根据名字查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        </form>
+        <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
+    </div>
+    <div class="mt-20">
+        <table class="table table-bordered table-border table-hover table-bg " id="welfare-table">
+            <thead>
+            <tr class="text-c">
+                <th>序号</th>
+                <th>姓名</th>
+                <th>学号</th>
+                <th>手机号</th>
+                <th>市</th>
+                <th>大学</th>
+                <th>学院</th>
+                <th>班级</th>
+                <th>学生证</th>
+                <th>审核状态</th>
+                <!--<th width="25%">操作</th>-->
+            </tr>
+            </thead>
+            <tbody id="welfare-tbody" class="text-c">
+            </tbody>
+        </table>
+        <div class="pagination r" id="pagination"></div>
+        <div class="nodata" id="nodata">
+            <img src="static/images/nodata.svg" alt="">
+        </div>
+    </div>
+</div>
+<div id="modal-examine" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title">审核拒绝</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row cl" style="width: 100%">
+                    <label class="form-label col-xs-4 col-sm-3" style="margin: 0">拒绝理由：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text" autocomplete="off" id="refuse_reason">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="submit_refuse">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/lightbox2/2.8.1/js/lightbox.min.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/cookie.js"></script>
+<script type="text/javascript" src="static/js/ajax.js"></script>
+
+
+<script type="text/javascript">
+    var isPageInit = false
+    var currPage = 1
+    var size = 12
+    var url = '/admin/auth/getAuthLogs'
+    var searchName = ''
+    var phone = ''
+    var authStatus = null
+
+    var successFunc = function(response){
+        layer.closeAll()
+        if(response.code === 1){
+            var list = response.data.list
+            $('#nodata').hide()
+            var trs = '';
+            for(var i = 0; i < list.length; i++){
+                var status = '未知',
+                    stuCardUrl = '<a href="'+list[i].student.stuCardUrl+'" data-lightbox="gallery" data-title="学生证"><img src="'+list[i].student.stuCardUrl+'" style="width: 100px"></a>';
+                switch(list[i].authStatus){
+                    case 0:
+                        status = '<a title="审核通过" href="javascript:;" onclick="update('+list[i].id+','+list[i].student.id+',2)" class="btn btn-success-outline radius">通过</a>' +
+                                 '<a title="审核拒绝" href="javascript:;" onclick="show_modal('+list[i].id+','+list[i].student.id+')" class="btn btn-danger-outline radius ml-10">拒绝</a>';
+                        break;
+                    case 1:
+                        status = '审核未通过';
+                        break;
+                    case 2:
+                        status = '审核通过';
+                        break;
+                }
+                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].student.name+'</td><td>'+list[i].student.number+'</td><td>'+list[i].student.phone+'</td><td>'+list[i].student.city+'</td><td>'+list[i].student.university+'</td><td>'+list[i].student.school+'</td><td>'+list[i].student.clazz+'</td><td>'+stuCardUrl+'</td><td>'+status+'</td></tr>'
+            }
+
+            // 判断数据是否取得成功
+            $('#welfare-tbody').html(trs)
+            $('#data-num').text(response.data.total)
+            if(!isPageInit && response.data.total > size){
+                $('#pagination').show()
+                var pages = Math.ceil(response.data.total/size)
+                laypage({
+                    cont: 'pagination',
+                    curr: 1,
+                    pages: pages,
+                    groups: 5,
+                    jump: function (obj,first) {
+                        if(!first){
+                            currPage = obj.curr
+                            ajax({
+                                url: url,
+                                data: {
+                                    page: currPage,
+                                    size: size,
+                                    stuName:searchName,
+                                    phone:phone,
+                                    authStatus:authStatus
+                                },
+                                successFunc: successFunc,
+                                errorFunc: errorFunc
+                            })
+                        }
+                    }
+                })
+            }
+            isPageInit = true
+
+
+        }
+        else if(response.code === 0){
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                icon:7,
+                title: '出现错误',
+                content: response.error
+            })
+        }else if(response.code === -1){
+            removeCookie('uuid')
+            removeCookie('login')
+            removeCookie('username')
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                icon:7,
+                title: '重新登录',
+                content: '超过30分钟未操作，已自动登出，请重新登录',
+                yes () {
+                    parent.window.open('login.html', '_self')
+                }
+            })
+
+        }
+    }
+
+    var errorFunc = function(xhr,status) {
+        console.log('error', status)
+        layer.closeAll()
+        if(!isPageInit){
+            layer.closeAll()
+            $('#nodata').show()
+        }else{
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                icon:7,
+                title: '获取数据失败',
+                content: '请检查网络'
+            })
+        }
+    }
+
+    function init(){
+        if(getCookie('login') === ''){
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                shade: [1,'#fff'],
+                title: '未登录',
+                icon: 7,
+                content: '请登录',
+                yes () {
+                    parent.window.open('login.html', '_self')
+                }
+            })
+        }
+
+        currPage = 1
+
+        ajax({
+            url: url,
+            data:{
+                'page':currPage,
+                'size':12,
+                'stuName':searchName,
+                'phone':phone,
+                'authStatus':authStatus
+            },
+            successFunc: successFunc,
+            errorFunc: errorFunc
+        })
+    }
+
+    $('#search-btn').click(function(event){
+        event.preventDefault()
+
+//            $('#pagination').hide()
+        isPageInit = false
+        searchName = $('#search-name').val()
+        phone = $('#search-phone').val()
+        authStatus = $('.J_select').val()
+        init()
+
+    })
+
+
+    function update(id,stuId,type,reason){
+        ajax({
+            method:'post',
+            url: '/admin/auth/updateAuthLog',
+            z_type:0,
+            data:{
+                id:id,
+                stuId:stuId,
+                authStatus:type,
+                authNote:reason
+            },
+            successFunc: function(data){
+                if(data.code==1){
+                    location.reload();
+                }else{
+                    layer.open({
+                        type: 0,
+                        closeBtn: 0,
+                        icon:7,
+                        title: '出现错误',
+                        content: data.error
+                    })
+                }
+            }
+        })
+    }
+
+    $(document).on('click','#submit_refuse',function(){
+        var reason = $('#refuse_reason').val().trim(),
+            id = $(this).attr('data-id'),
+            stuId = $(this).attr('data-stuid');
+        if(!reason){
+            $.Huimodalalert('拒绝理由不能为空',1000);
+            return false;
+        }
+        update(id,stuId,1,reason)
+    });
+    function show_modal(id,stuId){
+        $("#modal-examine").modal("show").find('#submit_refuse').attr({'data-id':id,'data-stuid':stuId});
+    }
+</script>
+</body>
+</html>
