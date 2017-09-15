@@ -150,23 +150,23 @@
                 }
                 if(ele.isReceive==0){
                     if(ele.welfareProId=='MFLLQJ'){
-                        btnStr = '<a href="javascript:void(0)" class="had-receive">未激活</a>';
+                        btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="wait-to-receive">未激活</a>';
 					}else{
                         btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="wait-to-receive">待领取</a>';
 					}
                 }
                 else if(ele.isReceive==1){
                     if(ele.welfareProId=='MFLLQJ'){
-                        btnStr = '<a href="javascript:void(0)" class="had-receive">已激活</a>';
+                        btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="had-receive">已激活</a>';
                     }else{
-                        btnStr = '<a href="javascript:void(0)" class="had-receive">已领取</a>';
+                        btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="had-receive">已领取</a>';
 					}
                 }
                 str +=  '<div class="welfare-item">'+
                     '<div class="icon"><img src="./images/icon_1.png"></div>'+
                     '<div class="info">'+
                     '<p class="title">'+ele.welfareName+'</p>'+
-                    '<p class="desc">任务：'+ele.welfareDesc+'</p>'+
+                    '<p class="desc">'+ele.welfareTask+'</p>'+
                     '<div class="progress-bar"><div class="bar" style="width:'+remainPer+'%"><span>'+remainStr+'</span></div></div>'+
                     '</div>'+
                     '<div class="btn">'+btnStr+'</div>'+
