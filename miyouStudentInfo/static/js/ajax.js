@@ -6,7 +6,7 @@ function ajax(dataObj){
 		layer.load()
 
 	})
-    var url = 'http://122.227.209.194:8086/miyou/'
+    var url = 'http://218.204.254.209:28812/miyou/'
 
     url += dataObj.url
 	var method = dataObj.method || 'get',
@@ -48,18 +48,6 @@ function ajax(dataObj){
 			token: uuid
 		},
 		dataType : 'json',
-		// data: {
-		// 	username: username,
-		// 	password: password,
-		// 	page: page,
-		// 	size: size,
-		// 	clazzId: clazzId,
-		// 	studentId: studentId,	
-		// 	phone: phone,
-		// 	pid: pid,
-		// 	uid: uid,
-		// 	parentId: parentId
-		// },
 		data: data,
 		timeout: timeout,
 		success: successFunc,

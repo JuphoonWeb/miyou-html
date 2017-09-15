@@ -43,7 +43,7 @@
 	<div class="page-container" id="student-list">
 
 		<div class="cl pd-5 bg-1 bk-gray mt-20">
-			<a title="添加学校" href="javascript:;" onclick="universityAdd('添加学校','university-add.html','','300')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>添加学校</a> 
+			<a title="添加学校" href="javascript:;" onclick="addUniversity()" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>添加学校</a> 
 			<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 		</div>
 		<div class="mt-20">
@@ -79,9 +79,77 @@
 	var isPageInit = false 
 	var currPage = 1
 	var size = 13
+	var universityList = []
 
-	function universityAdd(title,url,w,h){
-		layer_show(title,url,w,h);
+	function addUniversity(){
+		layer_show('添加学校','university-add.html','','300');
+	}
+
+	function editUniversity(index){
+		var universityInfo = universityList[index]
+		var universityInfoJson = JSON.stringify(universityInfo)
+		setCookie('universityInfo',universityInfoJson)
+		layer_show('编辑学校信息 ('+universityInfo.name+')','university-edit.html','','300');
+	}
+
+	function deleteUniversity(index){
+		var name  = universityList[index].name
+		var id = universityList[index].id
+		layer.confirm('确定删除'+name+'的信息吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes () {
+				ajax({
+					url: '/admin/deleteUniversity',
+					data: {
+						id: id
+					},
+					successFunc (response) {
+						if(response.code === 1){
+							layer.msg('已删除'+name)
+							setTimeout(function(){
+								parent.location.reload()
+							},1000)
+						}else if(response.code === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '删除失败',
+								content: response.error
+							})
+						}else if(response.code === -1){
+							removeCookie('uuid')
+							removeCookie('login')
+							removeCookie('username')
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '重新登录',
+								content: '超过30分钟未操作，已自动登出，请重新登录',
+								yes () {
+									parent.parent.window.open('login.html', '_self')
+								}
+							})
+
+						}
+				    },
+				    errorFunc () {
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '删除失败',
+							content: '请检查网络'
+						})
+ 
+					}
+
+				})
+			}
+		});
 	}
 
 	var successFunc = function(response){
@@ -93,9 +161,10 @@
 							var data = response.data
 							$('#nodata').hide()
 							var list = data.list
+							universityList = list
 							var trs = ''
 							for(let i = 0; i < list.length; i++){
-								trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td class="school-badge-container"><img class="school-badge" src="'+list[i].schoolBadgeUrl+'" alt="" /></td><td><button class="btn btn-secondary radius">编辑</button></td></tr>'
+								trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td class="school-badge-container"><img class="school-badge" src="'+list[i].schoolBadgeUrl+'" alt="" /></td><td><button onclick="editUniversity('+i+')" class="btn btn-secondary-outline radius" title="编辑"><span class="Hui-iconfont">&#xe60c;</span>编辑</button>&nbsp;&nbsp;<button onclick="deleteUniversity('+i+')" class="btn btn-danger radius" title="删除"><span class="Hui-iconfont">&#xe609;</span>删除</button></td></tr>'
 							}
 
 						

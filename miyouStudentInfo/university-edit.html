@@ -20,12 +20,11 @@
 
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
 
-<title>添加学校</title>
+<title>编辑学校信息</title>
 </head>
 <body>
 	<article class="page-container">
 		<form action="" method="post" class="form form-horizontal" id="form-member-add">
-
 			<div class="row cl" id="city-container">
 				<label class="form-label col-xs-4 col-sm-3">城市：</label>
 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
@@ -47,7 +46,7 @@
 				<label class="form-label col-xs-4 col-sm-3">校徽图片：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<span class="btn-upload form-group" style="width:100%">
-					  <input class="input-text upload-url radius"type="text" name="uploadfile-1" id="uploadfile-1" readonly  style="width:82%" ><a href="javascript:void();" class="btn btn-primary radius" style="width:18%" ><i class="Hui-iconfont">&#xe646;</i> 浏览文件</a>
+					  <input class="input-text upload-url radius"type="text" name="uploadfile-1" id="file-url" readonly  style="width:82%" ><a href="javascript:void();" class="btn btn-primary radius" style="width:18%" ><i class="Hui-iconfont">&#xe646;</i> 浏览文件</a>
 					  <input type="file" id="school-emblem" name="file" accept="image/jpg,image/jpeg,image/png" class="input-file">
 					</span>
 				</div>
@@ -71,6 +70,8 @@
 <script type="text/javascript" src="static/js/cookie.js"></script>
 <script type="text/javascript" src="static/js/ajax.js"></script>
 <script>
+
+	var universityInfo = JSON.parse(getCookie('universityInfo'))
 
 	$(document).ready(function(){
 		ajax({
@@ -119,6 +120,10 @@
 				})
 			}
 		})
+
+		
+		$('#name').val(universityInfo.name)
+		$('#file-url').val(universityInfo.schoolBadgeUrl)
 	})
 
 	function  fillSelect(selectorStr,data){
@@ -145,7 +150,8 @@
 			layer.msg('请选择学校所在城市')
 		}else if(universityName === ''){
 			layer.msg('请输入学校名称')
-		}else if(fileNum === 0){
+		}
+		else if(fileNum === 0){
 			layer.msg('请导入校徽图片')
 		}else{
 			
@@ -153,6 +159,7 @@
 			form.append('proId', proId)
 			form.append('name', universityName)
 			form.append('file', file)
+			form.append('id',universityInfo.id)
 			ajax({
 				url: '/admin/submitUniversityInfo',
 				method: 'post',
@@ -162,8 +169,9 @@
 			    contentType: false,
 			    successFunc (response) {
 					if(response.code === 1){
-						layer.msg('添加成功')
+						layer.msg('修改成功')
 						setTimeout(function(){
+							// layer_close()
 							parent.location.reload()
 						},1000)
 					}else if(response.code === 0){
@@ -171,7 +179,7 @@
 							type: 0,
 							closeBtn: 0,
 							icon:7, 
-							title: '添加失败',
+							title: '修改失败',
 							content: response.error
 						})
 					}else if(response.code === -1){
@@ -196,7 +204,7 @@
 						type: 0,
 						closeBtn: 0,
 						icon:7, 
-						title: '添加失败',
+						title: '修改失败',
 						content: '请检查网络'
 					})
 
