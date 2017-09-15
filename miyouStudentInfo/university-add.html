@@ -132,7 +132,6 @@
 		$(selectorStr).append(options)
 	}
 
-
 	$('#submit').click(function(event){
 		event.preventDefault()
 		var proId = $('select#city').val()
@@ -160,7 +159,7 @@
 				cache: false,
 				processData: false,
 			    contentType: false,
-			    successFunc (response) {
+			   successFunc (response) {
 					if(response.code === 1){
 						layer.msg('添加成功')
 						setTimeout(function(){
@@ -199,11 +198,13 @@
 						title: '添加失败',
 						content: '请检查网络'
 					})
-
+ 
 				}
 			})
 		}
 	})
+
+	$('select input')
 </script>
 
 </body>

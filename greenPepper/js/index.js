@@ -1,4 +1,4 @@
-
+//dialog插件封装
 
 function toast(text, status){
 	var iconUrl = ''
@@ -16,7 +16,6 @@ function toast(text, status){
 		autoClose: 1500
 	})
 }
-
 function dialog(obj){
 	 var dialog = $(document).dialog({
         type : obj.type || 'alert',
@@ -27,7 +26,6 @@ function dialog(obj){
     });
 	return dialog
 }
-
 function notice(text){
 	$(document).dialog({
         type : 'notice',
@@ -36,12 +34,15 @@ function notice(text){
     });
 }
 
+
+ //根据请求url获取参数
 function GetQueryString(name){
      var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
      var r = window.location.search.substr(1).match(reg);
      if(r!=null)return  unescape(r[2]); return null;
 }
 
+// Date对象格式化
 Date.prototype.Format = function (fmt) { //author: meizz
         var o = {
             "M+": this.getMonth() + 1, //月份

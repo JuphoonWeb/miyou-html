@@ -72,6 +72,7 @@
 <script>
 
 	var universityInfo = JSON.parse(getCookie('universityInfo'))
+	console.log('universityInfo', universityInfo)
 
 	$(document).ready(function(){
 		ajax({
@@ -81,7 +82,7 @@
 			},
 			successFunc (response){
 				if(response.code === 1){
-					fillSelect('select#city', response.data)
+					fillCitySelect('select#city', response.data)
 				}else if(response.code === 0){
 					layer.open({
 						type: 0,
@@ -126,13 +127,14 @@
 		$('#file-url').val(universityInfo.schoolBadgeUrl)
 	})
 
-	function  fillSelect(selectorStr,data){
+	function  fillCitySelect(selectorStr,data){
 		$(selectorStr).children('option+option').remove()
 		var options = ''
         var data = data
 		for(let i = 0; i < data.length; i++){
-			var name = data[i].name || data[i].schoolName || data[i].clazz
-			options += '<option value="'+data[i].id+'">'+name+'</option>'
+			var name = data[i].name
+			var selectedAttr = (name === universityInfo.city) ? 'selected' : ''
+			options += '<option value="'+data[i].id+'" '+selectedAttr+'>'+name+'</option>'
 		}
 		$(selectorStr).append(options)
 	}

@@ -32,7 +32,7 @@
 		<form action="" method="post" class="form-inline" id="table-upload">
 			<span class="btn-upload form-group">
 					
-					<input class="input-text upload-url" type="text" name="uploadfile" id="uploadfile" readonly nullmsg="请添加附件！" style="width:300px" v-model="filename">
+					<input class="input-text upload-url" type="text" name="uploadfile" id="uploadfile" readonly nullmsg="请添加附件！" style="width:300px" placeholder="导入Excel文件">
 					<a href="javascript:void();" class="btn btn-primary radius upload-btn"><i class="Hui-iconfont">&#xe642;</i> Excel导入</a>
 					<input type="file" name="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="input-file" id="file" :value="file">
 			</span>
