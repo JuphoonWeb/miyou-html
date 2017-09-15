@@ -197,7 +197,8 @@
 
         function deleteWelfare(id){
             ajax({
-                url: 'admin/deleteWelfare/'+id,
+                method:'post',
+                url: 'admin/welfare/deleteWelfare/'+id,
                 successFunc: function(data){
                     if(data.code==1){
                         location.reload();

@@ -51,6 +51,7 @@
                 <th>大学</th>
                 <th>学院</th>
                 <th>班级</th>
+                <th>身份证</th>
                 <th>学生证</th>
                 <th>审核状态</th>
                 <!--<th width="25%">操作</th>-->
@@ -113,7 +114,8 @@
             var trs = '';
             for(var i = 0; i < list.length; i++){
                 var status = '未知',
-                    stuCardUrl = '<a href="'+list[i].student.stuCardUrl+'" data-lightbox="gallery" data-title="学生证"><img src="'+list[i].student.stuCardUrl+'" style="width: 100px"></a>';
+                    idCardUrl = '<a href="'+list[i].student.identityUrl+'" data-lightbox="gallery" data-title="'+list[i].student.name+'的身份证"><img src="'+list[i].student.identityUrl+'" style="width: 100px"></a>',
+                    stuCardUrl = '<a href="'+list[i].student.stuCardUrl+'" data-lightbox="gallery" data-title="'+list[i].student.name+'的学生证"><img src="'+list[i].student.stuCardUrl+'" style="width: 100px"></a>';
                 switch(list[i].authStatus){
                     case 0:
                         status = '<a title="审核通过" href="javascript:;" onclick="update('+list[i].id+','+list[i].student.id+',2)" class="btn btn-success-outline radius">通过</a>' +
@@ -126,7 +128,7 @@
                         status = '审核通过';
                         break;
                 }
-                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].student.name+'</td><td>'+list[i].student.number+'</td><td>'+list[i].student.phone+'</td><td>'+list[i].student.city+'</td><td>'+list[i].student.university+'</td><td>'+list[i].student.school+'</td><td>'+list[i].student.clazz+'</td><td>'+stuCardUrl+'</td><td>'+status+'</td></tr>'
+                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].student.name+'</td><td>'+list[i].student.number+'</td><td>'+list[i].student.phone+'</td><td>'+list[i].student.city+'</td><td>'+list[i].student.university+'</td><td>'+list[i].student.school+'</td><td>'+list[i].student.clazz+'</td><td>'+idCardUrl+'</td><td>'+stuCardUrl+'</td><td>'+status+'</td></tr>'
             }
 
             // 判断数据是否取得成功
