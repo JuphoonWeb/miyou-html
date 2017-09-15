@@ -21,18 +21,18 @@
 <![endif]-->
 <title>我的桌面</title>
 <style>
-	.page-container{
+	.contain{
 		height:700px;
 		background-image: url(./static/images/book-2592783_1920.jpg);
 		background-position: 0px -50px;
-
+		position: relative;
 	}
 	.welcome-text{
-		position:fixed;
-		top:250px;left:500px;
-		white-space: nowrap;
+		position:absolute;
+		top:25%;
 		font-size: 50px;
 		cursor: default;
+		width: 100%;
 	}
 	.footer{
 		height:100px;
@@ -43,7 +43,7 @@
 </style>
 </head>
 <body>
-<div class="page-container">
+<div class="contain">
 	<div class="welcome-text text-c">	
 		<p class="f-40 text-success">欢迎使用青椒校园学生信息管理系统！</p>
 	</div>

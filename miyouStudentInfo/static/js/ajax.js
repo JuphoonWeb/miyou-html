@@ -29,7 +29,7 @@ function ajax(dataObj){
 
 	    var data = dataObj.data
 
-	    if(data){
+	    if(data&&dataObj.z_type!=0){
 			data.page = data.page || 1
 			data.size = data.size || 12
 		}
