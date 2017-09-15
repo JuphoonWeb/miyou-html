@@ -32,7 +32,7 @@
 				<th width="100">序号</th>
 				<th width="200">大学</th>
 				<th width="200">学院</th>
-				<th width="200">班级</th>
+				<th width="200">专业</th>
 				<th width="150">班级圈</th>		
 				<th width="200">主号</th>
 			</tr>
@@ -77,10 +77,11 @@
 							$('#clazz-tbody').children().remove()
 							for(let i=0; i<list.length; i++){						
 								var sequence = (currPage-1)*size+i+1
-								var clazzId = list[i].id
+								var clazzId = list[i].id || ''
+								var major = list[i].major || ''
 								var hasClazzGroup = list[i].clazzGroup ? '已开通' : '未开通<button onclick="applyGroup('+clazzId+')" style="display:none;margin-left:10px" class="btn btn-secondary-outline radius" >开通</button>'
 								var servnumber = list[i].servnumber || '暂无' 
-								trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].universityName+'</td><td>'+list[i].schoolName+'</td><td>'+list[i].clazz+'</td><td>'+hasClazzGroup+'</td><td>'+servnumber+'</td></tr>'
+								trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].universityName+'</td><td>'+list[i].schoolName+'</td><td>'+major+'</td><td>'+hasClazzGroup+'</td><td>'+servnumber+'</td></tr>'
 							}
 							// 判断数据是否取得成功
 							$('#clazz-tbody').append(trs)

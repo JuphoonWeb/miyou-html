@@ -52,6 +52,7 @@
 				<tr class="text-c">
 					<th width="100">序号</th>
 					<th width="200">大学</th>
+					<th width="200">城市</th>
 					<th width="200">校徽<span style="color:rgb(153,153,153)">(鼠标浮上可预览)</span></th>
 					<th width="100">操作</th>
 				</tr>
@@ -95,6 +96,7 @@
 	function deleteUniversity(index){
 		var name  = universityList[index].name
 		var id = universityList[index].id
+		console.log('universityId', id)
 		layer.confirm('确定删除'+name+'的信息吗？',{
 			title: '提示',
 			icon:3,
@@ -102,6 +104,7 @@
 			yes () {
 				ajax({
 					url: '/admin/deleteUniversity',
+					// method: 'post',
 					data: {
 						id: id
 					},
@@ -109,7 +112,7 @@
 						if(response.code === 1){
 							layer.msg('已删除'+name)
 							setTimeout(function(){
-								parent.location.reload()
+								window.location.reload()
 							},1000)
 						}else if(response.code === 0){
 							layer.open({
@@ -164,7 +167,7 @@
 							universityList = list
 							var trs = ''
 							for(let i = 0; i < list.length; i++){
-								trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td class="school-badge-container"><img class="school-badge" src="'+list[i].schoolBadgeUrl+'" alt="" /></td><td><button onclick="editUniversity('+i+')" class="btn btn-secondary-outline radius" title="编辑"><span class="Hui-iconfont">&#xe60c;</span>编辑</button>&nbsp;&nbsp;<button onclick="deleteUniversity('+i+')" class="btn btn-danger radius" title="删除"><span class="Hui-iconfont">&#xe609;</span>删除</button></td></tr>'
+								trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td>'+list[i].city+'</td><td class="school-badge-container"><img class="school-badge" src="'+list[i].schoolBadgeUrl+'" alt="" /></td><td><button onclick="editUniversity('+i+')" class="btn btn-secondary-outline radius" title="编辑"><span class="Hui-iconfont">&#xe60c;</span>编辑</button>&nbsp;&nbsp;<button onclick="deleteUniversity('+i+')" class="btn btn-danger radius" title="删除"><span class="Hui-iconfont">&#xe609;</span>删除</button></td></tr>'
 							}
 
 						

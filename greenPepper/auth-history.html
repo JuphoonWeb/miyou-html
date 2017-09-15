@@ -80,13 +80,13 @@
 						$('#history-list').append(listHtml)
 
 					}else if(response.code === 0){
-
+						notice(response.error)
 					}else{
-
+						notice('获取数据失败')
 					}
 				},
 				error(xhr, status) {
-					notice('出现错误:'+status)
+					notice(status)
 				}
 
 			})

@@ -20,7 +20,7 @@
 <style>
 	.nomember{
 		display: none;
-		margin:30px auto;
+		margin:100px auto;
 	}
 </style>
 </head>
@@ -74,9 +74,11 @@
 					$('#nodata').hide()
 					if(data.total === 0){
 						$('#nomember').show()
+						$('#member-table').hide()
 						return
 					}else{
 						$('#nomember').hide()
+						$('#member-table').show()
 					}
 					var trs = ''
 					$('#member-tbody').children().remove()
