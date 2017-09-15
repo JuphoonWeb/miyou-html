@@ -13,6 +13,7 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
 <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="lib/lightbox2/2.8.1/css/lightbox.css" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css" />
@@ -69,6 +70,7 @@
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
 <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/lightbox2/2.8.1/js/lightbox.min.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
 <script type="text/javascript" src="static/js/cookie.js"></script>
@@ -79,7 +81,7 @@
 	var url = '/admin/getUniversity'
 	var isPageInit = false 
 	var currPage = 1
-	var size = 13
+	var size = 11
 	var universityList = []
 
 	function addUniversity(){
@@ -165,8 +167,13 @@
 							$('#nodata').hide()
 							var list = data.list
 							universityList = list
+
+
 							var trs = ''
 							for(let i = 0; i < list.length; i++){
+
+							// var img = '<a href="'+list[i].schoolBadgeUrl+'" data-lightbox="gallery" data-title="学生证"><img class="school-badge" src="'+list[i].schoolBadgeUrl+'" alt="" /></a>'
+
 								trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td>'+list[i].city+'</td><td class="school-badge-container"><img class="school-badge" src="'+list[i].schoolBadgeUrl+'" alt="" /></td><td><button onclick="editUniversity('+i+')" class="btn btn-secondary-outline radius" title="编辑"><span class="Hui-iconfont">&#xe60c;</span>编辑</button>&nbsp;&nbsp;<button onclick="deleteUniversity('+i+')" class="btn btn-danger radius" title="删除"><span class="Hui-iconfont">&#xe609;</span>删除</button></td></tr>'
 							}
 

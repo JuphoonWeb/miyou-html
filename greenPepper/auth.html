@@ -151,7 +151,7 @@
 	<div id="auth-info">
 		<div class="content">
 			<div class="content-head">
-				<img src="img/imgZhongshan.png" alt="" class="school-badge" id="school-badge">
+				<img src="" alt="" class="school-badge" id="school-badge">
 				<div class="basic-info">
 					<div class="name">
 						<span class="name" id="name" style="font-size:20px"></span>
@@ -178,8 +178,8 @@
 					   <span class="value" id="year"></span>
 				  </li>
 				</ul>
-				<div class="school-badge-bg" id="school-badge-bg">
-					<img src="img/imgZhongshan@3x.png" alt="">
+				<div class="school-badge" id="school-badge-bg">
+					<img src="" alt="">
 				</div>
 			</div>	
 		</div>
@@ -196,15 +196,18 @@
 	<script src="js/index.js"></script>
 	<script>
 
+		var studentInfo = {}
+
 		function getInfo(){
 			ajax({
 				url: 'student/info/'+getCookie('phone'),
 				success (response){
 					if(response.code === 1){
 						var data = response.data
+						studentInfo = data
 						$('#name').text(data.name)
 						$('#university').text(data.university)
-						$('#school-badge').attr('src',data.schoolBadgeUrl)
+						$('.school-badge').attr('src',data.schoolBadgeUrl)
 						$('#school').text(data.school)
 						$('#clazz').text(data.clazz)
 						$('#number').text(data.number)
@@ -270,6 +273,7 @@
 			})
 		})
 		$('#auth-btn, #change-btn').click(function(){
+			setCookie('studentInfo', JSON.stringify(studentInfo))
 			window.open('basic-info.html','_self')
 		})
 	</script>
