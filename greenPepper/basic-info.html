@@ -210,7 +210,8 @@
 	<script>
 
 
-		var isFinish = false,
+		var isFinished = false,
+			isInit = true,
 			data = {	
 			    province: '广东',
 				month: 9,
@@ -228,25 +229,51 @@
 			studentInfo = null
 
 
-		function fillSelect(selectId, data){
+		function fillSelect(selectId, list){
 			var queryStr = 'select#'+selectId
 			console.log('children',$(queryStr).children())
 			
 			if(selectId === 'university'){
 				$('#university-result, #school-result, #clazz-result').text('')
+				if(!isInit){
+					studentInfo.university = ''
+					studentInfo.school = ''
+					studentInfo.clazz = ''
+					studentInfo.clazzId = ''
+				}
+				data.university = ''
+				data.school = ''
+				data.clazz = ''
+				data.clazzId = ''
 				$('select#school, select#clazz').attr('disabled', true)
 			}else if(selectId === 'school'){
 				$('#school-result, #clazz-result').text('')
 				$('select#clazz').attr('disabled', true)
+				if(!isInit){
+					studentInfo.school = ''
+					studentInfo.clazz = ''
+					studentInfo.clazzId = ''
+				}
+				data.school = ''
+				data.clazz = ''
+				data.clazzId = ''
+
 			}else if(selectId === 'clazz'){
 				$('#clazz-result').text('')
+				if(!isInit){
+					studentInfo.clazz = ''
+					studentInfo.clazzId = ''
+				}
+				data.clazz = ''
+				data.clazzId = ''
 			}	
+
 
 			$(queryStr).children().remove()
 			var options = '<option value=""></option>'
-			for(let i = 0; i<data.length; i++){
-				var val = data[i].id
-				var name = data[i].name || data[i].schoolName || data[i].major || data[i].clazz
+			for(let i = 0; i<list.length; i++){
+				var val = list[i].id
+				var name = list[i].name || list[i].schoolName || list[i].major || list[i].clazz
 				options += '<option value="'+val+'" data-name="'+name+'" >'+name+'</option>'
 			}
 			if(selectId === 'clazz'){
@@ -258,14 +285,16 @@
 		$(document).ready(function(){
 
 			$('select#university, select#school, select#clazz').attr('disabled',true)
-			
+			studentInfo = {}
+
+
 			ajax({
 				url: 'h5/getCity',
 				type: 'get',
 				success (response) {
 					if(response.code === 1){
 						fillSelect('city',response.data)
-						if(studentInfo){		
+						if(studentInfo.city && isInit){		
 							var city = studentInfo.city
 							data.city = city
 
@@ -303,14 +332,14 @@
 
 			var arrowList = $('.arrow-box')
 			var resultList = $('.result')
-			var dataList = []
+			var list = []
 			for(i in data){
-				dataList.push(data[i])
+				list.push(data[i])
 			}
 			for(let i = 0 ;i < resultList.length; i++){
-				if(dataList[i+3]){
+				if(list[i+3]){
 					arrowList[i].innerHTML = ''
-					resultList[i].innerHTML = dataList[i+3]  
+					resultList[i].innerHTML = list[i+3]  
 				}
 			}
 
@@ -342,10 +371,9 @@
 				$('#year-result').text(year)
 				$('option[data-name="'+year+'"]').attr('selected', true)
 				data.year = studentInfo.year
-
-
-
-			}	
+			}else{
+				isInit = false
+			}
 
 		})
 
@@ -367,9 +395,10 @@
 					success (response){
 						if(response.code === 1){
 							var list = response.data
+
 							fillSelect('university', list )
 
-							if(studentInfo){		
+							if(studentInfo.university && isInit){		
 								var university = studentInfo.university
 								data.university = university
 								var selected = $('option[data-name="'+university+'"]')
@@ -411,7 +440,7 @@
 							if(response.code === 1){
 								var list = response.data
 								fillSelect('school', list )
-								if(studentInfo){		
+								if(studentInfo.school && isInit){		
 
 									var school = studentInfo.school
 									
@@ -452,7 +481,7 @@
 							if(response.code === 1){
 								var list = response.data
 								fillSelect('clazz', list )
-								if(studentInfo.clazzId){		
+								if(studentInfo.clazzId && isInit){		
 									var clazzId = studentInfo.clazzId
 									var clazz = studentInfo.clazz
 									data.clazzId = studentInfo.clazzId
@@ -462,9 +491,10 @@
 									selected.attr('selected', true)
 									$('#clazz-result').text(clazz)
 
-									isFinish = true
+									isInit = false
+									isFinished = true
 
-									if(isFinish){
+									if(isFinished){
 										$('#next-btn').children().hide()
 										$('#next-btn')
 											.css('background-image','url(img/btnNextNor.png)')
@@ -485,11 +515,7 @@
 									}
 
 								}
-								if(list.length > 0){
-									$('select#clazz').removeAttr('disabled')
-								}else if(list.length === 0){
-									$('select#clazz').attr('disabled', true)
-								}
+								$('select#clazz').removeAttr('disabled')
 							}else if(response.code === 0){
 								notice(response.error)
 							}else{
@@ -541,6 +567,7 @@
 					var selected = $(this).children('option:checked')
 					var university = selected.text()
 					data.university = university
+					
 					studentInfo.university = university
 					
 					getSchool(selected)
@@ -574,15 +601,15 @@
 			}
 		
 			console.log('data', data)
-			isFinish = true
+			isFinished = true
 			for(i in data){
 				if(!data[i]){
-					isFinish = false
+					isFinished = false
 					break
 				}
 			}
 
-			if(isFinish){
+			if(isFinished){
 				$('#next-btn').children().hide()
 				$('#next-btn')
 					.css('background-image','url(img/btnNextNor.png)')
@@ -601,20 +628,20 @@
 					.css('background-image','url(img/btnNextDis.png)')
 					.off()
 			}
-			console.log(isFinish)
+			console.log(isFinished)
 		})	
 
 		$(document).on('blur', 'input, select',function(){
 			console.log('data', data)
-			isFinish = true
+			isFinished = true
 			for(i in data){
 				if(data[i] === ''){
-					isFinish = false
+					isFinished = false
 					break
 				}
 			}
 
-			if(isFinish){
+			if(isFinished){
 				$('#next-btn').children().hide()
 				$('#next-btn')
 					.css('background-image','url(img/btnNextNor.png)')
@@ -634,7 +661,7 @@
 					.css('background-image','url(img/btnNextDis.png)')
 					.off()
 			}
-			console.log(isFinish)
+			console.log(isFinished)
 		})
 
 

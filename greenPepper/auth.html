@@ -198,12 +198,13 @@
 	<script src="js/index.js"></script>
 	<script>
 
+
 		var studentInfo = {}
 
 		function getInfo(){
 			ajax({
 
-				url: 'h5/student/'+getCookie('phone'),
+				url: 'h5/student/'+GetQueryString('phone'),
 				success (response){
 					if(response.code === 1){
 						var data = response.data
@@ -250,14 +251,15 @@
 	
 		$(document).ready(function(){
 			var phone = GetQueryString('phone')
+			// setCookie('phone',phone)
 			setCookie('phone',phone)
 			ajax({
 				url: 'h5/userAuthStatus/'+phone,
 				success (response) {
 					if(response.code === 1){
 						var data = response.data
+						// setCookie('api_token', data.api_token)
 						setCookie('api_token', data.api_token)
-						
 						if(data.type === 3){
 							$('#un-auth').hide()
 							$('#auth-info').show()
@@ -297,6 +299,7 @@
 		$('#auth-btn, #change-btn').click(function(){
 			if(!isEmpty(studentInfo)){
 				setCookie('studentInfo', JSON.stringify(studentInfo))
+				
 			}
 			window.open('basic-info.html','_self')
 		})
