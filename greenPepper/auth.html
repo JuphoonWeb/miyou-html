@@ -131,7 +131,9 @@
 	
 
 	<style>
-		
+		#un-auth{
+			display: none;
+		}
 		#auth-info{
 			display: none;
 		}
@@ -168,7 +170,7 @@
 				  <li class="">学院
 				  	   <span class="value" id="school"></span>
 				  </li>
-				  <li class="">班级
+				  <li class="">专业
 					   <span class="value" id="clazz"></span>
 				  </li>
 				  <li class="">学号
@@ -273,7 +275,9 @@
 			})
 		})
 		$('#auth-btn, #change-btn').click(function(){
-			setCookie('studentInfo', JSON.stringify(studentInfo))
+			if(!isEmpty(studentInfo)){
+				setCookie('studentInfo', JSON.stringify(studentInfo))
+			}
 			window.open('basic-info.html','_self')
 		})
 	</script>

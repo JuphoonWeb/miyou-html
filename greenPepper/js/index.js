@@ -59,3 +59,12 @@ Date.prototype.Format = function (fmt) { //author: meizz
         return fmt;
 }
 
+
+function isEmpty(obj)
+{
+    for (var name in obj) 
+    {
+        return false;
+    }
+    return true;
+};

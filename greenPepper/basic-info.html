@@ -72,9 +72,11 @@
 		}
 		.arrow-box{
 			position: absolute;
+			width:16px;
+			height:16px;
 			top:17px;
 			right:0px;
-			z-index: 98;
+			z-index: 99;
 		}
 		.result{
 			position:absolute;
@@ -83,7 +85,7 @@
 			line-height:40px; 
 			text-align: right;
 			color:rgb(51, 51, 51); 
-			z-index:99;
+			z-index:98;
 		}
 		.arrow{
 			width:16px;
@@ -125,9 +127,9 @@
 				<div class="form-group">
 					<label for="sex">性别</label>	
 					<select name="sex" id="sex" >
-						<option value="" selected=""></option>
+						<!-- <option value="" selected=""></option>
 						<option value="0" id="sex-0">女</option>
-						<option value="1" id="sex-1">男</option>
+						<option value="1" id="sex-1">男</option> -->
 					</select>
 					<div class="arrow-box">
 						<div class="arrow"></div>
@@ -155,11 +157,10 @@
 				<div class="form-group">
 					<label for="graduate">在读学历</label>
 					<select name="graduate" id="graduate" >
-						<option value=""></option>
-						<option value="0">大专</option>
-						<option value="1">本科</option>
-						<option value="2">硕士</option>
-						<option value="3">博士</option>
+						<!-- <option value="0" data-name="大专">大专</option>
+						<option value="1" data-name="本科">本科</option>
+						<option value="2" data-name="硕士">硕士</option>
+						<option value="3" data-name="博士">博士</option> -->
 					</select>
 					<div class="arrow-box">
 						<div class="arrow"></div>
@@ -284,6 +285,7 @@
 					notice(status)
 				}
 			})
+
 			var nowYear = (new Date()).getFullYear()
 			var yearsOption ='<option value=""></option>'
 			for(let i = 4; i >= 0; i--){
@@ -291,6 +293,13 @@
 				yearsOption += '<option value="'+year+'" data-name="'+year+'" >'+year+'</option>'
 			}
 			$('select#year').append(yearsOption)
+
+			var sexOption = '<option value=""></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
+			$('select#sex').append(sexOption)
+
+			var graduateOption = '<option value=""></option><option value="0" data-name="大专">大专</option><option value="1" data-name="本科">本科</option><option value="2" data-name="硕士">硕士</option><option value="3" data-name="博士">博士</option>'
+			$('select#graduate').append(graduateOption)
+
 
 			var arrowList = $('.arrow-box')
 			var resultList = $('.result')
@@ -308,6 +317,7 @@
 			if(getCookie('studentInfo')){
 
 				studentInfo = JSON.parse(getCookie('studentInfo'))
+				
 				$('#name').val(studentInfo.name)
 				data.name = studentInfo.name
 				
@@ -316,14 +326,23 @@
 
 				var sexStr = studentInfo.sex ? '男': '女'
 				$('#sex-result').text(sexStr)
-				$('option#sex-'+studentInfo.sex).attr('selected', true)			
+				$('option[data-name="'+sexStr+'"]').attr('selected', true)			
 				data.sex = studentInfo.sex
+
+
+				var graduateNum = studentInfo.graduateNum
+				var graduateStr = studentInfo.graduateStr
+				$('#graduate-result').text(graduateStr)
+				$('option[data-name="'+graduateStr+'"]').attr('selected', true)
+				data.graduate = graduateNum
 
 
 				var year = studentInfo.year
 				$('#year-result').text(year)
 				$('option[data-name="'+year+'"]').attr('selected', true)
 				data.year = studentInfo.year
+
+
 
 			}	
 
@@ -432,14 +451,37 @@
 							if(response.code === 1){
 								var list = response.data
 								fillSelect('clazz', list )
-								if(studentInfo){		
+								if(studentInfo.clazzId){		
+									var clazzId = studentInfo.clazzId
 									var clazz = studentInfo.clazz
-
+									data.clazzId = studentInfo.clazzId
 									data.clazz = studentInfo.clazz
 
 									var selected = $('option[data-name="'+clazz+'"]')
 									selected.attr('selected', true)
 									$('#clazz-result').text(clazz)
+
+									isFinish = true
+
+									if(isFinish){
+										$('#next-btn').children().hide()
+										$('#next-btn')
+											.css('background-image','url(img/btnNextNor.png)')
+											.click(function(){
+												var dataJson = JSON.stringify(data)
+												setCookie('data', dataJson)
+												var studentInfoJson = JSON.stringify(studentInfo)
+												setCookie('studentInfo', studentInfoJson)
+
+												window.open('student-idcard.html', '_self')
+											})
+
+									}else{
+										$('#next-btn').children().show()
+										$('#next-btn')
+											.css('background-image','url(img/btnNextDis.png)')
+											.off()
+									}
 
 								}
 								if(list.length > 0){
@@ -466,44 +508,66 @@
 			if(tagName === 'INPUT'){
 				var inputId = $(this).attr('id')
 				if(inputId === 'name'){
-					data.name = $(this).val()
+					var name = $(this).val()
+					data.name = name
+					studentInfo.name = name 
 				}else{
-					data.number = $(this).val()
+					var number = $(this).val()
+					data.number = number
+					studentInfo.number = number
 				}
 			}else{
-				// $(this).next().hide()
 				var text = $(this).children('option:checked').text()
 				var resultEl = $(this).parent().children('.result')
 				resultEl.text(text)
 
 				var selectId = $(this).attr('id')
 				if(selectId === 'sex'){
-					data.sex = $(this).children('option:checked').val()
+					var sexNum = $(this).children('option:checked').val()
+					data.sex = sexNum
+					studentInfo.sex = sexNum
+
 				}else if(selectId === 'city'){
 					
 					var selected = $(this).children('option:checked')
-				
-					data.city = selected.text()
+					var city = selected.text()
+					data.city = city
+					studentInfo.city = city
 			
 					getUniversity(selected)
 
 				}else if(selectId === 'university'){
 					var selected = $(this).children('option:checked')
-					data.university = selected.text()
+					var university = selected.text()
+					data.university = university
+					studentInfo.university = university
 					
 					getSchool(selected)
 				}else if(selectId === 'graduate'){
-					data.graduate = $(this).children('option:checked').val()
+					var graduateNum = $(this).children('option:checked').val()
+					var graduateStr = $(this).children('option:checked').text()
+					data.graduate = graduateNum
+					studentInfo.graduateStr = graduateStr
+					studentInfo.graduateNum = graduateNum
+
 				}else if(selectId === 'school'){
 					var selected = $(this).children('option:checked')
-					data.school = selected.text()	
+					var school = selected.text()
+					data.school = school
+					studentInfo.school = school	
 					
 					getClazz(selected)
 				}else if(selectId === 'year'){
-					data.year = $(this).children('option:checked').text()
+					var year = $(this).children('option:checked').text()
+					data.year = year
+					studentInfo.year = year
 				}else if(selectId === 'clazz'){
-					data.clazz = $(this).children('option:checked').text()
-					data.clazzId = $(this).children('option:checked').val()
+					var clazz = $(this).children('option:checked').text()
+					var clazzId = $(this).children('option:checked').val()
+					data.clazz = clazz
+					data.clazzId = clazzId
+					studentInfo.clazz = clazz
+					studentInfo.clazzId = clazzId
 				}
 			
 			}
@@ -515,11 +579,6 @@
 					isFinish = false
 					break
 				}
-				if(i === 'number'){
-					if(!(/\d+/.test(data[i]))){
-						isFinish = false
-					}
-				}
 			}
 
 			if(isFinish){
@@ -529,6 +588,9 @@
 					.click(function(){
 						var dataJson = JSON.stringify(data)
 						setCookie('data', dataJson)
+						var studentInfoJson = JSON.stringify(studentInfo)
+						setCookie('studentInfo', studentInfoJson)
+
 						window.open('student-idcard.html', '_self')
 					})
 
@@ -549,11 +611,6 @@
 					isFinish = false
 					break
 				}
-				if(i === 'number'){
-					if(!(/\d+/.test(data[i]))){
-						isFinish = false
-					}
-				}
 			}
 
 			if(isFinish){
@@ -563,6 +620,10 @@
 					.click(function(){
 						var dataJson = JSON.stringify(data)
 						setCookie('data', dataJson)
+						
+						var studentInfoJson = JSON.stringify(studentInfo)
+						setCookie('studentInfo', studentInfoJson)
+
 						window.open('student-idcard.html', '_self')
 					})
 
