@@ -56,9 +56,9 @@
 			ajax({
 				url: 'h5/getAuthLog',
 				data: {
-					phone: GetQueryString('phone') || getCookie('phone')
+					phone: GetQueryString('phone') || localStorage.getItem('phone')
 				},
-				success (response){
+				success: function(response){
 					if(response.code === 1){
 						var list = response.data
 						var listHtml = ''
@@ -85,7 +85,7 @@
 						notice('获取数据失败')
 					}
 				},
-				error(xhr, status) {
+				error: function(xhr, status) {
 					notice(status)
 				}
 

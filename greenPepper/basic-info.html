@@ -226,12 +226,11 @@
 				clazzId: $('#clazz').children('option:checked').val(),
 				number: $('#student-id').val()
 			},
-			studentInfo = null
+			studentInfo = {}
 
 
 		function fillSelect(selectId, list){
 			var queryStr = 'select#'+selectId
-			console.log('children',$(queryStr).children())
 			
 			if(selectId === 'university'){
 				$('#university-result, #school-result, #clazz-result').text('')
@@ -268,10 +267,9 @@
 				data.clazzId = ''
 			}	
 
-
 			$(queryStr).children().remove()
 			var options = '<option value=""></option>'
-			for(let i = 0; i<list.length; i++){
+			for(var  i = 0; i<list.length; i++){
 				var val = list[i].id
 				var name = list[i].name || list[i].schoolName || list[i].major || list[i].clazz
 				options += '<option value="'+val+'" data-name="'+name+'" >'+name+'</option>'
@@ -285,13 +283,12 @@
 		$(document).ready(function(){
 
 			$('select#university, select#school, select#clazz').attr('disabled',true)
-			studentInfo = {}
-
+			
 
 			ajax({
 				url: 'h5/getCity',
 				type: 'get',
-				success (response) {
+				success: function(response) {
 					if(response.code === 1){
 						fillSelect('city',response.data)
 						if(studentInfo.city && isInit){		
@@ -310,14 +307,14 @@
 						notice('出现错误')
 					}
 				},
-				error (xhr, status){
+				error: function(xhr, status){
 					notice(status)
 				}
 			})
 
 			var nowYear = (new Date()).getFullYear()
 			var yearsOption ='<option value=""></option>'
-			for(let i = 4; i >= 0; i--){
+			for(var i = 4; i >= 0; i--){
 				var year = nowYear - i 
 				yearsOption += '<option value="'+year+'" data-name="'+year+'" >'+year+'</option>'
 			}
@@ -336,16 +333,16 @@
 			for(i in data){
 				list.push(data[i])
 			}
-			for(let i = 0 ;i < resultList.length; i++){
+			for(var i = 0 ;i < resultList.length; i++){
 				if(list[i+3]){
 					arrowList[i].innerHTML = ''
 					resultList[i].innerHTML = list[i+3]  
 				}
 			}
 
-			if(getCookie('studentInfo')){
+			if(localStorage.getItem('studentInfo')){
 
-				studentInfo = JSON.parse(getCookie('studentInfo'))
+				studentInfo = JSON.parse(localStorage.getItem('studentInfo'))
 				
 				$('#name').val(studentInfo.name)
 				data.name = studentInfo.name
@@ -392,7 +389,7 @@
 					data: {
 						cityId: selected.val()
 					},
-					success (response){
+					success: function(response){
 						if(response.code === 1){
 							var list = response.data
 
@@ -422,7 +419,7 @@
 							notice('出现错误')
 						}
 					},
-					error (xhr, status){
+					error: function(xhr, status){
 						notice(status)
 					}
 
@@ -436,7 +433,7 @@
 						data: {
 							uid: selected.val()
 						},
-						success (response){
+						success: function(response){
 							if(response.code === 1){
 								var list = response.data
 								fillSelect('school', list )
@@ -464,7 +461,7 @@
 								notice('出现错误')
 							}
 						},
-						error (xhr, status){	
+						error: function(xhr, status){	
 							notice(status)
 						}
 
@@ -477,7 +474,7 @@
 						data: {
 							pid: selected.val()
 						},
-						success (response){
+						success: function(response){
 							if(response.code === 1){
 								var list = response.data
 								fillSelect('clazz', list )
@@ -500,9 +497,9 @@
 											.css('background-image','url(img/btnNextNor.png)')
 											.click(function(){
 												var dataJson = JSON.stringify(data)
-												setCookie('data', dataJson)
+												localStorage.setItem('data', dataJson)
 												var studentInfoJson = JSON.stringify(studentInfo)
-												setCookie('studentInfo', studentInfoJson)
+												localStorage.setItem('studentInfo', studentInfoJson)
 
 												window.open('student-idcard.html', '_self')
 											})
@@ -522,7 +519,7 @@
 								notice('出现错误')
 							}
 						},
-						error (xhr, status){
+						error: function(xhr, status){
 							notice(status)
 						}
 
@@ -603,7 +600,21 @@
 			console.log('data', data)
 			isFinished = true
 			for(i in data){
-				if(!data[i]){
+				if(i === 'sex'){
+					console.log(i)
+					if(data[i]!=0 && data[i]!=1){
+						console.log(i,'false')
+						isFinished = false
+						break	
+					}
+				}else if(i === 'graduate'){
+					if(parseInt(data[i])<0 || parseInt(data[i])>3){
+						console.log(i,'false')
+						isFinished = false
+						break
+					}
+				}else if(data[i] === ''){
+					console.log(i,'false')
 					isFinished = false
 					break
 				}
@@ -615,9 +626,9 @@
 					.css('background-image','url(img/btnNextNor.png)')
 					.click(function(){
 						var dataJson = JSON.stringify(data)
-						setCookie('data', dataJson)
+						localStorage.setItem('data', dataJson)
 						var studentInfoJson = JSON.stringify(studentInfo)
-						setCookie('studentInfo', studentInfoJson)
+						localStorage.setItem('studentInfo', studentInfoJson)
 
 						window.open('student-idcard.html', '_self')
 					})
@@ -628,14 +639,28 @@
 					.css('background-image','url(img/btnNextDis.png)')
 					.off()
 			}
-			console.log(isFinished)
 		})	
 
 		$(document).on('blur', 'input, select',function(){
 			console.log('data', data)
 			isFinished = true
 			for(i in data){
-				if(data[i] === ''){
+
+				if(i === 'sex'){
+					console.log(i)
+					if(data[i]!=0 && data[i]!=1){
+						console.log(i,'false')
+						isFinished = false
+						break	
+					}
+				}else if(i === 'graduate'){
+					if(parseInt(data[i])<0 || parseInt(data[i])>3){
+						console.log(i,'false')
+						isFinished = false
+						break
+					}
+				}else if(data[i] === ''){
+					console.log(i,'false')
 					isFinished = false
 					break
 				}
@@ -647,10 +672,10 @@
 					.css('background-image','url(img/btnNextNor.png)')
 					.click(function(){
 						var dataJson = JSON.stringify(data)
-						setCookie('data', dataJson)
+						localStorage.setItem('data', dataJson)
 						
 						var studentInfoJson = JSON.stringify(studentInfo)
-						setCookie('studentInfo', studentInfoJson)
+						localStorage.setItem('studentInfo', studentInfoJson)
 
 						window.open('student-idcard.html', '_self')
 					})

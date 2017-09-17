@@ -25,7 +25,7 @@ function ajax(obj){
 		url: url,
 		type: obj.type,
 		headers: {
-			token: getCookie('api_token')
+			token: localStorage.getItem('api_token')
 		},
 		async: obj.async,
 		timeout: obj.timeout || 5*1000,

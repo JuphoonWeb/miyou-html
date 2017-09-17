@@ -205,7 +205,7 @@
 			ajax({
 
 				url: 'h5/student/'+GetQueryString('phone'),
-				success (response){
+				success: function(response){
 					if(response.code === 1){
 						var data = response.data
 						studentInfo = data
@@ -241,7 +241,7 @@
 						notice('网络错误')	
 					}
 				},
-				error () {
+				error: function() {
 					notice('网络错误')
 				}
 			})
@@ -251,15 +251,17 @@
 	
 		$(document).ready(function(){
 			var phone = GetQueryString('phone')
-			// setCookie('phone',phone)
-			setCookie('phone',phone)
+			localStorage.setItem('phone',phone)
+			$('#un-auth').show()
+			
 			ajax({
-				url: 'h5/userAuthStatus/'+phone,
-				success (response) {
+				url: 'h5/userAuthStatus/'+GetQueryString('phone'),
+				async: false,
+				success: function(response) {
+
 					if(response.code === 1){
 						var data = response.data
-						// setCookie('api_token', data.api_token)
-						setCookie('api_token', data.api_token)
+						localStorage.setItem('api_token', data.api_token)
 						if(data.type === 3){
 							$('#un-auth').hide()
 							$('#auth-info').show()
@@ -278,7 +280,7 @@
 							if(data.type === 1){
 								dialog({
 									text: '<p style="margin:0">你有认证信息正在审核<br>点击页面右上角查看进度</p>',
-									ok () {
+									ok: function() {
 										native.dismissWebView()
 									}
 								})
@@ -291,15 +293,14 @@
 						notice('网络错误')	
 					}
 				},
-				error (){
+				error: function(){
 					notice('网络错误')
 				}
 			})
 		})
 		$('#auth-btn, #change-btn').click(function(){
 			if(!isEmpty(studentInfo)){
-				setCookie('studentInfo', JSON.stringify(studentInfo))
-				
+				localStorage.setItem('studentInfo', JSON.stringify(studentInfo))
 			}
 			window.open('basic-info.html','_self')
 		})
