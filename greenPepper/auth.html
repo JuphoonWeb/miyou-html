@@ -165,7 +165,7 @@
 			<div class="content-body">
 				<ul class="content-list">
 				  <li class="">在读学历
-					  <span class="value" id="graduate">本科</span>
+					  <span class="value" id="graduate"></span>
 				  </li>
 				  <li class="">学院
 				  	   <span class="value" id="school"></span>
@@ -202,7 +202,8 @@
 
 		function getInfo(){
 			ajax({
-				url: 'student/info/'+getCookie('phone'),
+
+				url: 'h5/student/'+getCookie('phone'),
 				success (response){
 					if(response.code === 1){
 						var data = response.data
@@ -210,6 +211,25 @@
 						$('#name').text(data.name)
 						$('#university').text(data.university)
 						$('.school-badge').attr('src',data.schoolBadgeUrl)
+						switch(data.graduate){
+							case 0:{
+								studentInfo.graduateStr = '大专'
+								break
+							}
+							case 1:{
+								studentInfo.graduateStr = '本科'
+								break
+							}
+							case 2:{
+								studentInfo.graduateStr = '硕士'
+								break
+							}
+							case 3:{
+								studentInfo.graduateStr = '博士'
+								break
+							} 
+						}
+						$('#graduate').text(studentInfo.graduateStr)
 						$('#school').text(data.school)
 						$('#clazz').text(data.clazz)
 						$('#number').text(data.number)

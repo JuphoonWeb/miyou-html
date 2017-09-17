@@ -38,7 +38,8 @@ function notice(text){
  //根据请求url获取参数
 function GetQueryString(name){
      var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-     var r = window.location.search.substr(1).match(reg);
+     var currUrl = window.location.search
+     var r = currUrl.substr(1).match(reg);
      if(r!=null)return  unescape(r[2]); return null;
 }
 

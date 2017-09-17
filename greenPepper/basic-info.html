@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-	<title>1.基本信息</title>
+	<title>基本信息</title>
 	<link rel="stylesheet" href="css/dialog.css">
 	<style>
 		*{
@@ -330,11 +330,12 @@
 				data.sex = studentInfo.sex
 
 
-				var graduateNum = studentInfo.graduateNum
+				var graduate = studentInfo.graduate
+				
 				var graduateStr = studentInfo.graduateStr
 				$('#graduate-result').text(graduateStr)
 				$('option[data-name="'+graduateStr+'"]').attr('selected', true)
-				data.graduate = graduateNum
+				data.graduate = graduate
 
 
 				var year = studentInfo.year
@@ -544,11 +545,11 @@
 					
 					getSchool(selected)
 				}else if(selectId === 'graduate'){
-					var graduateNum = $(this).children('option:checked').val()
+					var graduate = $(this).children('option:checked').val()
 					var graduateStr = $(this).children('option:checked').text()
-					data.graduate = graduateNum
+					data.graduate = graduate
 					studentInfo.graduateStr = graduateStr
-					studentInfo.graduateNum = graduateNum
+					studentInfo.graduate = graduate
 
 				}else if(selectId === 'school'){
 					var selected = $(this).children('option:checked')
