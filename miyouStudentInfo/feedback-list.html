@@ -24,6 +24,10 @@
 <div class="page-container" id="student-list">
 
     <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form action="" class="form-inline" style="margin-top: 10px" class="search-box">
+            <input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据手机号查询">
+            <button id="search-btn" title="根据手机号查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        </form>
         <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
     </div>
     <div class="mt-20">
@@ -32,7 +36,7 @@
             <tr class="text-c">
                 <th>序号</th>
                 <th>用户</th>
-                <th>反馈内容</th>
+                <th width="80%">反馈内容</th>
             </tr>
             </thead>
             <tbody id="feedback-tbody" class="text-c">
@@ -58,6 +62,7 @@
     var currPage = 1
     var size = 12
     var url = '/admin/getFeedback'
+    var searchPhone = ''
 
     var successFunc = function(response){
         layer.closeAll()
@@ -89,6 +94,7 @@
                                 data: {
                                     page: currPage,
                                     size: size,
+                                    phone:searchPhone
                                 },
                                 successFunc: successFunc,
                                 errorFunc: errorFunc
@@ -165,12 +171,21 @@
             url: url,
             data:{
                 'page':currPage,
-                'size':12
+                'size':12,
+                'phone':searchPhone
             },
             successFunc: successFunc,
             errorFunc: errorFunc
         })
     }
+
+    $('#search-btn').click(function(event){
+        event.preventDefault()
+        $('#pagination').hide()
+        isPageInit = false
+        searchPhone = $('#search-phone').val()
+        init()
+    })
 </script>
 </body>
 </html>

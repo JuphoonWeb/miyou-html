@@ -11,6 +11,7 @@
 		margin-top: 10px;
 		box-shadow: 0px 4px 6px rgba(214,214,214,0.5);
 		position: relative;
+		display: block;
 	}
 	.welfare-item .icon,.welfare-item .info,.welfare-item .btn{
 		position: relative;
@@ -101,7 +102,7 @@
 
 <body class="z_body">
 	<div class="welfare-items J_items"></div>
-	<p class="loading">上拉加载更多...</p>
+	<p class="loading">正在加载...</p>
 <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="./static/common.js"></script>
 <script type="text/javascript">
@@ -112,25 +113,27 @@
 		totalPage = null;
 	if(phone){
         _ajax('get','/api/h5/userAuthStatus/'+phone,{},function(data){
-			switch(data.data.type){
-				case 0://未认证
-                    authPop('您还未成为认证用户','完成学生身份认证即可<br>添加10个免费通话联系人并领取8G流量','立即认证','../greenPepper/auth.html?phone='+phone);
-				    break;
-				case 1://未审核
-//                    warnAlert('认证信息正在审核，请在<br>“认证信息-认证记录”里查看进度');
-				    break;
-				case 2://审核拒绝
-				    break;
-				case 3://已认证
-				    break;
-			}
+            load(constPage,data.data.type);
         });
 	}
 
-	function load (page){
+	function load (page,auth){
         _ajax('get','/api/h5/getWelfares',{'page':page,'size':constSize,'phone':phone},function(data){
-            var str = '';
-            constTotal = data.data.total;
+            var str = '',
+            	constTotal = data.data.total,
+				clz = '';
+            switch(auth){
+                case 0://未认证
+					clz = ' J_showPopup';
+                    break;
+                case 1://未审核
+//                    warnAlert('认证信息正在审核，请在<br>“认证信息-认证记录”里查看进度');
+                    break;
+                case 2://审核拒绝
+                    break;
+                case 3://已认证
+                    break;
+            }
             if(constTotal%constSize==0){
                 totalPage = constTotal/constSize;
 			}else{
@@ -138,31 +141,33 @@
 			}
             if(constPage==totalPage){
                 $('.loading').text('已加载全部');
-            }
+            }else{
+                $('.loading').text('上拉加载更多...');
+			}
             $.each(data.data.list,function(index,ele){
-                var btnStr = '',
-                    allDays = getTimeDifference(ele.startTime,ele.endTime),
-                    remainDays = getTimeDifference(new Date(),ele.endTime),
+                var allDays = getTimeDifference(ele.startTime,ele.endTime),
+                    remainDays = getTimeDifference(ele.nowTime,ele.endTime),
                     remainPer = remainDays/allDays*100,
-                    remainStr = '剩余'+remainDays+'天';
+                    remainStr = '剩余'+remainDays+'天',
+					btnStr = '';
                 if(remainDays==0){
                     remainStr = '今天结束';
                 }
                 if(ele.isReceive==0){
                     if(ele.welfareProId=='MFLLQJ'){
-                        btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="wait-to-receive">未激活</a>';
+                        btnStr = '<span class="wait-to-receive">未激活</span>';
 					}else{
-                        btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="wait-to-receive">待领取</a>';
+                        btnStr = '<span class="wait-to-receive">待领取</span>';
 					}
                 }
                 else if(ele.isReceive==1){
                     if(ele.welfareProId=='MFLLQJ'){
-                        btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="had-receive">已激活</a>';
+                        btnStr = '<span class="had-receive">已激活</span>';
                     }else{
-                        btnStr = '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="had-receive">已领取</a>';
+                        btnStr = '<span class="had-receive">已领取</span>';
 					}
                 }
-                str +=  '<div class="welfare-item">'+
+                str +=  '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="welfare-item'+clz+'">'+
                     '<div class="icon"><img src="./images/icon_1.png"></div>'+
                     '<div class="info">'+
                     '<p class="title">'+ele.welfareName+'</p>'+
@@ -170,13 +175,11 @@
                     '<div class="progress-bar"><div class="bar" style="width:'+remainPer+'%"><span>'+remainStr+'</span></div></div>'+
                     '</div>'+
                     '<div class="btn">'+btnStr+'</div>'+
-                    '</div>'
+                    '</a>'
             });
             $('.J_items').append(str);
         });
 	}
-
-    load(constPage);
 
 	$(window).scroll(function(){
         var viewH =document.body.clientHeight,//可见高度
@@ -189,7 +192,12 @@
                 load(constPage);
 			}
         }
-	})
+	});
+
+	$(document).on('click','.J_showPopup',function(e){
+	    e.preventDefault();
+        authPop('您还未成为认证用户','完成学生身份认证即可<br>添加10个免费通话联系人并领取8G流量','立即认证','../greenPepper/auth.html?phone='+phone);
+    });
 
 </script>
 </body>
