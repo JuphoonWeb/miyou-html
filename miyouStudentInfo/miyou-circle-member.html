@@ -82,7 +82,7 @@
 					}
 					var trs = ''
 					$('#member-tbody').children().remove()
-					for(let i=0; i<list.length; i++){						
+					for(var i=0; i<list.length; i++){						
 						var sequence = i+1
 						console.log(list[i])
 						var name = list[i].miyouName || ''
@@ -139,7 +139,7 @@
 							icon:7, 
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
+							yes: function() {
 								parent.parent.window.open('login.html', '_self')
 							}
 						})
@@ -174,7 +174,7 @@
 				title: '未登录',
 				icon: 7,
 				content: '请登录',
-				yes () {
+				yes: function() {
 					parent.parent.window.open('login.html', '_self')
 				}
 			})

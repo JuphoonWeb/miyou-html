@@ -21,6 +21,9 @@
 	.upload-report{
 		padding: 20px 0 0 50px;
 	}
+	tr span+button{
+		margin-left: 10px
+	}
 </style>
 </head>
 <body  onload="init()"   >
@@ -45,7 +48,8 @@
 
 		<form action="" class="form-inline" style="margin-top: 10px" class="search-box">
 				<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据手机号查询学生(支持模糊查询)">
-				<button id="search-btn" title="根据手机号码查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+				<input id="search-university" type="text" style="width:300px" class="input-text radius" placeholder="根据大学查询学生">
+				<button id="search-btn" title="根据输入条件查询学生" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
 		</form>
 
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
@@ -61,8 +65,8 @@
 				<th width="250">大学</th>
 				<th width="200">院系</th>
 				<th width="200">班级</th>
-				<th width="150">班级群</th>
-				<th width="150">密友圈</th>
+				<th width="150">班级圈</th>
+				<th width="200">密友圈</th>
 			</tr>
 		</thead>
 		<tbody id="student-tbody">
@@ -85,10 +89,12 @@
 <script type="text/javascript">
 	var isPageInit = false
 	var currPage = 1
-	var size = 12
+	var size = 10
 	var uuid = getCookie('uuid')
 	var searchPhone = ''
+	var searchUniversity = ''
 	var url = 'admin/student'
+	var studentList = []
 
 	//	添加
 	function studentAdd(title,url,w,h){
@@ -99,19 +105,22 @@
 		if(response.code === 1){
 			var data = response.data
 			var list = data.list
+			studentList = list
 			var trs = ''
 			$('#student-tbody').children().remove()
 			if(data.total === 0){
 				$('#nodata').show()
 			}else{
 				$('#nodata').hide()
-				for(let i=0; i<list.length; i++){						
+				for(var i=0; i<list.length; i++){						
 					var sex = (list[i].sex === 1)? '男': '女' 
 					var phone = list[i].phone
 					var clazzId = list[i].clazzId
 					var studentId = list[i].id
-					var miyouGroup = list[i].miyouGroup ? '<a href="">已开通</a>' : '未开通'
-					var clazzGroup = list[i].clazzGroup ? '<span>已加入</span>' : '<button class="btn btn-secondary-outline radius size-MINI" style="cursor:pointer;width:40px;height:18px" onclick="addToClazzGroup('+phone+', '+clazzId +','+studentId+')" title="添加至班级群"><i class="Hui-iconfont" >&#xe600;</i></button>'
+					var miyouGroup = list[i].miyouGroup ? 
+						'<span class="label label-success radius">已开通</span><button class="btn btn-success-outline radius" title="查看密友圈" onclick="getMiyouMember('+i+')" ><span class="Hui-iconfont">&#xe695;</span>查看</button>' : 
+						'<span class="label label-warning radius" >未开通</span><button class="btn btn-secondary-outline radius" title="开通密友圈" onclick="openMiyouCircle('+i+')" ><span class="Hui-iconfont">&#xe611;</span>开通</button>'
+					var clazzGroup = list[i].clazzGroup ? '<span class="label label-success radius" >已加入</span>' : '<button class="btn btn-secondary-outline radius" onclick="addToClazzGroup('+i+')" title="添加至班级群" ><span class="Hui-iconfont" >&#xe607;</span>添加</button>'
 					var sequence = (currPage-1)*size+i+1 
 					trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td><td>'+clazzGroup+'</td><td>'+miyouGroup+'</td></tr>'
 				}
@@ -138,7 +147,9 @@
 									method: 'post',
 									data: {
 										page: currPage,
+										size: size,
 										phone: searchPhone,
+										university: searchUniversity
 									},
 									successFunc: successFunc,
 									errorFunc: errorFunc
@@ -167,7 +178,7 @@
 					icon:7, 
 					title: '重新登录',
 					content: '超过30分钟未操作，已自动登出，请重新登录',
-					yes () {
+					yes: function() {
 						parent.window.open('login.html', '_self')
 					}
 				})
@@ -193,7 +204,9 @@
 			url: url,
 			method: 'post',
 			page: currPage,
+			size: size,
 			phone: searchPhone,
+			university: searchUniversity,
 			successFunc: successFunc,
 			errorFunc: errorFunc
 		}
@@ -212,7 +225,9 @@
 			method: 'post',
 			data: {
 				page: currPage,
+				size: size,
 				phone: searchPhone,
+				university: searchUniversity
 			},
 			successFunc: successFunc,
 			errorFunc: errorFunc
@@ -221,89 +236,121 @@
 	}
 
 	//添加至班级圈
-	function addToClazzGroup(phone, clazzId, studentId){
-		console.log('clicked')
+	function addToClazzGroup(index){
+		
+		layer.confirm('确定添加'+studentList[index].name+'至班级圈吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url: 'admin/student/addClazzGroup',
+					method: 'post',
+					data: {
+						phone: studentList[index].phone,
+						clazzId: studentList[index].clazzId,
+						studentId: studentList[index].studentId,
+					},
+					successFunc: function(response) {
+						layer.closeAll()
+						console.log('success')
+						console.log(response)
+						if(response.code === 1){
+							var data = response.data
+							if(data.rettype == 0 || data.retcode == 5){
+								layer.msg('添加成功')
+								console.log('添加成功')
+								var currPage = $('.laypage_curr').text()
+								console.log('page',currPage)
+								setTimeout(function(){
+									ajax({
+										url: url,
+										method: 'post',
+										data: {	
+											page: currPage,
+											size: size,
+											phone: searchPhone,
+											university: searchUniversity
+										},
+										successFunc: successFunc,
+										errorFunc: errorFunc
+									})
+									
+									
+								},2000)
+							}else{
+								layer.open({
+									type: 0,
+									closeBtn: 0,
+									icon:7, 
+									title: '添加失败',
+									content: data.retmsg
+								})	
+							}
+						}else if(response.code === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '添加失败',
+								content: response.error
+							})
+						}else if(response.code === -1){
+								removeCookie('uuid')
+								removeCookie('login')
+								removeCookie('username')
+								layer.open({
+									type: 0,
+									closeBtn: 0,
+									icon:7, 
+									title: '重新登录',
+									content: '超过30分钟未操作，已自动登出，请重新登录',
+									yes: function() {
+										parent.window.open('login.html', '_self')
+									}
+								})
+
+							}
+					},
+					errorFunc: function() {
+						layer.closeAll()
+						layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '添加失败',
+								content: '请检查网络'
+							})
+					}
+
+				})
+			}
+		});
 		
 
-		ajax({
-			url: 'admin/student/addClazzGroup',
-			method: 'post',
-			data: {
-				phone: phone,
-				clazzId: clazzId,
-				studentId: studentId,
-			},
-			successFunc  (res) {
-				layer.closeAll()
-				console.log('success')
-				console.log(res)
-				if(res.code === 1){
-					var data = res.data
-					if(data.rettype == 0 || data.retcode == 5){
-						layer.msg('添加成功')
-						console.log('添加成功')
-						var currPage = $('.laypage_curr').text()
-						console.log('page',currPage)
-						setTimeout(function(){
-							ajax({
-								url: url,
-								method: 'post',
-								data: {	
-									page: currPage,
-									phone: searchPhone,
-								},
-								successFunc: successFunc,
-								errorFunc: errorFunc
-							})
-							
-							
-						},2000)
-					}else{
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '添加失败',
-							content: data.retmsg
-						})	
-					}
-				}else if(res.code === 0){
-					layer.open({
-						type: 0,
-						closeBtn: 0,
-						icon:7, 
-						title: '添加失败',
-						content: res.error
-					})
-				}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
-								parent.window.open('login.html', '_self')
-							}
-						})
+	}
 
-					}
-			},
-			errorFunc () {
-				layer.closeAll()
-				layer.open({
-						type: 0,
-						closeBtn: 0,
-						icon:7, 
-						title: '添加失败',
-						content: '请检查网络'
-					})
+	function openMiyouCircle(index){
+		layer.confirm('确定为'+studentList[index].name+'开通密友圈吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				
 			}
+		});
+	}
 
-		})
+	//查看密友圈
+	function getMiyouMember(index){
+		var id = studentList[index].id
+		var name = studentList[index].name || ''
+		console.log('id:', id)
+		console.log('name', name)
+		setCookie('miyouCircleId',id)
+		var title = name ? '密友圈成员 （群主：'+name+'）': '密友圈成员 （群主：匿名）'
+		// console.log(title)
+		layer_show(title,'miyou-circle-member.html','','650');
 	}
 
 	$('#search-btn').click(function(event){
@@ -312,6 +359,7 @@
 		$('#pagination').hide()
 		isPageInit = false
 		searchPhone = $('#search-phone').val()
+		searchUniversity = $('#search-university').val()
 		init()
 		
 	})
@@ -351,7 +399,7 @@
 			cache: false,
 			processData: false,
 		    contentType: false,
-		    successFunc (response,status,xhr) {
+		    successFunc: function(response,status,xhr) {
 				layer.closeAll()
 				if(response.code === 1){
 					var data = response.data
@@ -370,7 +418,7 @@
 							'<P>重复：'+data.repeateCount+'条数据</p>'+
 							'<p>重复数据：['+data.repeateNames+ellipses+']</p></div>',
 							btn: '确定',
-							yes (index) {
+							yes: function(index) {
 								if(data.successCount > 0){
 									init()
 								}
@@ -400,7 +448,7 @@
 							icon:7, 
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
+							yes: function() {
 								parent.window.open('login.html', '_self')
 							}
 						})
@@ -409,7 +457,7 @@
 				console.log(response)
 			},
 
-			errorFunc (xhr,status) {
+			errorFunc: function(xhr,status) {
 				layer.closeAll()
 				layer.open({
 					type: 0,
