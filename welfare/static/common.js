@@ -1,6 +1,6 @@
 var domain = 'http://218.204.254.209:28812/miyou';
 
-function _ajax(type,url,param,success){
+function _ajax(type,url,param,success,error){
 	$.ajax({
             type:type,
             url:domain+url,
@@ -12,6 +12,7 @@ function _ajax(type,url,param,success){
                         success&&success(data);
                     }else{
                         toast(data.error,2000);
+                        error&&error(data);
                     }
                 }else{
                     success&&success(data);
@@ -61,19 +62,25 @@ function warnAlert(text){
     $('body').append(str);
 }
 
+var timer = null;
 function toast(text,time,callback){
-    var str = '<span class="toast J_toast" style="display: none">'+text+'</span>';
-    if($('.J_toast').length!=0)return false;
+    var str = '<div class="toast-bg J_toast" style="display: none"><span class="toast">'+text+'</span></div>';
+    clearTimeout(timer);
+    removeToast();
     $('body').append(str);
     $('.J_toast').fadeIn(300);
     if(!time) return false;
-    setTimeout(function(){
+    timer = setTimeout(function(){
         $('.J_toast').fadeOut(300);
         setTimeout(function(){
-            $('.J_toast').remove();
+            removeToast();
             callback&&callback();
         },300)
     },time)
+}
+
+function removeToast(){
+    $('.J_toast').remove();
 }
 
 

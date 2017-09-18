@@ -57,7 +57,6 @@
                 'phone':phone,
                 'content':$('.J_feedback').val().trim()
             },function(data){
-                $('.J_toast').remove();
                 if(data.code==1){
                     toast('意见反馈提交成功',2000,function(){
                         location.reload();

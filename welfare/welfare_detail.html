@@ -121,11 +121,13 @@
                 });
             }else{
                 $('.J_receive').text('已领取');
+                $('.validity').hide();
             }
             $('.J_receive_box').show();
 		}
 	});
 	$(document).on('click','.J_receive.enable',function(){
+        toast('正在领取，请稍后');
         $('.J_receive').removeClass('enable');
 		_ajax('post','/api/h5/eaopPro',{
 			'phone':phone,
@@ -136,10 +138,13 @@
 			if(data.data.rettype=="0"){
                 $('.J_receive').text('已领取');
 				toast('福利已领取</br>请留言稍后短信通知',2000);
+                $('.validity').hide();
 			}else{
                 $('.J_receive').addClass('enable');
                 toast(data.data.retmsg,2000);
 			}
+		},function(data){
+            $('.J_receive').addClass('enable');
 		})
 	}).on('click','.J_feedback',function(){
         toast('意见反馈提交中');
@@ -147,7 +152,6 @@
             'phone':phone,
             'content':$('.J_feedback_text').text()
         },function(data){
-            $('.J_toast').remove();
             if(data.code==1){
                 toast('意见反馈提交成功',2000,function(){
                     history.back();
