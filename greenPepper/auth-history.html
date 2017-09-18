@@ -56,9 +56,9 @@
 			ajax({
 				url: 'h5/getAuthLog',
 				data: {
-					phone: GetQueryString('phone') || getCookie('phone')
+					phone: GetQueryString('phone') || sessionStorage.getItem('phone')
 				},
-				success (response){
+				success: function(response){
 					if(response.code === 1){
 						var list = response.data
 						var listHtml = ''
@@ -70,7 +70,7 @@
 								date += '&nbsp;&nbsp;提交审核'
 								status = '认证信息审核中......'
 							}else if(statusCode === 1){
-								status = '审核未通过'+list[i].authNote
+								status = '审核未通过: '+list[i].authNote
 							}else if(statusCode === 2){
 								status = '认证信息审核通过！'
 							}
@@ -85,7 +85,7 @@
 						notice('获取数据失败')
 					}
 				},
-				error(xhr, status) {
+				error: function(xhr, status) {
 					notice(status)
 				}
 

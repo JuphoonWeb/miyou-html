@@ -101,7 +101,7 @@
 			float:right;
 			color:rgb(54, 54, 54);
 		}
-		#school-badge-bg{
+		#school-badge-bg-container{
 			position:absolute;
 			top:180px;left:131px;
 			width:234px;
@@ -109,7 +109,7 @@
 			overflow: hidden;
 			opacity: .1;
 		}
-		#school-badge-bg img{
+		#school-badge-bg{
 			width:260px;
 			height:260px;
 		}
@@ -131,7 +131,9 @@
 	
 
 	<style>
-		
+		#un-auth{
+			display: none;
+		}
 		#auth-info{
 			display: none;
 		}
@@ -151,7 +153,7 @@
 	<div id="auth-info">
 		<div class="content">
 			<div class="content-head">
-				<img src="img/imgZhongshan.png" alt="" class="school-badge" id="school-badge">
+				<img src="" alt="" class="school-badge" id="school-badge">
 				<div class="basic-info">
 					<div class="name">
 						<span class="name" id="name" style="font-size:20px"></span>
@@ -163,12 +165,12 @@
 			<div class="content-body">
 				<ul class="content-list">
 				  <li class="">在读学历
-					  <span class="value" id="graduate">本科</span>
+					  <span class="value" id="graduate"></span>
 				  </li>
 				  <li class="">学院
 				  	   <span class="value" id="school"></span>
 				  </li>
-				  <li class="">班级
+				  <li class="">专业
 					   <span class="value" id="clazz"></span>
 				  </li>
 				  <li class="">学号
@@ -178,8 +180,8 @@
 					   <span class="value" id="year"></span>
 				  </li>
 				</ul>
-				<div class="school-badge-bg" id="school-badge-bg">
-					<img src="img/imgZhongshan@3x.png" alt="">
+				<div class="school-badge" id="school-badge-bg-container">
+					<img id="school-badge-bg" src="" alt="">
 				</div>
 			</div>	
 		</div>
@@ -196,15 +198,39 @@
 	<script src="js/index.js"></script>
 	<script>
 
+
+		var studentInfo = {}
+
 		function getInfo(){
 			ajax({
-				url: 'student/info/'+getCookie('phone'),
-				success (response){
+
+				url: 'h5/student/'+GetQueryString('phone'),
+				success: function(response){
 					if(response.code === 1){
 						var data = response.data
+						studentInfo = data
 						$('#name').text(data.name)
 						$('#university').text(data.university)
-						$('#school-badge').attr('src',data.schoolBadgeUrl)
+						$('#school-badge, #school-badge-bg').attr('src',data.schoolBadgeUrl)
+						switch(data.graduate){
+							case 0:{
+								studentInfo.graduateStr = '大专'
+								break
+							}
+							case 1:{
+								studentInfo.graduateStr = '本科'
+								break
+							}
+							case 2:{
+								studentInfo.graduateStr = '硕士'
+								break
+							}
+							case 3:{
+								studentInfo.graduateStr = '博士'
+								break
+							} 
+						}
+						$('#graduate').text(studentInfo.graduateStr)
 						$('#school').text(data.school)
 						$('#clazz').text(data.clazz)
 						$('#number').text(data.number)
@@ -215,7 +241,7 @@
 						notice('网络错误')	
 					}
 				},
-				error () {
+				error: function() {
 					notice('网络错误')
 				}
 			})
@@ -225,14 +251,17 @@
 	
 		$(document).ready(function(){
 			var phone = GetQueryString('phone')
-			setCookie('phone',phone)
+			sessionStorage.setItem('phone',phone)
+			$('#un-auth').show()
+			
 			ajax({
-				url: 'h5/userAuthStatus/'+phone,
-				success (response) {
+				url: 'h5/userAuthStatus/'+GetQueryString('phone'),
+				async: false,
+				success: function(response) {
+
 					if(response.code === 1){
 						var data = response.data
-						setCookie('api_token', data.api_token)
-						
+						sessionStorage.setItem('api_token', data.api_token)
 						if(data.type === 3){
 							$('#un-auth').hide()
 							$('#auth-info').show()
@@ -251,7 +280,7 @@
 							if(data.type === 1){
 								dialog({
 									text: '<p style="margin:0">你有认证信息正在审核<br>点击页面右上角查看进度</p>',
-									ok () {
+									ok: function() {
 										native.dismissWebView()
 									}
 								})
@@ -264,12 +293,15 @@
 						notice('网络错误')	
 					}
 				},
-				error (){
+				error: function(){
 					notice('网络错误')
 				}
 			})
 		})
 		$('#auth-btn, #change-btn').click(function(){
+			if(!isEmpty(studentInfo)){
+				sessionStorage.setItem('studentInfo', JSON.stringify(studentInfo))
+			}
 			window.open('basic-info.html','_self')
 		})
 	</script>

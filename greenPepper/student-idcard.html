@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-	<title>2.学生证信息</title>
+	<title>学生证信息</title>
 	<link rel="stylesheet" href="css/dialog.css">
 	<style>
 		*{
@@ -140,8 +140,8 @@
 	<script src="js/index.js"></script>
 	<script>
 
-		var data = JSON.parse(getCookie('data'))
-		data.phone = getCookie('phone')
+		var data = JSON.parse(sessionStorage.getItem('data'))
+		data.phone = sessionStorage.getItem('phone')
 
 		function getObjectURL(file){
 			var url = null;
@@ -198,7 +198,7 @@
 									url: 'h5/authStudent',
 									type: 'post',
 									data: data,
-									success (response){
+									success: function(response){
 										if(response.code === 1){
 											window.open('submit-success.html', '_self')
 										}else if(response.code === 0){
@@ -212,7 +212,7 @@
 											toast('出现错误', 'fail')
 										}
 									},
-									error (xhr, status) {
+									error: function(xhr, status) {
 										toast(status, 'fail')
 									}
 								})

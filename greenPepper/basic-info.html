@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-	<title>1.基本信息</title>
+	<title>基本信息</title>
 	<link rel="stylesheet" href="css/dialog.css">
 	<style>
 		*{
@@ -68,13 +68,17 @@
 			color:rgb(0, 0, 0);
 		}
 		.form-group option:first-child{
+			color:rgba(255, 255, 255, 1);
+			/*visibility: hidden;*/
 			display: none;
 		}
 		.arrow-box{
 			position: absolute;
+			width:16px;
+			height:16px;
 			top:17px;
 			right:0px;
-			z-index: 98;
+			z-index: 99;
 		}
 		.result{
 			position:absolute;
@@ -83,7 +87,7 @@
 			line-height:40px; 
 			text-align: right;
 			color:rgb(51, 51, 51); 
-			z-index:99;
+			z-index:98;
 		}
 		.arrow{
 			width:16px;
@@ -125,9 +129,9 @@
 				<div class="form-group">
 					<label for="sex">性别</label>	
 					<select name="sex" id="sex" >
-						<option value="" selected=""></option>
-						<option value="1">男</option>
-						<option value="0">女</option>
+						<!-- <option value="" selected=""></option>
+						<option value="0" id="sex-0">女</option>
+						<option value="1" id="sex-1">男</option> -->
 					</select>
 					<div class="arrow-box">
 						<div class="arrow"></div>
@@ -155,11 +159,10 @@
 				<div class="form-group">
 					<label for="graduate">在读学历</label>
 					<select name="graduate" id="graduate" >
-						<option value=""></option>
-						<option value="0">大专</option>
-						<option value="1">本科</option>
-						<option value="2">硕士</option>
-						<option value="3">博士</option>
+						<!-- <option value="0" data-name="大专">大专</option>
+						<option value="1" data-name="本科">本科</option>
+						<option value="2" data-name="硕士">硕士</option>
+						<option value="3" data-name="博士">博士</option> -->
 					</select>
 					<div class="arrow-box">
 						<div class="arrow"></div>
@@ -175,8 +178,8 @@
 					<div class="result" id="school-result"></div>
 				</div>
 				<div class="form-group">
-					<label for="enrol-year">入学年份</label>
-					<select name="enrol-year" id="enrol-year">
+					<label for="year">入学年份</label>
+					<select name="year" id="year">
 					</select>
 					<div class="arrow-box">
 						<div class="arrow"></div>
@@ -207,7 +210,10 @@
 	<script src="js/dialog.min.js"></script>
 	<script src="js/index.js"></script>
 	<script>
-		var isFinish = false
+
+
+		var isFinished = false,
+			isInit = true,
 			data = {	
 			    province: '广东',
 				month: 9,
@@ -217,32 +223,58 @@
 			    university: $('#university').children('option:checked').text(),
 			    graduate: $('#graduate').children('option:checked').val(),
 				school: $('#school').children('option:checked').text(),
-				year: $('#enrol-year').children('option:checked').text(),
+				year: $('#year').children('option:checked').text(),
 				clazz: $('#clazz').children('option:checked').text(),
 				clazzId: $('#clazz').children('option:checked').val(),
 				number: $('#student-id').val()
-			}	
+			},
+			studentInfo = {}
 
-		function fillSelect(selectId, data){
+
+		function fillSelect(selectId, list){
 			var queryStr = 'select#'+selectId
-			console.log('children',$(queryStr).children())
 			
 			if(selectId === 'university'){
 				$('#university-result, #school-result, #clazz-result').text('')
+				if(!isInit){
+					studentInfo.university = ''
+					studentInfo.school = ''
+					studentInfo.clazz = ''
+					studentInfo.clazzId = ''
+				}
+				data.university = ''
+				data.school = ''
+				data.clazz = ''
+				data.clazzId = ''
 				$('select#school, select#clazz').attr('disabled', true)
 			}else if(selectId === 'school'){
 				$('#school-result, #clazz-result').text('')
 				$('select#clazz').attr('disabled', true)
+				if(!isInit){
+					studentInfo.school = ''
+					studentInfo.clazz = ''
+					studentInfo.clazzId = ''
+				}
+				data.school = ''
+				data.clazz = ''
+				data.clazzId = ''
+
 			}else if(selectId === 'clazz'){
 				$('#clazz-result').text('')
+				if(!isInit){
+					studentInfo.clazz = ''
+					studentInfo.clazzId = ''
+				}
+				data.clazz = ''
+				data.clazzId = ''
 			}	
 
 			$(queryStr).children().remove()
-			var options = '<option value=""></option>'
-			for(let i = 0; i<data.length; i++){
-				var val = data[i].id
-				var name = data[i].name || data[i].schoolName || data[i].major
-				options += '<option value="'+val+'">'+name+'</option>'
+			var options = '<option  value=""></option>'
+			for(var  i = 0; i<list.length; i++){
+				var val = list[i].id
+				var name = list[i].name || list[i].schoolName || list[i].major || list[i].clazz
+				options += '<option value="'+val+'" data-name="'+name+'" >'+name+'</option>'
 			}
 			if(selectId === 'clazz'){
 				options += '<option value="-1">其他-不在列表内</option>'
@@ -254,120 +286,175 @@
 
 			$('select#university, select#school, select#clazz').attr('disabled',true)
 			
+
 			ajax({
 				url: 'h5/getCity',
 				type: 'get',
-				success (response) {
+				success: function(response) {
 					if(response.code === 1){
 						fillSelect('city',response.data)
+						if(studentInfo.city && isInit){		
+							var city = studentInfo.city
+							data.city = city
+
+							var selected = $('option[data-name="'+city+'"]')
+							selected.attr('selected', true)
+							$('#city-result').text(city)
+
+							getUniversity(selected)
+						}
 					}else if(response.code === 0){
 						notice(response.error)
 					}else{
 						notice('出现错误')
 					}
 				},
-				error (xhr, status){
+				error: function(xhr, status){
 					notice(status)
 				}
 			})
+
 			var nowYear = (new Date()).getFullYear()
 			var yearsOption ='<option value=""></option>'
-			for(let i = 4; i >= 0; i--){
+			for(var i = 4; i >= 0; i--){
 				var year = nowYear - i 
-				yearsOption += '<option value="'+year+'">'+year+'</option>'
+				yearsOption += '<option value="'+year+'" data-name="'+year+'" >'+year+'</option>'
 			}
-			$('select#enrol-year').append(yearsOption)
+			$('select#year').append(yearsOption)
+
+			var sexOption = '<option value=""></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
+			$('select#sex').append(sexOption)
+
+			var graduateOption = '<option value=""></option><option value="0" data-name="大专">大专</option><option value="1" data-name="本科">本科</option><option value="2" data-name="硕士">硕士</option><option value="3" data-name="博士">博士</option>'
+			$('select#graduate').append(graduateOption)
+
 
 			var arrowList = $('.arrow-box')
 			var resultList = $('.result')
-			var dataList = []
+			var list = []
 			for(i in data){
-				dataList.push(data[i])
+				list.push(data[i])
 			}
-			for(let i = 0 ;i < resultList.length; i++){
-				if(dataList[i+3]){
+			for(var i = 0 ;i < resultList.length; i++){
+				if(list[i+3]){
 					arrowList[i].innerHTML = ''
-					resultList[i].innerHTML = dataList[i+3]  
+					resultList[i].innerHTML = list[i+3]  
 				}
 			}
+
+			if(sessionStorage.getItem('studentInfo')){
+
+				studentInfo = JSON.parse(sessionStorage.getItem('studentInfo'))
+				
+				$('#name').val(studentInfo.name)
+				data.name = studentInfo.name
+				
+				$('#student-id').val(studentInfo.number)
+				data.number = studentInfo.number
+
+				var sexStr = studentInfo.sex ? '男': '女'
+				$('#sex-result').text(sexStr)
+				$('option[data-name="'+sexStr+'"]').attr('selected', true)			
+				data.sex = studentInfo.sex
+
+
+				var graduate = studentInfo.graduate
+				
+				var graduateStr = studentInfo.graduateStr
+				$('#graduate-result').text(graduateStr)
+				$('option[data-name="'+graduateStr+'"]').attr('selected', true)
+				data.graduate = graduate
+
+
+				var year = studentInfo.year
+				$('#year-result').text(year)
+				$('option[data-name="'+year+'"]').attr('selected', true)
+				data.year = studentInfo.year
+			}else{
+				isInit = false
+			}
+
 		})
 
-		$('input')
-			.focus(function(){
-				$(this).css('text-align', 'left')
-			})
-			.blur(function(){
-				$(this).css('text-align', 'right')  
-			})
+		// $('input')
+		// 	.focus(function(){
+		// 		$(this).css('text-align', 'left')
+		// 	})
+		// 	.blur(function(){
+		// 		$(this).css('text-align', 'right')  
+		// 	})
 
+		function getUniversity(selected){
+				ajax({
+					url: 'h5/getUniversity',
+					type: 'get',
+					data: {
+						cityId: selected.val()
+					},
+					success: function(response){
+						if(response.code === 1){
+							var list = response.data
 
-		$(document).on('change', 'input, select', function(){
-			var tagName = $(this).prop('tagName')
-			if(tagName === 'INPUT'){
-				var inputId = $(this).attr('id')
-				if(inputId === 'name'){
-					data.name = $(this).val()
-				}else{
-					data.number = $(this).val()
-				}
-			}else{
-				// $(this).next().hide()
-				var text = $(this).children('option:checked').text()
-				var resultEl = $(this).parent().children('.result')
-				resultEl.text(text)
+							fillSelect('university', list )
 
-				var selectId = $(this).attr('id')
-				if(selectId === 'sex'){
-					data.sex = $(this).children('option:checked').val()
-				}else if(selectId === 'city'){
-					var selected = $(this).children('option:checked')
-					data.city = selected.text()
-					ajax({
-						url: 'h5/getUniversity',
-						type: 'get',
-						data: {
-							cityId: selected.val()
-						},
-						success (response){
-							if(response.code === 1){
-								var list = response.data
-								fillSelect('university', list )
+							if(studentInfo.university && isInit){		
+								var university = studentInfo.university
+								data.university = university
+								var selected = $('option[data-name="'+university+'"]')
+								selected.attr('selected', true)
+								$('#university-result').text(university)
 
-								if(list.length > 0){
-									$('select#university').removeAttr('disabled')
-								}else if(list.length === 0 ){
-									if($('#city-result').text() != ''){
-										notice('所选城市没有大学')
-									}
-									$('select#university').attr('disabled',true)
-								}
-							}else if(response.code === 0){
-								notice(response.error)
-							}else{
-								notice('出现错误')
+								getSchool(selected)
 							}
-						},
-						error (xhr, status){
-							notice(status)
-						}
 
-					})
-				}else if(selectId === 'university'){
-					var selected = $(this).children('option:checked')
-					data.university = selected.text()
-					ajax({
+							if(list.length > 0){
+								$('select#university').removeAttr('disabled')
+							}else if(list.length === 0 ){
+								if($('#city-result').text() != ''){
+									notice('所选城市没有大学')
+								}
+								$('select#university').attr('disabled',true)
+							}
+						}else if(response.code === 0){
+							notice(response.error)
+						}else{
+							notice('出现错误')
+						}
+					},
+					error: function(xhr, status){
+						notice(status)
+					}
+
+				})
+		}
+
+		function getSchool(selected){
+			ajax({
 						url: 'h5/getSchool',
 						type: 'get',
 						data: {
 							uid: selected.val()
 						},
-						success (response){
+						success: function(response){
 							if(response.code === 1){
 								var list = response.data
 								fillSelect('school', list )
+								if(studentInfo.school && isInit){		
+
+									var school = studentInfo.school
+									
+									data.school = school
+									
+									var selected = $('option[data-name="'+school+'"]')
+									selected.attr('selected', true)
+									$('#school-result').text(school)
+
+									getClazz(selected)
+								}
+
 								if(list.length > 0){
 									$('select#school').removeAttr('disabled')
-								}else if(list.length === 0){
+																	}else if(list.length === 0){
 									$('select#school').attr('disabled', true)
 								}
 							}else if(response.code === 0){
@@ -376,71 +463,175 @@
 								notice('出现错误')
 							}
 						},
-						error (xhr, status){	
+						error: function(xhr, status){	
 							notice(status)
 						}
 
 					})
-				}else if(selectId === 'graduate'){
-					data.graduate = $(this).children('option:checked').val()
-				}else if(selectId === 'school'){
-					var selected = $(this).children('option:checked')
-					data.school = selected.text()	
-					ajax({
+		}
+
+		function getClazz(selected){
+			ajax({
 						url: 'h5/getClazz',
 						data: {
 							pid: selected.val()
 						},
-						success (response){
+						success: function(response){
 							if(response.code === 1){
 								var list = response.data
 								fillSelect('clazz', list )
-								if(list.length > 0){
-									$('select#clazz').removeAttr('disabled')
-								}else if(list.length === 0){
-									$('select#clazz').attr('disabled', true)
+								if(studentInfo.clazzId && isInit){		
+									var clazzId = studentInfo.clazzId
+									var clazz = studentInfo.clazz
+									data.clazzId = studentInfo.clazzId
+									data.clazz = studentInfo.clazz
+
+									var selected = $('option[data-name="'+clazz+'"]')
+									selected.attr('selected', true)
+									$('#clazz-result').text(clazz)
+
+									isInit = false
+									isFinished = true
+
+									if(isFinished){
+										$('#next-btn').children().hide()
+										$('#next-btn')
+											.css('background-image','url(img/btnNextNor.png)')
+											.click(function(){
+												var dataJson = JSON.stringify(data)
+												sessionStorage.setItem('data', dataJson)
+												var studentInfoJson = JSON.stringify(studentInfo)
+												sessionStorage.setItem('studentInfo', studentInfoJson)
+
+												window.open('student-idcard.html', '_self')
+											})
+
+									}else{
+										$('#next-btn').children().show()
+										$('#next-btn')
+											.css('background-image','url(img/btnNextDis.png)')
+											.off()
+									}
+
 								}
+								$('select#clazz').removeAttr('disabled')
 							}else if(response.code === 0){
 								notice(response.error)
 							}else{
 								notice('出现错误')
 							}
 						},
-						error (xhr, status){
+						error: function(xhr, status){
 							notice(status)
 						}
 
 					})
-				}else if(selectId === 'enrol-year'){
-					data.year = $(this).children('option:checked').text()
+		}	
+
+
+		$(document).on('change', 'input, select', function(){
+			var tagName = $(this).prop('tagName')
+			if(tagName === 'INPUT'){
+				var inputId = $(this).attr('id')
+				if(inputId === 'name'){
+					var name = $(this).val()
+					data.name = name
+					studentInfo.name = name 
+				}else{
+					var number = $(this).val()
+					data.number = number
+					studentInfo.number = number
+				}
+			}else{
+				var text = $(this).children('option:checked').text()
+				var resultEl = $(this).parent().children('.result')
+				resultEl.text(text)
+
+				var selectId = $(this).attr('id')
+				if(selectId === 'sex'){
+					var sexNum = $(this).children('option:checked').val()
+					data.sex = sexNum
+					studentInfo.sex = sexNum
+
+				}else if(selectId === 'city'){
+					
+					var selected = $(this).children('option:checked')
+					var city = selected.text()
+					data.city = city
+					studentInfo.city = city
+			
+					getUniversity(selected)
+
+				}else if(selectId === 'university'){
+					var selected = $(this).children('option:checked')
+					var university = selected.text()
+					data.university = university
+					
+					studentInfo.university = university
+					
+					getSchool(selected)
+				}else if(selectId === 'graduate'){
+					var graduate = $(this).children('option:checked').val()
+					var graduateStr = $(this).children('option:checked').text()
+					data.graduate = graduate
+					studentInfo.graduateStr = graduateStr
+					studentInfo.graduate = graduate
+
+				}else if(selectId === 'school'){
+					var selected = $(this).children('option:checked')
+					var school = selected.text()
+					data.school = school
+					studentInfo.school = school	
+					
+					getClazz(selected)
+				}else if(selectId === 'year'){
+					var year = $(this).children('option:checked').text()
+					data.year = year
+					studentInfo.year = year
 				}else if(selectId === 'clazz'){
-					data.clazz = $(this).children('option:checked').text()
-					data.clazzId = $(this).children('option:checked').val()
+					var clazz = $(this).children('option:checked').text()
+					var clazzId = $(this).children('option:checked').val()
+					data.clazz = clazz
+					data.clazzId = clazzId
+					studentInfo.clazz = clazz
+					studentInfo.clazzId = clazzId
 				}
 			
 			}
 		
 			console.log('data', data)
-			isFinish = true
+			isFinished = true
 			for(i in data){
-				if(!data[i]){
-					isFinish = false
-					break
-				}
-				if(i === 'number'){
-					if(!(/\d+/.test(data[i]))){
-						isFinish = false
+				if(i === 'sex'){
+					console.log(i)
+					if(data[i]!=0 && data[i]!=1){
+						console.log(i,'false')
+						isFinished = false
+						break	
 					}
+				}else if(i === 'graduate'){
+					if(parseInt(data[i])<0 || parseInt(data[i])>3){
+						console.log(i,'false')
+						isFinished = false
+						break
+					}
+				}else if(data[i] === ''){
+					console.log(i,'false')
+					isFinished = false
+					break
 				}
 			}
 
-			if(isFinish){
+			if(isFinished){
 				$('#next-btn').children().hide()
 				$('#next-btn')
 					.css('background-image','url(img/btnNextNor.png)')
 					.click(function(){
 						var dataJson = JSON.stringify(data)
-						setCookie('data', dataJson)
+						sessionStorage.setItem('data', dataJson)
+						var studentInfoJson = JSON.stringify(studentInfo)
+						sessionStorage.setItem('studentInfo', studentInfoJson)
+
 						window.open('student-idcard.html', '_self')
 					})
 
@@ -450,31 +641,44 @@
 					.css('background-image','url(img/btnNextDis.png)')
 					.off()
 			}
-			console.log(isFinish)
 		})	
 
 		$(document).on('blur', 'input, select',function(){
 			console.log('data', data)
-			isFinish = true
+			isFinished = true
 			for(i in data){
-				if(data[i] === ''){
-					isFinish = false
-					break
-				}
-				if(i === 'number'){
-					if(!(/\d+/.test(data[i]))){
-						isFinish = false
+
+				if(i === 'sex'){
+					console.log(i)
+					if(data[i]!=0 && data[i]!=1){
+						console.log(i,'false')
+						isFinished = false
+						break	
 					}
+				}else if(i === 'graduate'){
+					if(parseInt(data[i])<0 || parseInt(data[i])>3){
+						console.log(i,'false')
+						isFinished = false
+						break
+					}
+				}else if(data[i] === ''){
+					console.log(i,'false')
+					isFinished = false
+					break
 				}
 			}
 
-			if(isFinish){
+			if(isFinished){
 				$('#next-btn').children().hide()
 				$('#next-btn')
 					.css('background-image','url(img/btnNextNor.png)')
 					.click(function(){
 						var dataJson = JSON.stringify(data)
-						setCookie('data', dataJson)
+						sessionStorage.setItem('data', dataJson)
+						
+						var studentInfoJson = JSON.stringify(studentInfo)
+						sessionStorage.setItem('studentInfo', studentInfoJson)
+
 						window.open('student-idcard.html', '_self')
 					})
 
@@ -484,7 +688,7 @@
 					.css('background-image','url(img/btnNextDis.png)')
 					.off()
 			}
-			console.log(isFinish)
+			console.log(isFinished)
 		})
 
 
