@@ -342,9 +342,9 @@
 				}
 			}
 
-			if(localStorage.getItem('studentInfo')){
+			if(sessionStorage.getItem('studentInfo')){
 
-				studentInfo = JSON.parse(localStorage.getItem('studentInfo'))
+				studentInfo = JSON.parse(sessionStorage.getItem('studentInfo'))
 				
 				$('#name').val(studentInfo.name)
 				data.name = studentInfo.name
@@ -499,9 +499,9 @@
 											.css('background-image','url(img/btnNextNor.png)')
 											.click(function(){
 												var dataJson = JSON.stringify(data)
-												localStorage.setItem('data', dataJson)
+												sessionStorage.setItem('data', dataJson)
 												var studentInfoJson = JSON.stringify(studentInfo)
-												localStorage.setItem('studentInfo', studentInfoJson)
+												sessionStorage.setItem('studentInfo', studentInfoJson)
 
 												window.open('student-idcard.html', '_self')
 											})
@@ -628,9 +628,9 @@
 					.css('background-image','url(img/btnNextNor.png)')
 					.click(function(){
 						var dataJson = JSON.stringify(data)
-						localStorage.setItem('data', dataJson)
+						sessionStorage.setItem('data', dataJson)
 						var studentInfoJson = JSON.stringify(studentInfo)
-						localStorage.setItem('studentInfo', studentInfoJson)
+						sessionStorage.setItem('studentInfo', studentInfoJson)
 
 						window.open('student-idcard.html', '_self')
 					})
@@ -674,10 +674,10 @@
 					.css('background-image','url(img/btnNextNor.png)')
 					.click(function(){
 						var dataJson = JSON.stringify(data)
-						localStorage.setItem('data', dataJson)
+						sessionStorage.setItem('data', dataJson)
 						
 						var studentInfoJson = JSON.stringify(studentInfo)
-						localStorage.setItem('studentInfo', studentInfoJson)
+						sessionStorage.setItem('studentInfo', studentInfoJson)
 
 						window.open('student-idcard.html', '_self')
 					})

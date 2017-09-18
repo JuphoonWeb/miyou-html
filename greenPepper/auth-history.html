@@ -56,7 +56,7 @@
 			ajax({
 				url: 'h5/getAuthLog',
 				data: {
-					phone: GetQueryString('phone') || localStorage.getItem('phone')
+					phone: GetQueryString('phone') || sessionStorage.getItem('phone')
 				},
 				success: function(response){
 					if(response.code === 1){

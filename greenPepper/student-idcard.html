@@ -140,8 +140,8 @@
 	<script src="js/index.js"></script>
 	<script>
 
-		var data = JSON.parse(localStorage.getItem('data'))
-		data.phone = localStorage.getItem('phone')
+		var data = JSON.parse(sessionStorage.getItem('data'))
+		data.phone = sessionStorage.getItem('phone')
 
 		function getObjectURL(file){
 			var url = null;

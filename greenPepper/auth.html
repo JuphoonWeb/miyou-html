@@ -101,7 +101,7 @@
 			float:right;
 			color:rgb(54, 54, 54);
 		}
-		#school-badge-bg{
+		#school-badge-bg-container{
 			position:absolute;
 			top:180px;left:131px;
 			width:234px;
@@ -109,7 +109,7 @@
 			overflow: hidden;
 			opacity: .1;
 		}
-		#school-badge-bg img{
+		#school-badge-bg{
 			width:260px;
 			height:260px;
 		}
@@ -180,8 +180,8 @@
 					   <span class="value" id="year"></span>
 				  </li>
 				</ul>
-				<div class="school-badge" id="school-badge-bg">
-					<img src="" alt="">
+				<div class="school-badge" id="school-badge-bg-container">
+					<img id="school-badge-bg" src="" alt="">
 				</div>
 			</div>	
 		</div>
@@ -211,7 +211,7 @@
 						studentInfo = data
 						$('#name').text(data.name)
 						$('#university').text(data.university)
-						$('.school-badge').attr('src',data.schoolBadgeUrl)
+						$('#school-badge, #school-badge-bg').attr('src',data.schoolBadgeUrl)
 						switch(data.graduate){
 							case 0:{
 								studentInfo.graduateStr = '大专'
@@ -251,7 +251,7 @@
 	
 		$(document).ready(function(){
 			var phone = GetQueryString('phone')
-			localStorage.setItem('phone',phone)
+			sessionStorage.setItem('phone',phone)
 			$('#un-auth').show()
 			
 			ajax({
@@ -261,7 +261,7 @@
 
 					if(response.code === 1){
 						var data = response.data
-						localStorage.setItem('api_token', data.api_token)
+						sessionStorage.setItem('api_token', data.api_token)
 						if(data.type === 3){
 							$('#un-auth').hide()
 							$('#auth-info').show()
@@ -300,7 +300,7 @@
 		})
 		$('#auth-btn, #change-btn').click(function(){
 			if(!isEmpty(studentInfo)){
-				localStorage.setItem('studentInfo', JSON.stringify(studentInfo))
+				sessionStorage.setItem('studentInfo', JSON.stringify(studentInfo))
 			}
 			window.open('basic-info.html','_self')
 		})
