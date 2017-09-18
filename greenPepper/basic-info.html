@@ -68,6 +68,8 @@
 			color:rgb(0, 0, 0);
 		}
 		.form-group option:first-child{
+			color:rgba(255, 255, 255, 1);
+			/*visibility: hidden;*/
 			display: none;
 		}
 		.arrow-box{
@@ -268,7 +270,7 @@
 			}	
 
 			$(queryStr).children().remove()
-			var options = '<option value=""></option>'
+			var options = '<option  value=""></option>'
 			for(var  i = 0; i<list.length; i++){
 				var val = list[i].id
 				var name = list[i].name || list[i].schoolName || list[i].major || list[i].clazz
@@ -374,13 +376,13 @@
 
 		})
 
-		$('input')
-			.focus(function(){
-				$(this).css('text-align', 'left')
-			})
-			.blur(function(){
-				$(this).css('text-align', 'right')  
-			})
+		// $('input')
+		// 	.focus(function(){
+		// 		$(this).css('text-align', 'left')
+		// 	})
+		// 	.blur(function(){
+		// 		$(this).css('text-align', 'right')  
+		// 	})
 
 		function getUniversity(selected){
 				ajax({
