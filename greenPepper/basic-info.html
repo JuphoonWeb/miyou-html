@@ -270,7 +270,7 @@
 			}	
 
 			$(queryStr).children().remove()
-			var options = '<option  value=""></option>'
+			var options = '<option disabled  value=""></option>'
 			for(var  i = 0; i<list.length; i++){
 				var val = list[i].id
 				var name = list[i].name || list[i].schoolName || list[i].major || list[i].clazz
@@ -315,17 +315,17 @@
 			})
 
 			var nowYear = (new Date()).getFullYear()
-			var yearsOption ='<option value=""></option>'
+			var yearsOption ='<option disabled value=""></option>'
 			for(var i = 4; i >= 0; i--){
 				var year = nowYear - i 
 				yearsOption += '<option value="'+year+'" data-name="'+year+'" >'+year+'</option>'
 			}
 			$('select#year').append(yearsOption)
 
-			var sexOption = '<option value=""></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
+			var sexOption = '<option disabled value=""></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
 			$('select#sex').append(sexOption)
 
-			var graduateOption = '<option value=""></option><option value="0" data-name="大专">大专</option><option value="1" data-name="本科">本科</option><option value="2" data-name="硕士">硕士</option><option value="3" data-name="博士">博士</option>'
+			var graduateOption = '<option disabled value=""></option><option value="0" data-name="大专">大专</option><option value="1" data-name="本科">本科</option><option value="2" data-name="硕士">硕士</option><option value="3" data-name="博士">博士</option>'
 			$('select#graduate').append(graduateOption)
 
 
