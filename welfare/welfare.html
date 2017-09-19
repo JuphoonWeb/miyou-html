@@ -156,6 +156,7 @@
                 if(ele.isReceive==0){
                     if(ele.welfareProId=='MFLLQJ'){
                         btnStr = '<span class="wait-to-receive">未激活</span>';
+                        clz = '';
 					}else{
                         btnStr = '<span class="wait-to-receive">待领取</span>';
 					}
@@ -163,6 +164,7 @@
                 else if(ele.isReceive==1){
                     if(ele.welfareProId=='MFLLQJ'){
                         btnStr = '<span class="had-receive">已激活</span>';
+                        clz = '';
                     }else{
                         btnStr = '<span class="had-receive">已领取</span>';
 					}
