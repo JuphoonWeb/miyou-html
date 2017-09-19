@@ -78,7 +78,7 @@
 			data: {
 				parentId: 20
 			},
-			successFunc (response){
+			successFunc: function(response){
 				if(response.code === 1){
 					fillSelect('select#city', response.data)
 				}else if(response.code === 0){
@@ -99,21 +99,21 @@
 							icon:7, 
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
+							yes: function() {
 								parent.parent.window.open('login.html', '_self')
 							}
 						})
 
 				}
 			},
-			errorFunc(){
+			errorFunc: function(){
 				layer.open({
 					type: 0,
 					closeBtn: 0,
 					icon:7, 
 					title: '获取城市列表失败',
 					content: '请检查网络',
-					yes () {
+					yes: function() {
 						layer_close()
 					}
 				})
@@ -125,7 +125,7 @@
 		$(selectorStr).children('option+option').remove()
 		var options = ''
         var data = data
-		for(let i = 0; i < data.length; i++){
+		for(var i = 0; i < data.length; i++){
 			var name = data[i].name || data[i].schoolName || data[i].clazz
 			options += '<option value="'+data[i].id+'">'+name+'</option>'
 		}
@@ -159,7 +159,7 @@
 				cache: false,
 				processData: false,
 			    contentType: false,
-			   successFunc (response) {
+			   successFunc: function(response) {
 					if(response.code === 1){
 						layer.msg('添加成功')
 						setTimeout(function(){
@@ -183,14 +183,14 @@
 							icon:7, 
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
+							yes: function () {
 								parent.parent.window.open('login.html', '_self')
 							}
 						})
 
 					}
 			    },
-			    errorFunc () {
+			    errorFunc: function() {
 					layer.open({
 						type: 0,
 						closeBtn: 0,

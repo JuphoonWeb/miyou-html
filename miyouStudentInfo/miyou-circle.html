@@ -22,7 +22,11 @@
 
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span>  密友圈 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
-	<div class="cl pd-5 bg-1 bk-gray mt-20">
+	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
+		<form action="" class="form-inline" style="margin-top: 10px" class="search-box">
+				<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据群主手机号查询密友圈(支持模糊查询)">
+				<button id="search-btn" title="根据手机号码查询密友圈" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+		</form>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
@@ -65,8 +69,6 @@
 
 	var successFunc = function(response){
 				layer.closeAll()
-				console.log('success')
-				console.log(response)
 				if(response.code === 1){
 					var data = response.data
 					var list = data.list
@@ -77,12 +79,11 @@
 
 					console.log('miyouList:',miyouList)
 					$('#miyou-tbody').children().remove()
-					for(let i=0; i<list.length; i++){						
+					for(var i=0; i<list.length; i++){						
 						var sequence = (currPage-1)*size+i+1
 						var name = list[i].miyouName || ''
 						var Protype = list[i].prod ? 'prod.FrendGroupQJ.0' : 'prod.FrendTriGroupQJ.0'
-						console.log(name)
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td><td><button class="btn btn-secondary-outline radius" onclick="getMiyouMember('+i+')">查看</button></td><td>'+Protype+'</td></tr>'
+						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td><td><button class="btn btn-secondary-outline radius" onclick="getMiyouMember('+i+')"><span class="Hui-iconfont">&#xe695;</span>查看</button></td><td>'+Protype+'</td></tr>'
 					}
 					// 判断数据是否取得成功
 					$('#miyou-tbody').append(trs)
@@ -134,7 +135,7 @@
 							icon:7, 
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
+							yes: function() {
 								parent.window.open('login.html', '_self')
 							}
 						})
@@ -168,14 +169,13 @@
 				title: '未登录',
 				icon: 7,
 				content: '请登录',
-				yes () {
+				yes: function () {
 					parent.window.open('login.html', '_self')
 				}
 			})
 		}
 		currPage = 1		
 		
-		console.log('uuid',uuid) 
 
 	
 		ajax({
@@ -194,8 +194,6 @@
 	function getMiyouMember(index){
 		var id = miyouList[index].id
 		var name = miyouList[index].miyouName || ''
-		console.log('id:', id)
-		console.log('name', name)
 		setCookie('miyouCircleId',id)
 		var title = name ? '密友圈成员 （群主：'+name+'）': '密友圈成员 （群主：匿名）'
 		// console.log(title)

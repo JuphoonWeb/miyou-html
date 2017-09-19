@@ -46,7 +46,7 @@
 				<label class="form-label col-xs-4 col-sm-3">校徽图片：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<span class="btn-upload form-group" style="width:100%">
-					  <input class="input-text upload-url radius"type="text" name="uploadfile-1" id="file-url" readonly  style="width:82%" ><a href="javascript:void();" class="btn btn-primary radius" style="width:18%" ><i class="Hui-iconfont">&#xe646;</i> 浏览文件</a>
+					  <input class="input-text upload-url radius"type="text" name="uploadfile-1" id="file-url" readonly  style="width:82%" placeholder="导入校徽图片" ><a href="javascript:void();" class="btn btn-primary radius" style="width:18%" ><i class="Hui-iconfont">&#xe646;</i> 浏览文件</a>
 					  <input type="file" id="school-emblem" name="file" accept="image/jpg,image/jpeg,image/png" class="input-file">
 					</span>
 				</div>
@@ -80,7 +80,7 @@
 			data: {
 				parentId: 20
 			},
-			successFunc (response){
+			successFunc: function(response){
 				if(response.code === 1){
 					fillCitySelect('select#city', response.data)
 				}else if(response.code === 0){
@@ -101,21 +101,21 @@
 							icon:7, 
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
+							yes: function() {
 								parent.parent.window.open('login.html', '_self')
 							}
 						})
 
 				}
 			},
-			errorFunc(){
+			errorFunc: function(){
 				layer.open({
 					type: 0,
 					closeBtn: 0,
 					icon:7, 
 					title: '获取城市列表失败',
 					content: '请检查网络',
-					yes () {
+					yes: function() {
 						layer_close()
 					}
 				})
@@ -131,7 +131,7 @@
 		$(selectorStr).children('option+option').remove()
 		var options = ''
         var data = data
-		for(let i = 0; i < data.length; i++){
+		for(var i = 0; i < data.length; i++){
 			var name = data[i].name
 			var selectedAttr = (name === universityInfo.city) ? 'selected' : ''
 			options += '<option value="'+data[i].id+'" '+selectedAttr+'>'+name+'</option>'
@@ -147,15 +147,17 @@
 		var fileInput = $('#school-emblem')[0];
 		var fileNum = fileInput.files.length 
 		var file = fileInput.files[0]
+		var fileUrl = $('#file-url').val()
 		console.log(proId)
 		if(!proId){
 			layer.msg('请选择学校所在城市')
 		}else if(universityName === ''){
 			layer.msg('请输入学校名称')
 		}
-		else if(fileNum === 0){
+		else if(fileUrl === ''){
 			layer.msg('请导入校徽图片')
-		}else{
+		}
+		else{
 			
 			var form = new FormData()
 			form.append('proId', proId)
@@ -169,7 +171,7 @@
 				cache: false,
 				processData: false,
 			    contentType: false,
-			    successFunc (response) {
+			    successFunc: function(response) {
 					if(response.code === 1){
 						layer.msg('修改成功')
 						setTimeout(function(){
@@ -193,14 +195,14 @@
 							icon:7, 
 							title: '重新登录',
 							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes () {
+							yes: function() {
 								parent.parent.window.open('login.html', '_self')
 							}
 						})
 
 					}
 			    },
-			    errorFunc () {
+			    errorFunc: function() {
 					layer.open({
 						type: 0,
 						closeBtn: 0,
