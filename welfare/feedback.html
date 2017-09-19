@@ -59,7 +59,7 @@
             },function(data){
                 if(data.code==1){
                     toast('意见反馈提交成功',2000,function(){
-                        location.reload();
+                        native.dismissWebView();
                     });
                 }else{
                     toast('意见反馈</br>提交失败，请重试',2000);
