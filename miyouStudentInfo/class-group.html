@@ -64,7 +64,7 @@
 	var isPageInit = false
 	var currPage = 1
 	var size = 13
-	var uuid = getCookie('uuid')
+	var uuid = sessionStorage.getItem('uuid')
 
 	var successFunc = function(response){
 						layer.closeAll()
@@ -126,9 +126,9 @@
 								content: response.error
 							})
 						}else if(response.code === -1){
-								removeCookie('uuid')
-								removeCookie('login')
-								removeCookie('username')
+								sessionStorage.removeItem('uuid')
+								sessionStorage.removeItem('login')
+								sessionStorage.removeItem('username')
 								layer.open({
 									type: 0,
 									closeBtn: 0,
@@ -188,9 +188,9 @@
 						content: response.error
 					})
 				}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,
@@ -220,7 +220,7 @@
 
 
 	function init(){
-		if(getCookie('login') === ''){
+		if(sessionStorage.getItem('uuid') === ''){
 			layer.open({
 				type: 0,
 				closeBtn: 0,

@@ -28,6 +28,10 @@
 
 <div class="page-container" id="member-list">
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
+		<form onsubmit="return false" action="" class="form-inline" style="margin-top: 10px" class="search-box">
+				<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据手机号查询密友圈成员(支持模糊查询)">
+				<button id="search-btn" onclick="init()" title="根据手机号码查询密友圈" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+		</form>
 		<span class="r">共有成员：<strong id="data-num">0</strong> 名</span> 
 	</div>
 	<div class="mt-20">
@@ -64,7 +68,8 @@
 	var isInit = false
 	var url = 'admin/getMiyou'
 	var size = 10
-	var currPage = 1	
+	var currPage = 1
+	var searchPhone = ''	
 
 	var successFunc = function (response){
 				if(response.code === 1){
@@ -108,7 +113,8 @@
 										data: {
 											page: currPage,
 											size: size,
-											pid: getCookie('miyouCircleId'),
+											pid: sessionStorage.getItem('miyouCircleId'),
+											phone: searchPhone
 										},
 										successFunc: successFunc,
 										errorFunc: errorFunc
@@ -130,9 +136,9 @@
 						content: response.error
 					})
 				}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,
@@ -166,7 +172,7 @@
 
 
 	function init(){
-		if(getCookie('login') === ''){
+		if(sessionStorage.getItem('uuid') === ''){
 			layer.open({
 				type: 0,
 				closeBtn: 0,
@@ -180,13 +186,16 @@
 			})
 		}
 		
+		currPage = 1
+		searchPhone = $('#search-phone').val()
 	
 		ajax({
 			url: url,
 			data: {
 				page: currPage,
 				size: size,
-				pid: getCookie('miyouCircleId'),
+				pid: sessionStorage.getItem('miyouCircleId'),
+				phone: searchPhone,
 			},
 			successFunc: successFunc,
 			errorFunc: errorFunc

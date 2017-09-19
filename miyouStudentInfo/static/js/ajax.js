@@ -6,7 +6,9 @@ function ajax(dataObj){
 		layer.load()
 
 	})
-    var url = 'http://218.204.254.209:28812/miyou/'
+    var url = 'http://192.168.0.46:8086/miyou/'
+    // var url = 'http://218.204.254.209:28812/miyou/'
+
 
     url += dataObj.url
 	var method = dataObj.method || 'get',
@@ -15,7 +17,6 @@ function ajax(dataObj){
 		cache = dataObj.cache,
 		processData = dataObj.processData,
 	    contentType = dataObj.contentType,
-	    uuid = getCookie('uuid'),
 	    successFunc = function(res){
 	    	layer.closeAll()
 	    	console.log('success',res)
@@ -45,7 +46,7 @@ function ajax(dataObj){
 		processData: processData,
 	    contentType: contentType,
 		headers: {
-			token: uuid
+			token: sessionStorage.getItem('uuid')
 		},
 		dataType : 'json',
 		data: data,

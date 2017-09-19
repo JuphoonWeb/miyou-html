@@ -334,9 +334,9 @@
 		 			if(response.code === 1){
 		 				console.log('登录成功')
 		 				console.log('loginData',response)
-		 				setCookie('login','true')
-		 				setCookie('username',username)
-		 				setCookie('uuid',response.data.uuid)
+		 				sessionStorage.setItem('login','true')
+		 				sessionStorage.setItem('username',username)
+		 				sessionStorage.setItem('uuid',response.data.uuid)
 		 				window.open('index.html','_self')
 
 		 			}else if(response.code === 0){

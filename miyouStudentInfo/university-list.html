@@ -91,7 +91,7 @@
 	function editUniversity(index){
 		var universityInfo = universityList[index]
 		var universityInfoJson = JSON.stringify(universityInfo)
-		setCookie('universityInfo',universityInfoJson)
+		sessionStorage.setItem('universityInfo',universityInfoJson)
 		layer_show('编辑学校信息 ('+universityInfo.city+'-'+universityInfo.name+')','university-edit.html','','300');
 	}
 
@@ -124,9 +124,9 @@
 								content: response.error
 							})
 						}else if(response.code === -1){
-							removeCookie('uuid')
-							removeCookie('login')
-							removeCookie('username')
+							sessionStorage.removeItem('uuid')
+							sessionStorage.removeItem('login')
+							sessionStorage.removeItem('username')
 							layer.open({
 								type: 0,
 								closeBtn: 0,
@@ -215,9 +215,9 @@
 								content: response.error
 							})
 						}else if(response.code === -1){
-								removeCookie('uuid')
-								removeCookie('login')
-								removeCookie('username')
+								sessionStorage.removeItem('uuid')
+								sessionStorage.removeItem('login')
+								sessionStorage.removeItem('username')
 								layer.open({
 									type: 0,
 									closeBtn: 0,
@@ -250,7 +250,7 @@
 				    } 
 
 	function init(){
-		if(getCookie('login') === ''){
+		if(sessionStorage.getItem('uuid') === ''){
 			layer.open({
 				type: 0,
 				closeBtn: 0,

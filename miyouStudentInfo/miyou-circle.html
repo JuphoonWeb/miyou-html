@@ -23,9 +23,9 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span>  密友圈 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
-		<form action="" class="form-inline" style="margin-top: 10px" class="search-box">
+		<form onsubmit="return false" action="" class="form-inline" style="margin-top: 10px" class="search-box">
 				<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据群主手机号查询密友圈(支持模糊查询)">
-				<button id="search-btn" title="根据手机号码查询密友圈" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+				<button id="search-btn" onclick="init()" title="根据手机号码查询密友圈" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
 		</form>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
@@ -65,7 +65,8 @@
 	var isPageInit = false
 	var currPage = 1
 	var size = 12
-	var uuid = getCookie('uuid')
+	var searchPhone = ''
+	var uuid = sessionStorage.getItem('uuid')
 
 	var successFunc = function(response){
 				layer.closeAll()
@@ -103,7 +104,9 @@
 										url: url,
 										data: {
 											page: currPage,
+											size: size,
 											pid: 0,
+											phone: searchPhone
 										},
 										successFunc: successFunc,
 										errorFunc: errorFunc
@@ -126,9 +129,9 @@
 						content: response.error
 					})
 				}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,
@@ -159,9 +162,10 @@
 					})
 				}
 			}
+
 	
 	function init(){
-		if(getCookie('login') === ''){
+		if(sessionStorage.getItem('uuid') === ''){
 			layer.open({
 				type: 0,
 				closeBtn: 0,
@@ -175,14 +179,17 @@
 			})
 		}
 		currPage = 1		
-		
+		searchPhone = $('#search-phone').val()
+		console.log('phone', searchPhone)
 
-	
+
 		ajax({
 			url: url,
 			data: {
 				page: currPage,
+				size: size,
 				pid: 0,
+				phone: 13802880996
 			},
 			successFunc: successFunc,
 			errorFunc: errorFunc
@@ -194,7 +201,7 @@
 	function getMiyouMember(index){
 		var id = miyouList[index].id
 		var name = miyouList[index].miyouName || ''
-		setCookie('miyouCircleId',id)
+		sessionStorage.setItem('miyouCircleId',id)
 		var title = name ? '密友圈成员 （群主：'+name+'）': '密友圈成员 （群主：匿名）'
 		// console.log(title)
 		layer_show(title,'miyou-circle-member.html','','650');

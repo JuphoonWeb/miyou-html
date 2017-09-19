@@ -122,7 +122,7 @@
 
 <script>
 	function init(){
-		if(getCookie('login') === ''){
+		if(sessionStorage.getItem('uuid') === ''){
 			layer.open({
 				type: 0,
 				closeBtn: 0,
@@ -135,18 +135,19 @@
 				}
 			})
 		}else{
-			$('#username').text(getCookie('username'))
+			$('#username').text(sessionStorage.getItem('username'))
 		}
 	}
 
-	var successFunc = function(response){
+	var logoutSuccess = function(response){
 				console.log('logoutdata',response)
-				removeCookie('login')
-				removeCookie('username')
+				sessionStorage.removeItem('login')
+				sessionStorage.removeItem('username')
+				sessionStorage.removeItem('uuid')
 				window.open('login.html', '_self')
 			}
 
-	var errorFunc = function(){
+	var logoutFail = function(){
 				layer.open({
 						type: 0,
 						closeBtn:0,
@@ -163,8 +164,8 @@
 		ajax({
 			url: 'logout',
 			method: 'post',
-			successFunc: successFunc,
-			errorFunc: errorFunc
+			successFunc: logoutSuccess,
+			errorFunc: logoutFail
 		})
 	})
 		

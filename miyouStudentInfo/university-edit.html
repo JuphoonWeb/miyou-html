@@ -71,10 +71,23 @@
 <script type="text/javascript" src="static/js/ajax.js"></script>
 <script>
 
-	var universityInfo = JSON.parse(getCookie('universityInfo'))
+	var universityInfo = JSON.parse(sessionStorage.getItem('universityInfo'))
 	console.log('universityInfo', universityInfo)
 
 	$(document).ready(function(){
+		if(sessionStorage.getItem('uuid') === ''){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				shade: [1,'#fff'],
+				title: '未登录',
+				icon: 7,
+				content: '请登录',
+				yes: function () {
+					parent.window.open('login.html', '_self')
+				}
+			})
+		}
 		ajax({
 			url: 'admin/getDistrict',
 			data: {
@@ -92,9 +105,9 @@
 						content: response.error
 					})
 				}else if(response.code === -1){
-					removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+					sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,
@@ -186,9 +199,9 @@
 							content: response.error
 						})
 					}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,
