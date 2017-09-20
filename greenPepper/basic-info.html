@@ -270,7 +270,7 @@
 			}	
 
 			$(queryStr).children().remove()
-			var options = '<option disabled  value=""></option>'
+			var options = '<option value=""></option>'
 			for(var  i = 0; i<list.length; i++){
 				var val = list[i].id
 				var name = list[i].name || list[i].schoolName || list[i].major || list[i].clazz
@@ -315,17 +315,17 @@
 			})
 
 			var nowYear = (new Date()).getFullYear()
-			var yearsOption ='<option disabled value=""></option>'
+			var yearsOption ='<option  value=""></option>'
 			for(var i = 4; i >= 0; i--){
 				var year = nowYear - i 
 				yearsOption += '<option value="'+year+'" data-name="'+year+'" >'+year+'</option>'
 			}
 			$('select#year').append(yearsOption)
 
-			var sexOption = '<option disabled value=""></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
+			var sexOption = '<option  value="-1"></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
 			$('select#sex').append(sexOption)
 
-			var graduateOption = '<option disabled value=""></option><option value="0" data-name="大专">大专</option><option value="1" data-name="本科">本科</option><option value="2" data-name="硕士">硕士</option><option value="3" data-name="博士">博士</option>'
+			var graduateOption = '<option  value=""></option><option value="0" data-name="大专">大专</option><option value="1" data-name="本科">本科</option><option value="2" data-name="硕士">硕士</option><option value="3" data-name="博士">博士</option>'
 			$('select#graduate').append(graduateOption)
 
 
@@ -352,7 +352,12 @@
 				$('#student-id').val(studentInfo.number)
 				data.number = studentInfo.number
 
-				var sexStr = studentInfo.sex ? '男': '女'
+				var sexStr = ''
+				if(studentInfo.sex == 1){
+					sexStr = '男'
+				}else if(studentInfo.sex == 0){
+					sexStr = '女'
+				}
 				$('#sex-result').text(sexStr)
 				$('option[data-name="'+sexStr+'"]').attr('selected', true)			
 				data.sex = studentInfo.sex
@@ -604,7 +609,8 @@
 			for(i in data){
 				if(i === 'sex'){
 					console.log(i)
-					if(data[i]!=0 && data[i]!=1){
+
+					if(data[i] == -1){
 						console.log(i,'false')
 						isFinished = false
 						break	
@@ -650,7 +656,7 @@
 
 				if(i === 'sex'){
 					console.log(i)
-					if(data[i]!=0 && data[i]!=1){
+					if(data[i] == -1){
 						console.log(i,'false')
 						isFinished = false
 						break	

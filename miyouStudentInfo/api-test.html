@@ -69,6 +69,14 @@
 			</div>
 		</div>
 
+		<div class="row cl" id="member-phone-container"  style="margin-top:30px;display: none">
+			
+			<label for="member-phone" class=" form-label col-sm-1 col-sm-1 text-c"><b>member phone:</b></label>
+			<div class="formControls col-sm-11 col-xs-11">
+				<input type="text" class="input-text" id="member-phone" placeholder="请输入要增加或取消的成员号码">
+			</div>
+		</div>
+
 
 	</form>
 
@@ -164,36 +172,55 @@
 		index = $(this).children('option:checked').val()
 		if(index == 3){
 			$('#type-select-container').show()
+			$('#member-phone-container').show()
 		}else{
 			$('#type-select-container').hide()
+			$('#member-phone-container').hide()
 		}
 		console.log(index)
 		var apiName = $(this).children('option:checked').text() 
 		$('#api-name').text(apiName)
 		url = urlList[index]
 		$('#api-url').text(url)
+		$('#api-response').html('')
 
 	})
 
 	$('#type-select').change(function(){
 		var chgtype = $(this).children('option:checked').val()
 		dataList[3].chgtype = chgtype 
+		$('#api-response').html('')
 	})
 
 	$('#send').click(function(){
 		var phone = $('#api-phone').val().trim()
+		
 		if( phone === ''){
 			layer.msg('请输入手机号码')
 			$('#api-phone').focus()
 		}else if( !(/^1[3|4|5|7|8][0-9]\d{8}$/.test(phone))){
-			layer.msg('请填写正确格式的手机号码')
+			layer.msg('请输入正确格式的手机号码')
 			$('#api-phone').focus()
 		}else{
+			
 			if(index > 0){
+				if(index == 3){
+					var memberPhone = $('#member-phone').val().trim()
+					if( memberPhone === ''){
+						layer.msg('请输入成员手机号码')
+						$('#member-phone').focus()
+					}else if( !(/^1[3|4|5|7|8][0-9]\d{8}$/.test(memberPhone))){
+						layer.msg('请输入正确格式的成员手机号码')
+						$('#member-phone').focus()
+					}else{
+						dataList[index].memberPhone = memberPhone
+					}		
+				}
 				dataList[index].serverPhone = phone
-			}else if(index === 0){
+			}else if(index == 0){
 				dataList[index].phone = phone
 			}
+			console.log(dataList[index])
 
 			$.ajax({
 				url: url,
