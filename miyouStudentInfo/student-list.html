@@ -216,7 +216,7 @@
 
 	function init(){
 
-		if(sessionStorage.getItem('uuid') === ''){
+		if(!sessionStorage.getItem('uuid')){
 			layer.open({
 				type: 0,
 				closeBtn: 0,
@@ -361,9 +361,11 @@
 						
 						if(response.code === 1){
 							var data = response.data
-							if(data.rettype === 0 || data.retcode === 5){
+							if(data.rettype == 0 || data.retcode == 5){
 								layer.msg('开通成功')
-								window.location.reload()
+								setTimeout(function(){
+									window.location.reload()
+								}, 1500)
 							}else{
 								layer.open({
 									type: 0,

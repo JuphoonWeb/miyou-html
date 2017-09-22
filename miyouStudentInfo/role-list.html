@@ -1,0 +1,238 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>角色管理</title>
+</head>
+<body  onload="init()"   >
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 角色管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
+		<button id="search-btn" title="新增角色" onclick="addRole()" class="btn btn-success-outline radius" ><i class="Hui-iconfont">&#xe607;</i>新增角色</button>
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+	</div>
+	<div class="mt-20">
+	<table class="table table-bordered table-border table-hover table-bg " id="admin-table">
+		<thead>
+			<tr class="text-c">
+				<th width="100">序号</th>
+				<th width="200">角色名</th>
+				<th width="200">角色描述</th>
+				<th width="200">操作</th>
+			</tr>
+		</thead>
+		<tbody id="role-tbody" class="text-c" >
+		
+			
+		</tbody>
+	</table>
+	<div class="pagination r" id="pagination"></div>
+	<div class="nodata" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/cookie.js"></script>
+<script type="text/javascript" src="static/js/ajax.js"></script> 
+
+
+<script type="text/javascript">
+	var isPageInit = false
+	var currPage = 1
+	var size = 11
+	var roleName = ''
+	var roleList = []
+
+	function init(){
+
+		if(!sessionStorage.getItem('uuid')){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				shade: [1,'#fff'],
+				title: '未登录',
+				icon: 7,
+				content: '请登录',
+				yes: function () {
+					parent.window.open('login.html', '_self')
+				}
+			})
+		}
+		currPage = 1
+		getData(currPage, size, roleName)		
+
+		
+	}
+	function getData(page,size,roleName){
+
+		ajax({
+			url: 'admin/role/getRoleList',
+			data: {
+				page: page,
+				size: size,
+				roleName: roleName,
+			},
+			successFunc: function(response){
+				var status = response.code
+				if(status === 1){
+					$('#role-tbody').children().remove()
+					var data = response.data
+					var list = data.list
+					roleList = list
+					var trs = ''
+					for(var i = 0; i<list.length; i++){
+						var sequence = (currPage-1)*size+i+1
+						trs += '<tr>'+
+									'<td>'+sequence+'</td>'+
+									'<td>'+list[i].roleName+'</td>'+
+									'<td>'+list[i].roleDesc+'</td>'+
+									'<td>'+
+										'<button onclick="editRole('+i+')" class="btn btn-secondary-outline radius"><span class="Hui-iconfont">&#xe60c;</span>修改'+
+										'</button>'+
+										'<button onclick="deleteRole('+i+')" style="margin-left:15px" class="btn btn-danger-outline radius">'+
+											'<span class="Hui-iconfont">&#xe609;</span>删除'+
+										'</button>'
+									'</td>'+
+								'</tr>'
+					}
+					$('#role-tbody').append(trs)
+					$('#data-num').text(data.total)
+					if(!isPageInit && data.total > size){
+						var pages = Math.ceil(data.total/size)
+						laypage({
+						    cont: 'pagination',
+						    curr: 1, 
+						    pages: pages,
+						    groups: 5,
+						    jump (obj,first) {
+						    	if(!first){
+						    		console.log(obj.curr)
+						    		currPage =obj.curr
+							    	getData(currPage, size, roleName)
+								}
+						    }
+					  });
+					
+					}
+					isPageInit = true
+
+				}else if(status === 0){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '获取数据失败',
+						content: response.error
+					})
+
+				}else if(status === -1){
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '重新登录',
+							content: '超过30分钟未操作，已自动登出，请重新登录',
+							yes: function() {
+								parent.window.open('login.html', '_self')
+							}
+						})
+				}
+			}
+			
+		})
+	}
+
+	//	添加
+	function addRole(){
+		sessionStorage.removeItem('editRoleInfo')
+		layer_show('新增角色','role-add-edit.html','','600');
+	}
+	//编辑
+	function editRole(index){
+		var editRoleInfo = roleList[index]
+		sessionStorage.setItem('editRoleInfo',JSON.stringify(editRoleInfo))
+		layer_show('修改角色','role-add-edit.html','','300');	
+	}
+	//删除
+	function deleteRole(index){
+		var deleteRoleInfo = roleList[index]
+		console.log(deleteRoleInfo.id)
+		layer.confirm('确定删除['+deleteRoleInfo.roleName+']吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url: 'admin/role//deleteRole/'+deleteRoleInfo.id,
+					successFunc: function(response){
+						var status = response.code
+						if(status === 1){
+							layer.msg('已删除')
+							setTimeout(function(){
+								window.location.reload()
+							},1500)
+						}else if(status === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '删除失败',
+								content: response.error
+							})
+						}else if(status === -1){
+							sessionStorage.removeItem('uuid')
+							sessionStorage.removeItem('login')
+							sessionStorage.removeItem('username')
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '重新登录',
+								content: '超过30分钟未操作，已自动登出，请重新登录',
+								yes: function() {
+									parent.window.open('login.html', '_self')
+								}
+							})
+						}
+					},
+					errorFunc: function(xhr, status){
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '出现错误',
+							content: status
+						})
+					}
+				})
+			}
+		});
+		
+	}
+
+</script> 
+</body>
+</html>

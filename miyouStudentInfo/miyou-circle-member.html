@@ -89,7 +89,7 @@
 					$('#member-tbody').children().remove()
 					for(var i=0; i<list.length; i++){						
 						var sequence = i+1
-						console.log(list[i])
+						// console.log(list[i])
 						var name = list[i].miyouName || ''
 
 						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td></tr>'
@@ -172,7 +172,7 @@
 
 
 	function init(){
-		if(sessionStorage.getItem('uuid') === ''){
+		if(!sessionStorage.getItem('uuid')){
 			layer.open({
 				type: 0,
 				closeBtn: 0,

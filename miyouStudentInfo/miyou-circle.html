@@ -64,7 +64,7 @@
 	var url = 'admin/getMiyou'
 	var isPageInit = false
 	var currPage = 1
-	var size = 12
+	var size = 11
 	var searchPhone = ''
 	var uuid = sessionStorage.getItem('uuid')
 
@@ -90,6 +90,7 @@
 					$('#miyou-tbody').append(trs)
 					$('#data-num').text(data.total)
 					if(!isPageInit && data.total > size){
+						$('#pagination').show()
 						var pages = Math.ceil(data.total/size)
 						laypage({
 						    cont: 'pagination',
@@ -165,7 +166,7 @@
 
 	
 	function init(){
-		if(sessionStorage.getItem('uuid') === ''){
+		if(!sessionStorage.getItem('uuid')){
 			layer.open({
 				type: 0,
 				closeBtn: 0,
@@ -181,15 +182,15 @@
 		currPage = 1		
 		searchPhone = $('#search-phone').val()
 		console.log('phone', searchPhone)
-
-
+		isPageInit = false
+		$('#pagination').hide()
 		ajax({
 			url: url,
 			data: {
 				page: currPage,
 				size: size,
 				pid: 0,
-				phone: 13802880996
+				phone: searchPhone
 			},
 			successFunc: successFunc,
 			errorFunc: errorFunc

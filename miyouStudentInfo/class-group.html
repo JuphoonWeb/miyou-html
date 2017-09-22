@@ -220,7 +220,7 @@
 
 
 	function init(){
-		if(sessionStorage.getItem('uuid') === ''){
+		if(!sessionStorage.getItem('uuid')){
 			layer.open({
 				type: 0,
 				closeBtn: 0,

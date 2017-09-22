@@ -11,7 +11,7 @@ function ajax(dataObj){
 
 
     url += dataObj.url
-	var method = dataObj.method || 'get',
+	var method = dataObj.method || dataObj.type || 'get',
 		async = dataObj.hasOwnProperty('async') ? dataObj.async : true,
 		timeout = dataObj.timeout || 5*1000,
 		cache = dataObj.cache,
@@ -26,8 +26,11 @@ function ajax(dataObj){
 	    	layer.closeAll()
 	    	console.log('error',status)
 	    	dataObj.errorFunc && dataObj.errorFunc(xhr, status)
+	    },
+	    beforeSendFunc = function(xhr, settings){
+	    	console.log('beforeSend')
+	    	dataObj.beforeSendFunc && dataObj.beforeSendFunc(xhr, settings)	
 	    }
-
 	    var data = dataObj.data
 
 	    if(data&&dataObj.z_type!=0){
@@ -46,11 +49,13 @@ function ajax(dataObj){
 		processData: processData,
 	    contentType: contentType,
 		headers: {
-			token: sessionStorage.getItem('uuid')
+			token: sessionStorage.getItem('uuid'),
+			// "Access-Control-Allow-Headers": "Content-Type"
 		},
 		dataType : 'json',
 		data: data,
 		timeout: timeout,
+		beforeSend: beforeSendFunc,
 		success: successFunc,
 		error: errorFunc 
 	})

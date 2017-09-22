@@ -1,0 +1,276 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico" >
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" href="lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
+<style>
+	#psw-init-container,#psw-confirm-container{
+		display: none
+	}
+</style>
+
+<title>新增账号</title>
+</head>
+<body>
+	<article class="page-container">
+		<form action="" method="post" class="form form-horizontal" id="form-member-add">
+	
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>用户名：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="请输入用户名" id="username" >
+				</div>
+			</div>
+			<div class="row cl" id="psw-init-container">
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>密码：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="password" class="input-text" value="" placeholder="请输入密码" id="psw-init" >
+				</div>
+			</div>
+			<div class="row cl" id="psw-confirm-container">
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>确认密码：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="password" class="input-text" value="" placeholder="请确认密码" id="psw-confirm" >
+				</div>
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">手机号：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="请输入手机号" id="phone" >
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">邮箱地址：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="email" class="input-text" value="" placeholder="请输入邮箱地址" id="email" >
+				</div>
+			</div>
+
+			<div class="row cl" id="city-container">
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>角色：</label>
+				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+					<select class="select" size="1"  id="role">
+					</select>
+					</span> 
+				</div>
+			</div>
+
+			<div class="row cl">
+				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+					<input id="submit" class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+				</div>
+			</div>
+		</form>
+		
+	</article>
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+
+
+<script type="text/javascript" src="static/js/index.js"></script>
+
+
+
+<script type="text/javascript">
+	var editAccountInfo = JSON.parse(sessionStorage.getItem('editAccountInfo'))
+
+	var errorFunc = function(xhr, status){
+		layer.open({
+				type: 0,
+				closeBtn: 0,
+				icon:7, 
+				title: '出现错误',
+				content: status
+			})
+	}
+
+	$(function(){
+		
+
+		if(!editAccountInfo){
+			$('#psw-init-container').show()
+			$('#psw-confirm-container').show()
+		}
+		
+
+		ajax({
+			url: 'admin/role/getRoleList',
+			data: {
+				page: 1,
+				size: 500,
+				roleName: ''
+			},
+			successFunc: function(response){
+				var status = response.code
+				if(status === 1){
+					var roleList = response.data.list
+					var options = '<option value="-1">请选择角色</option>'
+					for(var i = 0; i < roleList.length; i++){
+						options += '<option value="'+roleList[i].id+'">'+roleList[i].roleName+'</option>'
+					}
+					$('#role').append(options)
+
+					if(editAccountInfo){
+						$('#username').val(editAccountInfo.username)
+						
+						$('#phone').val(editAccountInfo.phone)
+						$('#email').val(editAccountInfo.email)
+						$('option[value="'+editAccountInfo.roleId+'"]').attr('selected', true)
+					}else if(status === 0){
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '获取数据失败',
+							content: response.error
+						})
+
+					}else if(status === -1){
+							sessionStorage.removeItem('uuid')
+							sessionStorage.removeItem('login')
+							sessionStorage.removeItem('username')
+							
+					}
+						
+					
+				}
+
+			},
+			errorFunc: errorFunc
+		})
+
+		
+	})
+
+	$('#role').change(function(){
+		console.log($('#role').val())
+	})
+
+	$('#submit').click(function(event){
+		event.preventDefault()
+		var username = $('#username').val(),
+		    pswInit = $('#psw-init').val(),
+		    pswConfirm = $('#psw-confirm').val(),
+		    phone = $('#phone').val(),
+		    email = $('#email').val()
+		    roleId = $('#role').val();
+
+		if(username === ''){
+			layer.msg('请输入用户名')
+		}else if(!editAccountInfo && pswInit === ''){
+			layer.msg('请输入密码')
+		}else if(!editAccountInfo && pswConfirm === ''){
+			layer.msg('请确认密码')
+		}else if(!editAccountInfo && pswInit != pswConfirm){
+			layer.msg('确认密码与原密码不一致')
+		}else if(phone && !(/^1[3|4|5|7|8][0-9]\d{8}$/.test(phone))){
+			layer.msg('请输入正确格式的手机号码')
+		}else if(email && !(/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/.test(email))){
+			layer.msg('请输入正确格式的邮箱地址')
+		}else if(roleId == -1){
+			layer.msg('请选择角色')
+		}else{
+			if(editAccountInfo){
+				ajax({
+					url: 'admin/user/updateUser',
+					method: 'post',
+					data: {
+						username: username,
+						phone: phone,
+						email: email,
+						id: roleId
+					},
+					successFunc: function(response){
+						var status = response.code
+						if(status === 1){
+							layer.msg('修改成功')
+							setTimeout(function(){
+								parent.location.reload()
+							}, 1000)
+						}else if(status === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '修改失败',
+								content: response.error
+							})
+
+						}else if(status === -1){
+								sessionStorage.removeItem('uuid')
+								sessionStorage.removeItem('login')
+								sessionStorage.removeItem('username')
+								
+						}
+
+					},
+					errorFunc: errorFunc
+				})
+			}else{
+				ajax({
+					url: 'admin/user/addUser',
+					method: 'post',
+					data: {
+						username: username,
+						password: pswConfirm,
+						phone: phone,
+						email: email,
+						roleId: roleId
+					},
+					successFunc: function(response){
+						var status = response.code
+						if(status === 1){
+							layer.msg('新增成功')
+							setTimeout(function(){
+								parent.location.reload()
+							}, 1000)
+						}else if(status === 0){
+								layer.open({
+									type: 0,
+									closeBtn: 0,
+									icon:7, 
+									title: '获取数据失败',
+									content: response.error
+								})
+
+							}else if(status === -1){
+									sessionStorage.removeItem('uuid')
+									sessionStorage.removeItem('login')
+									sessionStorage.removeItem('username')
+									
+							}
+
+					},
+					errorFunc
+				})
+			}
+		}
+
+
+	})
+</script> 
+</body>
+</html>

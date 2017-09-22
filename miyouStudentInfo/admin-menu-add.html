@@ -1,0 +1,365 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<style>
+	input,select{
+		height:30px;
+	}
+	input.input-text{
+		padding-left: 10px
+	}
+
+	#menu-icon-container{
+		display: none;
+	}
+
+</style>
+<title>新增菜单</title>
+</head>
+<body>
+<div class="page-container">
+	<form action="" method="post" class="form form-horizontal" id="form-menu-add">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">
+				菜单名称：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="menu-name">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">
+				父菜单：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span class="select-box">
+					<select class="select" size="1" id="menu-parent">
+					</select>
+				</span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">
+				菜单地址：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="menu-url"> 
+			</div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">
+				菜单顺序：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="menu-order">
+			</div>
+		</div>
+
+		<div class="row cl" id="menu-icon-container">
+			<label class="form-label col-xs-4 col-sm-2">
+				菜单图标：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span class="select-box">
+					<select class="select Hui-iconfont" size="1" id="menu-icon">
+
+					</select>
+				</span>
+			</div>
+		</div>
+		<div class="row cl">
+			<div class="col-9 col-offset-2">
+				<input style="width:100px" class="btn btn-primary radius" id="submit-btn" type="submit" value="提交">
+			
+			</div>
+		</div>
+	</form>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+
+<script type="text/javascript" src="static/js/ajax.js"></script>
+<script type="text/javascript">
+$(function(){
+	var menuList = JSON.parse(sessionStorage.getItem('menuList'))
+	console.log(menuList)
+	for(i in menuList){
+		if(menuList[i].pId === 0){
+			var menu = menuList[i]
+			var option = '<option value="'+menu.id+'">'+menu.name+'</option>'
+			$('#menu-parent').append(option)
+		}
+	}
+	$('#menu-parent').append('<option value="0">无</option>')
+
+	var iconList	=	[
+		'&#xe684;',
+		'&#xe667;',
+		'&#xe64e;',
+		'&#xe665;',
+		'&#xe709;',
+		'&#xe632;',
+		'&#xe66b;',
+		'&#xe66c;',
+		'&#xe640;',
+		'&#xe63d;',
+		'&#xe67d;',
+		'&#xe603;',
+		'&#xe604;',
+		'&#xe68f;',
+		'&#xe606;',
+		'&#xe644;',
+		'&#xe645;',
+		'&#xe60b;',
+		'&#xe609;',
+		'&#xe6e2;',
+		'&#xe647;',
+		'&#xe600;',
+		'&#xe6a1;',
+		'&#xe60c;',
+		'&#xe6df;',
+		'&#xe61d;',
+		'&#xe610;',
+		'&#xe61f;',
+		'&#xe63f;',
+		'&#xe605;',
+		'&#xe60e;',
+		'&#xe6a6;',
+		'&#xe706;',
+		'&#xe6a7;',
+		'&#xe608;',
+		'&#xe6a8;',
+		'&#xe676;',
+		'&#xe677;',
+		'&#xe601;',
+		'&#xe6f7;',
+		'&#xe617;',
+		'&#xe6dc;',
+		'&#xe6de;',
+		'&#xe642;',
+		'&#xe641;',
+		'&#xe6bc;',
+		'&#xe6bd;',
+		'&#xe615;',
+		'&#xe614;',
+		'&#xe619;',
+		'&#xe695;',
+		'&#xe6e0;',
+		'&#xe6dd;',
+		'&#xe6e1;',
+		'&#xe631;',
+		'&#xe6e6;',
+		'&#xe6db;',
+		'&#xe6e3;',
+		'&#xe6e5;',
+		'&#xe6e4;',
+		'&#xe720;',
+		'&#xe725;',
+		'&#xe726;',
+		'&#xe72a;',
+		'&#xe728;',	
+		'&#xe625;',
+		'&#xe67f;',
+		'&#xe616;',
+		'&#xe613;',
+		'&#xe60f;',
+		'&#xe64b;',
+		'&#xe66f;',
+		'&#xe62e;',
+		'&#xe633;',
+		'&#xe634;',
+		'&#xe646;',
+		'&#xe681;',
+		'&#xe636;',
+		'&#xe687;',
+		'&#xe637;',
+		'&#xe691;',
+		'&#xe692;',
+		'&#xe639;',
+		'&#xe623;',
+		'&#xe626;',
+		'&#xe63e;',
+		'&#xe63c;',
+		'&#xe627;',
+		'&#xe6a4;',
+		'&#xe6a5;',
+		'&#xe612;',
+		'&#xe685;',
+		'&#xe72d;',
+		'&#xe727;',
+		'&#xe72b;',
+		'&#xe62c;',
+		'&#xe60d;',
+		'&#xe60a;',
+		'&#xe705;',
+		'&#xe607;',
+		'&#xe602;',
+		'&#xe638;',
+		'&#xe70d;',
+		'&#xe62b;',
+		'&#xe653;',
+		'&#xe62d;',
+		'&#xe643;',
+		'&#xe6b4;',
+		'&#xe6cc;',
+		'&#xe611;',
+		'&#xe6d0;',
+		'&#xe72c;',
+		'&#xe6d3;',
+		'&#xe621;',
+		'&#xe635;',
+		'&#xe61e;',
+		'&#xe61a;',
+		'&#xe618;',
+		'&#xe61c;',
+		'&#xe6cf;',
+		'&#xe6c7;',
+		'&#xe6a3;',
+		'&#xe696;',
+		'&#xe708;',
+		'&#xe64c;',
+		'&#xe64f;',
+		'&#xe650;',
+		'&#xe651;',
+		'&#xe652;',
+		'&#xe64d;',
+		'&#xe654;',
+		'&#xe655;',
+		'&#xe675;',
+		'&#xe624;',
+		'&#xe62a;',
+		'&#xe6cb;',
+		'&#xe682;',
+		'&#xe683;',
+		'&#xe68c;',
+		'&#xe68d;',
+		'&#xe6be;',
+		'&#xe6c0;',
+		'&#xe6bf;',
+		'&#xe690;',
+		'&#xe69c;',
+		'&#xe629;',
+		'&#xe6c1;',
+		'&#xe6c2;',
+		'&#xe6c3;',
+		'&#xe6c4;',
+		'&#xe6c6;',
+		'&#xe6c9;',
+		'&#xe671;',
+		'&#xe69f;',
+		'&#xe6a0;',
+		'&#xe64a;',
+		'&#xe6a2;',
+		'&#xe6d1;',
+		'&#xe6d2;',
+		'&#xe6d3;',
+	]
+	var iconOptions = ''
+	for (var i in iconList){
+		iconOptions += '<option value="'+iconList[i].replace('&','&amp;')+'">'+iconList[i]+'</option>'
+	}
+	$('#menu-icon').append(iconOptions)
+	
+});
+
+$('#menu-parent').change(function(){
+	if($(this).val() == 0){
+		$('#menu-icon-container').show()
+	}else{
+		$('#menu-icon-container').hide()
+	}
+})
+
+$('#submit-btn').click(function(event){
+	event.preventDefault()
+	var menuName = $('#menu-name').val() 
+	var menuUrl = $('#menu-url').val() 
+	var menuOrder = $('#menu-order').val()
+    var pid = $('#menu-parent').val()
+	var menuIcon = (pid == 0) ? $('#menu-icon').val() : ''
+	if(menuName === ''){
+		layer.msg('请输入菜单名称')
+	}else if(menuUrl === ''){
+		layer.msg('请输入菜单地址')
+	}else if(menuOrder === ''){
+		layer.msg('请输入菜单顺序')
+	}else if(! (/^[0-9]*$/.test(menuOrder))){
+		layer.msg('菜单顺序只能为纯数字')
+	}else{
+		ajax({
+			url: 'admin/menu/addMenu',
+			method: 'post',
+			data: {
+				menuName: menuName,
+				menuUrl: menuUrl,
+				menuOrder: menuOrder,
+				pid: $('#menu-parent').val(),
+				icon: menuIcon
+			},
+			successFunc: function(response){
+						var code = response.code
+						if(code === 1){
+							layer.msg('新增成功')
+							setTimeout(function(){
+								parent.location.reload()
+							},1500)
+								
+						}else if(code === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '新增失败',
+								content: response.error
+							})
+						}else if(response.code === -1){
+							sessionStorage.removeItem('uuid')
+							sessionStorage.removeItem('login')
+							sessionStorage.removeItem('username')
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '重新登录',
+								content: '超过30分钟未操作，已自动登出，请重新登录',
+								yes: function() {
+									parent.parent.window.open('login.html', '_self')
+								}
+							})
+
+						}
+					},
+					errorFunc: function(xhr, status){
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '出现错误',
+							content: status
+						})
+					}
+		})
+	}
+})
+
+
+</script>
+</body>
+</html>
