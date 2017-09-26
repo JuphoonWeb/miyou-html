@@ -239,11 +239,13 @@
 				if(!isInit){
 					studentInfo.university = ''
 					studentInfo.school = ''
+					studentInfo.major = ''
 					studentInfo.clazz = ''
 					studentInfo.clazzId = ''
 				}
 				data.university = ''
 				data.school = ''
+				data.major = ''
 				data.clazz = ''
 				data.clazzId = ''
 				$('select#school, select#clazz').attr('disabled', true)
@@ -252,19 +254,23 @@
 				$('select#clazz').attr('disabled', true)
 				if(!isInit){
 					studentInfo.school = ''
+					studentInfo.major = ''
 					studentInfo.clazz = ''
 					studentInfo.clazzId = ''
 				}
 				data.school = ''
+				data.major = ''
 				data.clazz = ''
 				data.clazzId = ''
 
 			}else if(selectId === 'clazz'){
 				$('#clazz-result').text('')
 				if(!isInit){
+					studentInfo.major = ''
 					studentInfo.clazz = ''
 					studentInfo.clazzId = ''
 				}
+				data.major = ''
 				data.clazz = ''
 				data.clazzId = ''
 			}	
@@ -490,7 +496,7 @@
 									var clazz = studentInfo.clazz
 									data.clazzId = studentInfo.clazzId
 									data.clazz = studentInfo.clazz
-
+									data.major = studentInfo.clazz
 									var selected = $('option[data-name="'+clazz+'"]')
 									selected.attr('selected', true)
 									$('#clazz-result').text(clazz)
@@ -597,6 +603,7 @@
 					var clazz = $(this).children('option:checked').text()
 					var clazzId = $(this).children('option:checked').val()
 					data.clazz = clazz
+					data.major = clazz
 					data.clazzId = clazzId
 					studentInfo.clazz = clazz
 					studentInfo.clazzId = clazzId
@@ -626,6 +633,7 @@
 					isFinished = false
 					break
 				}
+				//记得添加iOS学号检测
 			}
 
 			if(isFinished){

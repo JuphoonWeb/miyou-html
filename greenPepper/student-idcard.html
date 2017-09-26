@@ -143,6 +143,53 @@
 		var data = JSON.parse(sessionStorage.getItem('data'))
 		data.phone = sessionStorage.getItem('phone')
 
+		var file = null
+		var reader = new FileReader()
+		var img = new Image()
+		var canvas = document.createElement('canvas')
+		var context = canvas.getContext('2d')
+
+		reader.onload = function(e) {
+		    img.src = e.target.result;
+		};
+
+		img.onload = function(){
+			var originWidth = this.width;
+		    var originHeight = this.height;
+		    // 最大尺寸限制
+		    var maxWidth = 600, maxHeight = 600;
+		    // 目标尺寸
+		    var targetWidth = originWidth, targetHeight = originHeight;
+		    // 图片尺寸超过600x600的限制
+		    if (originWidth > maxWidth || originHeight > maxHeight) {
+		        if (originWidth / originHeight > maxWidth / maxHeight) {
+		            // 更宽，按照宽度限定尺寸
+		            targetWidth = maxWidth;
+		            targetHeight = Math.round(maxWidth * (originHeight / originWidth));
+		        } else {
+		            targetHeight = maxHeight;
+		            targetWidth = Math.round(maxHeight * (originWidth / originHeight));
+		        }
+		    }
+		        
+		    // canvas对图片进行缩放
+		    canvas.width = targetWidth;
+		    canvas.height = targetHeight;
+		    // 清除画布
+		    context.clearRect(0, 0, targetWidth, targetHeight);
+		    // 图片压缩
+		    context.drawImage(img, 0, 0, targetWidth, targetHeight);
+		    // canvas转为blob并上传
+		    canvas.toBlob(function (blob) {
+				var form = new FormData()
+				blob.name = file.name
+				form.append('file',file)
+				console.log('blob', blob)
+				upload('upload/studentImage', form, successFunc1, errorFunc)
+		        
+		    },file.type || 'image/png');
+		}
+
 		function getObjectURL(file){
 			var url = null;
 		    if (window.createObjectURL != undefined) { // basic
@@ -268,23 +315,25 @@
 
 		$('#image-upload-1').change(function(){
 			var fileInput = $('#image-upload-1')[0];
-			var file = fileInput.files[0]
+			file = fileInput.files[0]
 			console.log('file',file)
 			var imgUrl = getObjectURL(file)
 			console.log('url', imgUrl)
 			$('#image-example-1').attr('src', imgUrl)
 			$('#upload-btn').hide()
-			
-			var form = new FormData()
-			form.append('file',file)
 
-			upload('upload/studentImage', form, successFunc1, errorFunc)
+			reader.readAsDataURL(file)
 			
-			})		
+			// var form = new FormData()
+			// form.append('file',file)
+
+			// upload('upload/studentImage', form, successFunc1, errorFunc)
+			
+		})		
 
 		$('#image-upload-2').change(function(){
 			var fileInput = $('#image-upload-2')[0];
-			var file = fileInput.files[0]
+			file = fileInput.files[0]
 			console.log(file)
 			var imgUrl = getObjectURL(file)
 			console.log('url', imgUrl)
