@@ -44,12 +44,14 @@
 		.form-group input{
 			position:absolute;
 			top:5px;
-			padding: 10px 5px;
+			padding-top:5px;
+			padding-bottom:5px;
 			height:40px;
 			line-height:40px;
 			width:70%;
 			border:none;
 			text-align: right;
+
 		}
 		.form-group input:focus{
 			outline: none;
@@ -86,6 +88,9 @@
 			width:80%;height:40px;
 			line-height:40px; 
 			text-align: right;
+			white-space: nowrap;
+			text-overflow: hidden;
+			overflow: hidden;
 			color:rgb(51, 51, 51); 
 			z-index:98;
 		}
@@ -102,19 +107,18 @@
 			height:10px;
 			background-color: rgb(246, 246, 246)
 		}
-		.btn-container{
+		#next-btn{
+			display: block;
 			width:120px;
 			height:50px;
 			margin:19px auto;
-			background-image: url(img/btnNextDis.png);
+			background-color:rgb(244, 200, 113);
+			border:none;
+			border-radius: 25px;
 			color:rgb(255, 255, 255);
 			font-size:18px;
 			text-align: center;
 		}
-		.btn-container p{
-			height:45px;
-			line-height: 45px;
-		} 
 	</style>
 </head>
 <body>
@@ -195,13 +199,13 @@
 					<div class="result" id="clazz-result"></div>
 				</div>
 				<div class="form-group">
-					<label for="student-id">学号</label>
-					<input type="number" id="student-id" placeholder="请输入学号">
+					<label for="number">学号</label>
+					<input type="text" id="number" placeholder="请输入学号">
 				</div>
 			</div>
-			<div class="btn-container" id="next-btn">
-				<p>下一步</p>
-			</div>
+			<button class="btn-container" id="next-btn">
+				下一步
+			</button>
 		</form>
 	</div>
 	<script src="js/zepto.min.js"></script>
@@ -226,7 +230,7 @@
 				year: $('#year').children('option:checked').text(),
 				clazz: $('#clazz').children('option:checked').text(),
 				clazzId: $('#clazz').children('option:checked').val(),
-				number: $('#student-id').val()
+				number: $('#number').val()
 			},
 			studentInfo = {}
 
@@ -355,7 +359,7 @@
 				$('#name').val(studentInfo.name)
 				data.name = studentInfo.name
 				
-				$('#student-id').val(studentInfo.number)
+				$('#number').val(studentInfo.number)
 				data.number = studentInfo.number
 
 				var sexStr = ''
@@ -505,10 +509,10 @@
 									isFinished = true
 
 									if(isFinished){
-										$('#next-btn').children().hide()
 										$('#next-btn')
-											.css('background-image','url(img/btnNextNor.png)')
-											.click(function(){
+											.css('background-color','rgb(242, 170, 25)')
+											.click(function(e){
+												e.preventDefault()
 												var dataJson = JSON.stringify(data)
 												sessionStorage.setItem('data', dataJson)
 												var studentInfoJson = JSON.stringify(studentInfo)
@@ -518,9 +522,8 @@
 											})
 
 									}else{
-										$('#next-btn').children().show()
 										$('#next-btn')
-											.css('background-image','url(img/btnNextDis.png)')
+											.css('background-color','rgb(244, 200, 113)')
 											.off()
 									}
 
@@ -628,6 +631,7 @@
 						isFinished = false
 						break
 					}
+				
 				}else if(data[i] === ''){
 					console.log(i,'false')
 					isFinished = false
@@ -637,10 +641,10 @@
 			}
 
 			if(isFinished){
-				$('#next-btn').children().hide()
 				$('#next-btn')
-					.css('background-image','url(img/btnNextNor.png)')
-					.click(function(){
+					.css('background-color','rgb(242, 170, 25)')
+					.click(function(e){
+						e.preventDefault()
 						var dataJson = JSON.stringify(data)
 						sessionStorage.setItem('data', dataJson)
 						var studentInfoJson = JSON.stringify(studentInfo)
@@ -650,9 +654,8 @@
 					})
 
 			}else{
-				$('#next-btn').children().show()
 				$('#next-btn')
-					.css('background-image','url(img/btnNextDis.png)')
+					.css('background-color','rgb(244, 200, 113)')
 					.off()
 			}
 		})	
@@ -683,10 +686,10 @@
 			}
 
 			if(isFinished){
-				$('#next-btn').children().hide()
 				$('#next-btn')
-					.css('background-image','url(img/btnNextNor.png)')
-					.click(function(){
+					.css('background-color','rgb(242, 170, 25)')
+					.click(function(e){
+						e.preventDefault()
 						var dataJson = JSON.stringify(data)
 						sessionStorage.setItem('data', dataJson)
 						
@@ -697,12 +700,18 @@
 					})
 
 			}else{
-				$('#next-btn').children().show()
 				$('#next-btn')
-					.css('background-image','url(img/btnNextDis.png)')
+					.css('background-color','rgb(244, 200, 113)')
 					.off()
 			}
 			console.log(isFinished)
+		})
+
+		$('#number').change(function(){
+			if(isNaN(Number($(this).val()))){
+				notice('学号只能是数字')
+				$(this).val('').focus()
+			}
 		})
 
 
