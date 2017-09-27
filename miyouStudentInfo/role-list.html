@@ -37,8 +37,6 @@
 			</tr>
 		</thead>
 		<tbody id="role-tbody" class="text-c" >
-		
-			
 		</tbody>
 	</table>
 	<div class="pagination r" id="pagination"></div>
@@ -52,7 +50,6 @@
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="static/js/cookie.js"></script>
 <script type="text/javascript" src="static/js/ajax.js"></script> 
 
 
@@ -174,7 +171,7 @@
 	function editRole(index){
 		var editRoleInfo = roleList[index]
 		sessionStorage.setItem('editRoleInfo',JSON.stringify(editRoleInfo))
-		layer_show('修改角色','role-add-edit.html','','300');	
+		layer_show('修改角色','role-add-edit.html','','600');	
 	}
 	//删除
 	function deleteRole(index){

@@ -31,14 +31,14 @@
 	<form action="" method="post" class="form form-horizontal" id="form-user-add">
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">
-				菜单名称：</label>
+				<span class="c-red">*</span>菜单名称：</label>
 			<div class="formControls col-xs-6 col-sm-6">
 				<input type="text" class="input-text" value="" placeholder="" id="menu-name">
 			</div>
 		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">
-				父菜单：</label>
+				<span class="c-red">*</span>父菜单：</label>
 			<div class="formControls col-xs-6 col-sm-6">
 				<span class="select-box">
 					<select class="select" size="1" name="proId" id="menu-parent">
@@ -48,7 +48,7 @@
 		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">
-				菜单地址：</label>
+				<span class="c-red">*</span>菜单地址：</label>
 			<div class="formControls col-xs-6 col-sm-6">
 				<input type="text" class="input-text" value="" placeholder="" id="menu-url"> 
 			</div>
@@ -92,7 +92,7 @@ function GetQueryString(name){
 $(function(){
 	var menuList = JSON.parse(sessionStorage.getItem('menuList'))
 	console.log(menuList)
-	var parentOptions = '<option value="0">无</option>'
+	var parentOptions = ''
 	for(i in menuList){
 		if(menuList[i].pId === 0){
 			var menu = menuList[i]
@@ -156,9 +156,9 @@ $('#submit-btn').click(function(event){
 	if($('#menu-name').val() === ''){
 		parent.layer.msg('请输入菜单名称')
 	}
-	// else if(!$('#menu-url').val()){
-	// 	parent.layer.msg('请输入菜单地址')
-	// }
+	else if(!$('#menu-url').val()){
+		parent.layer.msg('请输入菜单地址')
+	}
 	else{
 		parent.layer.confirm('确定修改吗？',{
 			title: '提示',
@@ -180,7 +180,7 @@ $('#submit-btn').click(function(event){
 							parent.layer.msg('修改成功')
 							setTimeout(function(){
 								parent.location.reload()
-							},1500)
+							},1000)
 								
 						}else if(code === 0){
 							parent.layer.open({
@@ -237,10 +237,10 @@ $('#delete-btn').click(function(event){
 					successFunc: function(response){
 						var code = response.code
 						if(code === 1){
-							parent.layer.msg('删除成功')
+							parent.layer.msg('已删除')
 							setTimeout(function(){
 								parent.location.reload()
-							},1500)
+							},1000)
 								
 						}else if(code === 0){
 							parent.layer.open({

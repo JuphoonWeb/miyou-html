@@ -27,7 +27,7 @@
 		}
 		form{
 			position: absolute;
-			top:450px;
+			top:400px;
 			left: 50%;
 			transform: translateX(-50%);
 			width: 400px;
@@ -322,7 +322,6 @@
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>	
-<script type="text/javascript" src="static/js/cookie.js"></script>	
 <script type="text/javascript" src="static/js/ajax.js"></script>
 
 
@@ -334,9 +333,12 @@
 		 			if(response.code === 1){
 		 				console.log('登录成功')
 		 				console.log('loginData',response)
+		 				var data = response.data
 		 				sessionStorage.setItem('login','true')
 		 				sessionStorage.setItem('username',username)
-		 				sessionStorage.setItem('uuid',response.data.uuid)
+		 				sessionStorage.setItem('uuid',data.uuid)
+		 				sessionStorage.setItem('loginData',JSON.stringify(data))
+		 				sessionStorage.setItem('menus',JSON.stringify(data.menus))
 		 				window.open('index.html','_self')
 
 		 			}else if(response.code === 0){
