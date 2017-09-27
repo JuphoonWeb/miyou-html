@@ -17,22 +17,16 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
 <title>密友圈成员</title>
-<style>
-	.nomember{
-		display: none;
-		margin:100px auto;
-	}
-</style>
 </head>
 <body  onload="init()"   >
 
 <div class="page-container" id="member-list">
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
-		<form onsubmit="return false" action="" class="form-inline" style="margin-top: 10px" class="search-box">
+		<form onsubmit="return false" action="" class="form-inline" style="margin-top: 10px" class="search-box" id="search-box">
 				<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据手机号查询密友圈成员(支持模糊查询)">
 				<button id="search-btn" onclick="init()" title="根据手机号码查询密友圈" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
 		</form>
-		<span class="r">共有成员：<strong id="data-num">0</strong> 名</span> 
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
 	<table class="table table-bordered table-border table-hover table-bg " id="member-table">
@@ -51,9 +45,6 @@
 	<div class="nodata text-c" id="nodata">
 		<img src="static/images/nodata.svg" alt="">
 	</div>
-	<div class="text-c nomember" id="nomember">
-		<h3>该密友圈内暂无成员</h3>
-	</div>
 </div>
 
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
@@ -65,7 +56,7 @@
 <script type="text/javascript" src="static/js/ajax.js"></script>
  
 <script type="text/javascript">
-	var isInit = false
+	var isPageInit = false
 	var url = 'admin/getMiyou'
 	var size = 10
 	var currPage = 1
@@ -78,17 +69,17 @@
 					console.log('data:',data)
 					$('#nodata').hide()
 					if(data.total === 0){
-						$('#nomember').show()
+						$('#nodata').show()
 						$('#member-table').hide()
 						return
 					}else{
-						$('#nomember').hide()
+						$('#nodata').hide()
 						$('#member-table').show()
 					}
 					var trs = ''
 					$('#member-tbody').children().remove()
 					for(var i=0; i<list.length; i++){						
-						var sequence = i+1
+						var sequence = (currPage-1)*size+i+1
 						// console.log(list[i])
 						var name = list[i].miyouName || ''
 
@@ -97,7 +88,8 @@
 					// 判断数据是否取得成功
 					$('#member-tbody').append(trs)
 					$('#data-num').text(data.total)
-					if(!isInit && data.total > size){
+					if(!isPageInit && data.total > size){
+						$('#pagination').show()
 						var pages = Math.ceil(data.total/size)
 						laypage({
 						    cont: 'pagination',
@@ -123,7 +115,7 @@
 						    }
 					  });
 					}
-					isInit = true
+					isPageInit = true
 					
 
 				}
@@ -156,7 +148,7 @@
 	var errorFunc = function (xhr,status) {
 				console.log('error', status)
 				layer.closeAll()
-				if(!isInit){	
+				if(!isPageInit){	
 					layer.closeAll()
 					$('#nodata').show()
 				}else{
@@ -188,7 +180,9 @@
 		
 		currPage = 1
 		searchPhone = $('#search-phone').val()
-	
+		isPageInit = false
+		$('#pagination').hide()
+
 		ajax({
 			url: url,
 			data: {

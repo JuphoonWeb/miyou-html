@@ -33,19 +33,19 @@
 		<form action="" method="post" class="form form-horizontal" id="form-member-add">
 	
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>用户名：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>用户名：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="text" class="input-text" value="" placeholder="请输入用户名" id="username" >
 				</div>
 			</div>
 			<div class="row cl" id="psw-init-container">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>密码：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>密码：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="password" class="input-text" value="" placeholder="请输入密码" id="psw-init" >
 				</div>
 			</div>
 			<div class="row cl" id="psw-confirm-container">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>确认密码：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>确认密码：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="password" class="input-text" value="" placeholder="请确认密码" id="psw-confirm" >
 				</div>
@@ -65,7 +65,7 @@
 			</div>
 
 			<div class="row cl" id="city-container">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>角色：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>角色：</label>
 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
 					<select class="select" size="1"  id="role">
 					</select>
@@ -201,7 +201,8 @@
 						username: username,
 						phone: phone,
 						email: email,
-						id: roleId
+						id: editAccountInfo.id,
+						roleId: roleId
 					},
 					successFunc: function(response){
 						var status = response.code

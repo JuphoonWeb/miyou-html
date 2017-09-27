@@ -22,6 +22,7 @@
 <style>
 	input,select{
 		height:30px;
+		font-size:25px;
 	}
 	input.input-text{
 		padding-left: 10px
@@ -39,14 +40,14 @@
 	<form action="" method="post" class="form form-horizontal" id="form-menu-add">
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">
-				菜单名称：</label>
+				<span class="c-red">*</span>菜单名称：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<input type="text" class="input-text" value="" placeholder="" id="menu-name">
 			</div>
 		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">
-				父菜单：</label>
+				<span class="c-red">*</span>父菜单：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<span class="select-box">
 					<select class="select" size="1" id="menu-parent">
@@ -54,9 +55,9 @@
 				</span>
 			</div>
 		</div>
-		<div class="row cl">
+		<div class="row cl" id="menu-url-container">
 			<label class="form-label col-xs-4 col-sm-2">
-				菜单地址：</label>
+				<span class="c-red">*</span>菜单地址：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<input type="text" class="input-text" value="" placeholder="" id="menu-url"> 
 			</div>
@@ -64,7 +65,7 @@
 
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">
-				菜单顺序：</label>
+				<span class="c-red">*</span>菜单顺序：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<input type="text" class="input-text" value="" placeholder="" id="menu-order">
 			</div>
@@ -72,7 +73,7 @@
 
 		<div class="row cl" id="menu-icon-container">
 			<label class="form-label col-xs-4 col-sm-2">
-				菜单图标：</label>
+				<span class="c-red">*</span>菜单图标：</label>
 			<div class="formControls col-xs-8 col-sm-9">
 				<span class="select-box">
 					<select class="select Hui-iconfont" size="1" id="menu-icon">
@@ -109,167 +110,16 @@ $(function(){
 	}
 	$('#menu-parent').append('<option value="0">无</option>')
 
-	var iconList	=	[
-		'&#xe684;',
-		'&#xe667;',
-		'&#xe64e;',
-		'&#xe665;',
-		'&#xe709;',
-		'&#xe632;',
-		'&#xe66b;',
-		'&#xe66c;',
-		'&#xe640;',
-		'&#xe63d;',
-		'&#xe67d;',
-		'&#xe603;',
-		'&#xe604;',
-		'&#xe68f;',
-		'&#xe606;',
-		'&#xe644;',
-		'&#xe645;',
-		'&#xe60b;',
-		'&#xe609;',
-		'&#xe6e2;',
-		'&#xe647;',
-		'&#xe600;',
-		'&#xe6a1;',
-		'&#xe60c;',
-		'&#xe6df;',
-		'&#xe61d;',
-		'&#xe610;',
-		'&#xe61f;',
-		'&#xe63f;',
-		'&#xe605;',
-		'&#xe60e;',
-		'&#xe6a6;',
-		'&#xe706;',
-		'&#xe6a7;',
-		'&#xe608;',
-		'&#xe6a8;',
-		'&#xe676;',
-		'&#xe677;',
-		'&#xe601;',
-		'&#xe6f7;',
-		'&#xe617;',
-		'&#xe6dc;',
-		'&#xe6de;',
-		'&#xe642;',
-		'&#xe641;',
-		'&#xe6bc;',
-		'&#xe6bd;',
-		'&#xe615;',
-		'&#xe614;',
-		'&#xe619;',
-		'&#xe695;',
-		'&#xe6e0;',
-		'&#xe6dd;',
-		'&#xe6e1;',
-		'&#xe631;',
-		'&#xe6e6;',
-		'&#xe6db;',
-		'&#xe6e3;',
-		'&#xe6e5;',
-		'&#xe6e4;',
-		'&#xe720;',
-		'&#xe725;',
-		'&#xe726;',
-		'&#xe72a;',
-		'&#xe728;',	
-		'&#xe625;',
-		'&#xe67f;',
-		'&#xe616;',
-		'&#xe613;',
-		'&#xe60f;',
-		'&#xe64b;',
-		'&#xe66f;',
-		'&#xe62e;',
-		'&#xe633;',
-		'&#xe634;',
-		'&#xe646;',
-		'&#xe681;',
-		'&#xe636;',
-		'&#xe687;',
-		'&#xe637;',
-		'&#xe691;',
-		'&#xe692;',
-		'&#xe639;',
-		'&#xe623;',
-		'&#xe626;',
-		'&#xe63e;',
-		'&#xe63c;',
-		'&#xe627;',
-		'&#xe6a4;',
-		'&#xe6a5;',
-		'&#xe612;',
-		'&#xe685;',
-		'&#xe72d;',
-		'&#xe727;',
-		'&#xe72b;',
-		'&#xe62c;',
-		'&#xe60d;',
-		'&#xe60a;',
-		'&#xe705;',
-		'&#xe607;',
-		'&#xe602;',
-		'&#xe638;',
-		'&#xe70d;',
-		'&#xe62b;',
-		'&#xe653;',
-		'&#xe62d;',
-		'&#xe643;',
-		'&#xe6b4;',
-		'&#xe6cc;',
-		'&#xe611;',
-		'&#xe6d0;',
-		'&#xe72c;',
-		'&#xe6d3;',
-		'&#xe621;',
-		'&#xe635;',
-		'&#xe61e;',
-		'&#xe61a;',
-		'&#xe618;',
-		'&#xe61c;',
-		'&#xe6cf;',
-		'&#xe6c7;',
-		'&#xe6a3;',
-		'&#xe696;',
-		'&#xe708;',
-		'&#xe64c;',
-		'&#xe64f;',
-		'&#xe650;',
-		'&#xe651;',
-		'&#xe652;',
-		'&#xe64d;',
-		'&#xe654;',
-		'&#xe655;',
-		'&#xe675;',
-		'&#xe624;',
-		'&#xe62a;',
-		'&#xe6cb;',
-		'&#xe682;',
-		'&#xe683;',
-		'&#xe68c;',
-		'&#xe68d;',
-		'&#xe6be;',
-		'&#xe6c0;',
-		'&#xe6bf;',
-		'&#xe690;',
-		'&#xe69c;',
-		'&#xe629;',
-		'&#xe6c1;',
-		'&#xe6c2;',
-		'&#xe6c3;',
-		'&#xe6c4;',
-		'&#xe6c6;',
-		'&#xe6c9;',
-		'&#xe671;',
-		'&#xe69f;',
-		'&#xe6a0;',
-		'&#xe64a;',
-		'&#xe6a2;',
-		'&#xe6d1;',
-		'&#xe6d2;',
-		'&#xe6d3;',
+	var iconList	=	['&#xe684;','&#xe667;','&#xe64e;','&#xe665;','&#xe709;','&#xe632;','&#xe66b;',
+				'&#xe66c;','&#xe640;','&#xe63d;','&#xe67d;','&#xe603;','&#xe604;','&#xe68f;','&#xe606;','&#xe644;','&#xe645;','&#xe60b;','&#xe609;','&#xe6e2;','&#xe647;','&#xe600;','&#xe6a1;','&#xe60c;',
+				'&#xe6df;','&#xe61d;','&#xe610;','&#xe61f;','&#xe63f;','&#xe605;','&#xe60e;','&#xe6a6;','&#xe706;','&#xe6a7;','&#xe608;','&#xe6a8;','&#xe676;','&#xe677;','&#xe601;','&#xe6f7;','&#xe617;',
+				'&#xe6dc;','&#xe6de;','&#xe642;','&#xe641;','&#xe6bc;','&#xe6bd;','&#xe615;','&#xe614;','&#xe619;','&#xe695;','&#xe6e0;','&#xe6dd;','&#xe6e1;','&#xe631;','&#xe6e6;','&#xe6db;','&#xe6e3;',
+				'&#xe6e5;','&#xe6e4;','&#xe720;','&#xe725;','&#xe726;','&#xe72a;','&#xe728;','&#xe625;','&#xe67f;','&#xe616;','&#xe613;','&#xe60f;','&#xe64b;','&#xe66f;','&#xe62e;','&#xe633;','&#xe634;',
+				'&#xe646;','&#xe681;','&#xe636;','&#xe687;','&#xe637;','&#xe691;','&#xe692;','&#xe639;','&#xe623;','&#xe626;','&#xe63e;','&#xe63c;','&#xe627;','&#xe6a4;','&#xe6a5;','&#xe612;','&#xe685;',
+				'&#xe72d;','&#xe727;','&#xe72b;','&#xe62c;','&#xe60d;','&#xe60a;','&#xe705;','&#xe607;','&#xe602;','&#xe638;','&#xe70d;','&#xe62b;','&#xe653;','&#xe62d;','&#xe643;','&#xe6b4;','&#xe6cc;','&#xe611;','&#xe6d0;','&#xe72c;','&#xe6d3;','&#xe621;','&#xe635;','&#xe61e;','&#xe61a;',
+				'&#xe618;','&#xe61c;','&#xe6cf;','&#xe6c7;','&#xe6a3;','&#xe696;','&#xe708;','&#xe64c;','&#xe64f;','&#xe650;','&#xe651;','&#xe652;','&#xe64d;','&#xe654;','&#xe655;','&#xe675;','&#xe624;',
+				'&#xe62a;','&#xe6cb;','&#xe682;','&#xe683;','&#xe68c;','&#xe68d;','&#xe6be;','&#xe6c0;','&#xe6bf;','&#xe690;','&#xe69c;','&#xe629;','&#xe6c1;','&#xe6c2;','&#xe6c3;','&#xe6c4;','&#xe6c6;',
+				'&#xe6c9;','&#xe671;','&#xe69f;','&#xe6a0;','&#xe64a;','&#xe6a2;','&#xe6d1;','&#xe6d2;','&#xe6d3;','&#xe669;','&#xe66a;','&#xe670;','&#xe672;','&#xe673;','&#xe6b8;','&#xe6b9;','&#xe6ba;','&#xe628;','&#xe6bb;','&#xe6b6;','&#xe6b7;','&#xe620;'
 	]
 	var iconOptions = ''
 	for (var i in iconList){
@@ -287,6 +137,7 @@ $('#menu-parent').change(function(){
 	}
 })
 
+
 $('#submit-btn').click(function(event){
 	event.preventDefault()
 	var menuName = $('#menu-name').val() 
@@ -301,7 +152,7 @@ $('#submit-btn').click(function(event){
 	}else if(menuOrder === ''){
 		layer.msg('请输入菜单顺序')
 	}else if(! (/^[0-9]*$/.test(menuOrder))){
-		layer.msg('菜单顺序只能为纯数字')
+		layer.msg('菜单顺序只能为数字')
 	}else{
 		ajax({
 			url: 'admin/menu/addMenu',
@@ -319,7 +170,7 @@ $('#submit-btn').click(function(event){
 							layer.msg('新增成功')
 							setTimeout(function(){
 								parent.location.reload()
-							},1500)
+							},1000)
 								
 						}else if(code === 0){
 							layer.open({

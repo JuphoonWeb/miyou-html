@@ -28,23 +28,23 @@
 		<form action="" method="post" class="form form-horizontal" id="form-member-add">
 	
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">角色名：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>角色名：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="text" class="input-text" value="" placeholder="请输入角色名" id="role-name" >
 				</div>
 			</div>
 
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">角色描述：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>角色描述：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<textarea id="role-desc" cols="" maxlength="100" rows="" class="textarea"  placeholder="角色描述"></textarea>
 				</div>
 			</div>
 
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">权限分配：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限分配：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<ul id="treeDemo" class="ztree"></ul>
+					<ul id="treeDemo" class="ztree" style=""></ul>
 				</div>
 			</div>
 			
@@ -117,7 +117,6 @@
 						var pId = treeNode.id
 						for(var i = 0; i < zNodes.length; i++){
 							if(zNodes[i].pId == pId){
-								console.log('hhhhhhh')
 								editMenuIds.push(zNodes[i].id)
 							}
 						}
@@ -259,6 +258,9 @@
 						var status = response.code
 						if(status === 1){
 							layer.msg('修改成功')
+							setTimeout(function(){
+								parent.location.reload()
+							},1500)
 						}else if(status === 0){
 							parent.layer.open ({
 								type: 0,

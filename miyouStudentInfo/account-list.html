@@ -41,8 +41,7 @@
 				<th width="200">操作</th>
 			</tr>
 		</thead>
-		<tbody id="account-tobody" class="text-c" >
-			
+		<tbody id="account-tobody" class="text-c" >	
 		</tbody>
 	</table>
 	<div class="pagination r" id="pagination"></div>
@@ -56,7 +55,6 @@
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="static/js/cookie.js"></script>
 <script type="text/javascript" src="static/js/ajax.js"></script> 
 
 
@@ -91,13 +89,23 @@
 					var trs = ''
 					for(var i = 0; i<list.length; i++){
 						var sequence = (currPage-1)*size+i+1
+						var id = list[i].id
+						var status = list[i].userStatus ? 
+										'<span class="label label-success radius">已启用</span>'+
+										'<button onclick="disableAccount('+i+')" style="margin-left:15px" class="btn btn-warning-outline radius">'+
+											'<span class="Hui-iconfont">&#xe631;</span>禁用'+
+										'</button>': 
+										'<span class="label label-warning radius">已禁用</span>'+
+										'<button onclick="enableAccount('+i+')" style="margin-left:15px" class="btn btn-success-outline radius">'+
+											'<span class="Hui-iconfont">&#xe6e1;</span>启用'+
+										'</button>'
 						trs += '<tr>'+
 									'<td>'+sequence+'</td>'+
 									'<td>'+list[i].username+'</td>'+
 									'<td>'+list[i].phone+'</td>'+
 									'<td>'+list[i].email+'</td>'+
 									'<td>'+list[i].roleName+'</td>'+
-									'<td>'+list[i].userStatus+'</td>'+
+									'<td>'+status+'</td>'+
 									'<td>'+
 										'<button onclick="editAccount('+i+')" class="btn btn-secondary-outline radius"><span class="Hui-iconfont">&#xe60c;</span>修改'+
 										'</button>'+
@@ -158,17 +166,83 @@
 		})
 	}
 
+	//ajax error函数
+	function errorFunc(xhr, status){
+		layer.open({
+			type: 0,
+			closeBtn: 0,
+			icon:7, 
+			title: '出现错误',
+			content: status
+		})
+	}
+
 	//	添加
 	function addAccount(){
 		sessionStorage.removeItem('editAccountInfo')
 		layer_show('新增账号','account-add-edit.html','','500');
+	}
+	//禁用
+	function disableAccount(index){
+		var username = accountList[index].username
+		var id = accountList[index].id
+		layer.confirm('确定禁用 '+username+' 吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url: 'admin/user/updateStatus',
+					method: 'post',
+					data: {
+						id: id,
+						userStatus: 0
+					},
+					successFunc: function(){
+						layer.msg('已禁用')
+						setTimeout(function(){
+							window.location.reload()
+						},1500)
+					},
+					errorFunc: errorFunc
+				})
+			}
+		});
+		
+	}
+	//启用
+	function enableAccount(index){
+		var username = accountList[index].username
+		var id = accountList[index].id
+		layer.confirm('确定启用 '+username+' 吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url: 'admin/user/updateStatus',
+					method: 'post',
+					data: {
+						id: id,
+						userStatus: 1
+					},
+					successFunc: function(){
+						layer.msg('已启用')
+						setTimeout(function(){
+							window.location.reload()
+						},1500)
+					},
+					errorFunc: errorFunc
+				})
+			}
+		});
 	}
 	//编辑
 	function editAccount(index){
 		var editAccountInfo = accountList[index]
 		console.log(editAccountInfo)
 		sessionStorage.setItem('editAccountInfo', JSON.stringify(editAccountInfo))
-		layer_show('修改账号','account-add-edit.html','','500');
+		layer_show('修改账号','account-add-edit.html','','400');
 	}
 	//删除
 	function deleteAccount(index){

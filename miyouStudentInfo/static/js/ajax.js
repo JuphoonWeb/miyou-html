@@ -7,7 +7,8 @@ function ajax(dataObj){
 
 	})
     // var url = 'http://192.168.0.46:8086/miyou/'
-    var url = 'http://218.204.254.209:28812/miyou/'
+    var url = 'http://192.168.15.161:8086/miyou/'
+    // var url = 'http://218.204.254.209:28812/miyou/'
 
 
     url += dataObj.url
@@ -39,7 +40,6 @@ function ajax(dataObj){
 		}
 	console.log('async', async)
 
-
 	$.ajax({
 		
 		url: url,
@@ -50,7 +50,8 @@ function ajax(dataObj){
 	    contentType: contentType,
 		headers: {
 			token: sessionStorage.getItem('uuid'),
-			// "Access-Control-Allow-Headers": "Content-Type"
+			'Menu-Url': window.location.href.split('/').reverse()[0] 
+
 		},
 		dataType : 'json',
 		data: data,
