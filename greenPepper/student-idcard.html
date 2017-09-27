@@ -24,10 +24,12 @@
 			margin:37px auto 20px;
 			color:rgb(255, 168, 11);
 		}
+		.upload-container{
+			height:400px;
+		}
 		#upload-1{
 			position: relative;
-			width:100%;
-			height:28%;
+			height:190px;
 			border-radius: 8px;
 			text-align: center;
 		}
@@ -59,7 +61,7 @@
 			display: none;
 			position:relative;
 			width: 82%;
-			height:28%;
+			height:190px;
 			margin:20px 33px;
 			border-radius:8px;
 		}
@@ -91,30 +93,24 @@
 			z-index:100;
 		}
 
-		.btn-container{
-			position: absolute;
+		#submit{
 			width:120px;
 			height:50px;
-			bottom:42px;
-			left:50%;
-			transform: translateX(-50%);
-			/*margin:30px auto 0;*/
+			margin:30px auto 0;
 			color:rgb(255, 255, 255);
+			border:none;
 			font-size:18px;
 			text-align: center;
-			background-image: url(img/btnOkDis.png);
+			border-radius: 25px;
+			background-color:rgb(244, 200, 113);
 
-		}
-		.btn-container p{
-			height: 45px;
-			line-height: 45px;
 		}
 	</style>
 </head>
 <body>
 	<div class="container">
-		<!-- <form action=""> -->
 		<p class="title">手持学生证照片及个人信息页</p>
+		<div class="upload-container">	
 			<div class="upload" id="upload-1">
 				<img id="image-example-1" src="img/imgExample.png" alt="">
 				<button id="upload-btn">点击上传照片</button>
@@ -129,9 +125,9 @@
 				</div>
 				<input type="file" accept="image/*" id="image-upload-2">
 			</div>
-			<div class="btn-container" id="submit"><p>提交</p></div>
+		</div>	
+		<button id="submit">提交</button>
 
-		<!-- </form> -->
 	</div>
 	<script src="js/zepto.min.js"></script>
 	<script src="js/dialog.min.js"></script>
@@ -143,53 +139,7 @@
 		var data = JSON.parse(sessionStorage.getItem('data'))
 		data.phone = sessionStorage.getItem('phone')
 
-		var file = null
-		var reader = new FileReader()
-		var img = new Image()
-		var canvas = document.createElement('canvas')
-		var context = canvas.getContext('2d')
-
-		reader.onload = function(e) {
-		    img.src = e.target.result;
-		};
-
-		img.onload = function(){
-			var originWidth = this.width;
-		    var originHeight = this.height;
-		    // 最大尺寸限制
-		    var maxWidth = 600, maxHeight = 600;
-		    // 目标尺寸
-		    var targetWidth = originWidth, targetHeight = originHeight;
-		    // 图片尺寸超过600x600的限制
-		    if (originWidth > maxWidth || originHeight > maxHeight) {
-		        if (originWidth / originHeight > maxWidth / maxHeight) {
-		            // 更宽，按照宽度限定尺寸
-		            targetWidth = maxWidth;
-		            targetHeight = Math.round(maxWidth * (originHeight / originWidth));
-		        } else {
-		            targetHeight = maxHeight;
-		            targetWidth = Math.round(maxHeight * (originWidth / originHeight));
-		        }
-		    }
-		        
-		    // canvas对图片进行缩放
-		    canvas.width = targetWidth;
-		    canvas.height = targetHeight;
-		    // 清除画布
-		    context.clearRect(0, 0, targetWidth, targetHeight);
-		    // 图片压缩
-		    context.drawImage(img, 0, 0, targetWidth, targetHeight);
-		    // canvas转为blob并上传
-		    canvas.toBlob(function (blob) {
-				var form = new FormData()
-				blob.name = file.name
-				form.append('file',file)
-				console.log('blob', blob)
-				upload('upload/studentImage', form, successFunc1, errorFunc)
-		        
-		    },file.type || 'image/png');
-		}
-
+	
 		function getObjectURL(file){
 			var url = null;
 		    if (window.createObjectURL != undefined) { // basic
@@ -238,7 +188,7 @@
 							data.stuCardUrl = response.data
 
 							$('#upload-2').show()
-							$('#submit').css('background-image','url(img/btnOkNor.png)')
+							$('#submit').css('background-color','rgb(242, 170, 25)')
 							$('#submit').click(function(e){
 								e.preventDefault()
 								ajax({
@@ -322,12 +272,12 @@
 			$('#image-example-1').attr('src', imgUrl)
 			$('#upload-btn').hide()
 
-			reader.readAsDataURL(file)
+			// reader.readAsDataURL(file)
 			
-			// var form = new FormData()
-			// form.append('file',file)
+			var form = new FormData()
+			form.append('file',file)
 
-			// upload('upload/studentImage', form, successFunc1, errorFunc)
+			upload('upload/studentImage', form, successFunc1, errorFunc)
 			
 		})		
 
