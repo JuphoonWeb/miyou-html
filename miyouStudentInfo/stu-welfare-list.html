@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
     <link rel="stylesheet" type="text/css" href="static/css/main.css" />
-    <title>学校管理</title>
+    <title>福利管理</title>
 </head>
 <body  onload="init()"   >
 
@@ -139,9 +139,9 @@
                     content: response.error
                 })
             }else if(response.code === -1){
-                removeCookie('uuid')
-                removeCookie('login')
-                removeCookie('username')
+                sessionStorage.removeItem('uuid')
+                sessionStorage.removeItem('login')
+                sessionStorage.removeItem('username')
                 layer.open({
                     type: 0,
                     closeBtn: 0,
@@ -174,7 +174,7 @@
         }
 
         function init(){
-            if(getCookie('login') === ''){
+            if(!sessionStorage.getItem('uuid')){
                 layer.open({
                     type: 0,
                     closeBtn: 0,

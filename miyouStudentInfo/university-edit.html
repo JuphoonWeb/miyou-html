@@ -26,7 +26,7 @@
 	<article class="page-container">
 		<form action="" method="post" class="form form-horizontal" id="form-member-add">
 			<div class="row cl" id="city-container">
-				<label class="form-label col-xs-4 col-sm-3">城市：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>城市：</label>
 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
 					<select class="select" size="1" name="proId" id="city">
 						<option value="" selected>请选择学校所在城市</option>
@@ -36,7 +36,7 @@
 			</div>
 			
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">学校：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>学校：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="text" class="input-text" value="" placeholder="请输入学校名称" id="name" name="name">
 				</div>
@@ -71,10 +71,23 @@
 <script type="text/javascript" src="static/js/ajax.js"></script>
 <script>
 
-	var universityInfo = JSON.parse(getCookie('universityInfo'))
+	var universityInfo = JSON.parse(sessionStorage.getItem('universityInfo'))
 	console.log('universityInfo', universityInfo)
 
 	$(document).ready(function(){
+		if(!sessionStorage.getItem('uuid')){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				shade: [1,'#fff'],
+				title: '未登录',
+				icon: 7,
+				content: '请登录',
+				yes: function () {
+					parent.window.open('login.html', '_self')
+				}
+			})
+		}
 		ajax({
 			url: 'admin/getDistrict',
 			data: {
@@ -92,9 +105,9 @@
 						content: response.error
 					})
 				}else if(response.code === -1){
-					removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+					sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,
@@ -154,9 +167,9 @@
 		}else if(universityName === ''){
 			layer.msg('请输入学校名称')
 		}
-		else if(fileUrl === ''){
-			layer.msg('请导入校徽图片')
-		}
+		// else if(fileUrl === ''){
+		// 	layer.msg('请导入校徽图片')
+		// }
 		else{
 			
 			var form = new FormData()
@@ -186,9 +199,9 @@
 							content: response.error
 						})
 					}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,

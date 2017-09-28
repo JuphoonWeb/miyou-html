@@ -83,14 +83,13 @@
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="static/js/cookie.js"></script>
 <script type="text/javascript" src="static/js/ajax.js"></script>
 
 <script type="text/javascript">
 	var isPageInit = false
 	var currPage = 1
 	var size = 10
-	var uuid = getCookie('uuid')
+	var uuid = sessionStorage.getItem('uuid')
 	var searchPhone = ''
 	var searchUniversity = ''
 	var url = 'admin/student'
@@ -169,9 +168,9 @@
 				content: response.error
 			})
 		}else if(response.code === -1){
-				removeCookie('uuid')
-				removeCookie('login')
-				removeCookie('username')
+				sessionStorage.removeItem('uuid')
+				sessionStorage.removeItem('login')
+				sessionStorage.removeItem('username')
 				layer.open({
 					type: 0,
 					closeBtn: 0,
@@ -216,6 +215,19 @@
 
 	function init(){
 
+		if(!sessionStorage.getItem('uuid')){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				shade: [1,'#fff'],
+				title: '未登录',
+				icon: 7,
+				content: '请登录',
+				yes: function () {
+					parent.window.open('login.html', '_self')
+				}
+			})
+		}
 		currPage = 1
 		
 		console.log('uuid',uuid) 
@@ -296,9 +308,9 @@
 								content: response.error
 							})
 						}else if(response.code === -1){
-								removeCookie('uuid')
-								removeCookie('login')
-								removeCookie('username')
+								sessionStorage.removeItem('uuid')
+								sessionStorage.removeItem('login')
+								sessionStorage.removeItem('username')
 								layer.open({
 									type: 0,
 									closeBtn: 0,
@@ -336,7 +348,63 @@
 			icon:3,
 			closeBtn: 0,
 			yes: function(){
-				
+				ajax({
+					url: 'admin/chgrichMiyouMember',
+					method: 'post',
+					data: {
+						operationReq: 'createrichman',
+						serverPhone: studentList[index].phone,
+						mainprod: '85817',	
+					},
+					successFunc: function(response){
+						
+						if(response.code === 1){
+							var data = response.data
+							if(data.rettype == 0 || data.retcode == 5){
+								layer.msg('开通成功')
+								setTimeout(function(){
+									window.location.reload()
+								}, 1500)
+							}else{
+								layer.open({
+									type: 0,
+									closeBtn: 0,
+									icon:7, 
+									title: '开通失败',
+									content: data.retmsg
+								})	
+							}
+						}else if(response.code === 0 || response.code === -2) {
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '开通失败',
+								content: response.error
+							})
+
+						}else if(response.code === -1){
+								sessionStorage.removeItem('uuid')
+								sessionStorage.removeItem('login')
+								sessionStorage.removeItem('username')
+								
+								layer.open({
+									type: 0,
+									closeBtn: 0,
+									icon:7, 
+									title: '重新登录',
+									content: '超过30分钟未操作，已自动登出，请重新登录',
+									yes: function() {
+										parent.window.open('login.html', '_self')
+									}
+								})
+
+						}	
+					},
+					errorFunc: function(){
+
+					}
+				})
 			}
 		});
 	}
@@ -347,7 +415,7 @@
 		var name = studentList[index].name || ''
 		console.log('id:', id)
 		console.log('name', name)
-		setCookie('miyouCircleId',id)
+		sessionStorage.setItem('miyouCircleId',id)
 		var title = name ? '密友圈成员 （群主：'+name+'）': '密友圈成员 （群主：匿名）'
 		// console.log(title)
 		layer_show(title,'miyou-circle-member.html','','650');
@@ -439,9 +507,9 @@
 					})
 
 				}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,

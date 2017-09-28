@@ -28,7 +28,7 @@
 			
 			
 			<div class="row cl" id="city-container">
-					<label class="form-label col-xs-4 col-sm-3">城市：</label>
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>城市：</label>
 					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
 						<select class="select" size="1" name="city" id="city">
 							<option value="" selected>请选择城市</option>
@@ -37,7 +37,7 @@
 					</div>
 			</div>
 			<div class="row cl" id="university-container">
-				<label class="form-label col-xs-4 col-sm-3">大学：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>大学：</label>
 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
 					<select class="select" size="1" name="university"  id="university">
 						<option value="" selected>请选择大学</option>
@@ -47,7 +47,7 @@
 			</div>
 
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">入学时间：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>入学时间：</label>
 				
 				<div class="formControls col-xs-8 col-sm-9"> 
 						<input type="text" onfocus="WdatePicker({ maxDate:'\'%y-%M-%d\'}' })" id="enrol-time" class="input-text Wdate formControls" placeholder="入学时间" style="padding-left: 10px">
@@ -55,7 +55,7 @@
 			</div>
 
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">院系：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>院系：</label>
 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
 					<select class="select" size="1" name="school"  id="school">
 						<option value="" selected>请选择院系</option>
@@ -65,7 +65,7 @@
 			</div>
 
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">专业：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>专业：</label>
 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
 					<select class="select" size="1" name="major"  id="major">
 						<option value="" selected>请选择专业</option>
@@ -74,13 +74,13 @@
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">姓名：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>姓名：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="text" class="input-text" value="" placeholder="" id="name" name="name">
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">性别：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>性别：</label>
 				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
 					<div class="radio-box">
 						<input name="sex" type="radio" id="sex-1" value="1">
@@ -93,7 +93,7 @@
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">手机：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>手机：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="text" class="input-text" value="" placeholder="" id="phone" name="phone">
 				</div>
@@ -136,9 +136,9 @@
 						content: response.error
 					})
 				}else if(response.code === -1){
-					removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+					sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,
@@ -182,7 +182,19 @@
 
 
 	$(document).ready(function(){
-		
+		if(!sessionStorage.getItem('uuid')){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				shade: [1,'#fff'],
+				title: '未登录',
+				icon: 7,
+				content: '请登录',
+				yes: function () {
+					parent.window.open('login.html', '_self')
+				}
+			})
+		}
 
 		ajax({
 			url: 'admin/getDistrict',
@@ -222,95 +234,6 @@
 		})
 	})
 		
-	
-
-	// $('select#province').change(function(){
-	// 	// console.log('change')
-	// 	var provinceVal = $(this).val()
-	// 	console.log('proId', provinceVal )
-	// 	if(provinceVal <= 4 || provinceVal >= 33 && provinceVal < 35 ){
-	// 		//选择了直辖市
-	// 		$('#city-container').remove()
-			
-	// 		if($('#district-container').length === 0){
-	// 			$('#province-container').after(`<div class="row cl" id="district-container">
-	// 				<label class="form-label col-xs-4 col-sm-3">区：</label>
-	// 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
-	// 					<select class="select" size="1" name="district" id="district">
-	// 						<option value="" selected>请选择区</option>
-	// 					</select>
-	// 					</span> 
-	// 				</div>
-	// 			</div>`)
-				
-	// 		}
-	// 		ajax({
-	// 			url: 'admin/getDistrict',
-	// 			async: false,
-	// 			data: {
-	// 				parentId: provinceVal,
-	// 			},
-	// 			successFunc: successFunc,
-	// 			errorFunc: errorFunc
-	// 		})
-	// 		districtList = tempData
-	// 		fillSelect('select#district', districtList)			
-	// 	}else if(provinceVal > 4 || provinceVal <= 33 && provinceVal < 35){
-	// 		// 选择了省
-	// 		if($('#district-container').length === 0){
-	// 			$('#province-container').after(`<div class="row cl" id="city-container">
-	// 				<label class="form-label col-xs-4 col-sm-3">城市：</label>
-	// 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
-	// 					<select class="select" size="1" name="city" id="city">
-	// 						<option value="" selected>请选择城市</option>
-	// 					</select>
-	// 					</span> 
-	// 				</div>
-	// 			</div>
-	// 			<div class="row cl" id="district-container">
-	// 				<label class="form-label col-xs-4 col-sm-3">区：</label>
-	// 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
-	// 					<select class="select" size="1" name="district" id="district">
-	// 						<option value="" selected>请选择区</option>
-	// 					</select>
-	// 					</span> 
-	// 				</div>
-	// 			</div>`)
-
-	// 		}else if($('#district-container').length === 1 && $('#city-container').length === 0){
-	// 			$('#province-container').after(`<div class="row cl" id="city-container">
-	// 				<label class="form-label col-xs-4 col-sm-3">城市：</label>
-	// 				<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
-	// 					<select class="select" size="1" name="city" id="city">
-	// 						<option value="" selected>请选择城市</option>
-	// 					</select>
-	// 					</span> 
-	// 				</div>
-	// 			</div>`)
-	// 		}
-						
-	// 		ajax({
-	// 			url: 'admin/getDistrict',
-	// 			async: false,
-	// 			data: {
-	// 				parentId: provinceVal,
-	// 			},
-	// 			successFunc: successFunc,
-	// 			errorFunc: errorFunc
-	// 		})
-
-	// 		cityList = tempData
-	// 		fillSelect('select#city', cityList)
-
-			
-
-
-	// })
-
-
-
-	
-
 	$('select#university').change(function(){
 		ajax({
 			url: 'admin/getSchool',
@@ -421,7 +344,7 @@
 					sex: sex,
 					university: university,
 					school: school,
-					clazz: major,
+					major: major,
 					clazzId: majorId,
 					number: number,
 					year: year,
@@ -447,9 +370,9 @@
 							content: response.error
 						})
 					}else if(response.code === -1){
-						removeCookie('uuid')
-						removeCookie('login')
-						removeCookie('username')
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
 						layer.open({
 							type: 0,
 							closeBtn: 0,

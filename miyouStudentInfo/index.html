@@ -13,7 +13,7 @@
 	<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 
 </head>
-<body onload="init()">
+<body>
 	<header class="navbar-wrapper">
 		<div class="navbar navbar-fixed-top">
 			<div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="">青椒校园学生信息管理系统</a> 
@@ -42,42 +42,18 @@
 	</header>
 
 	<aside class="Hui-aside">
-		<div class="menu_dropdown bk_2">
-			<dl id="menu-student-info">
-				<dt class="selected"><i class="Hui-iconfont">&#xe60d;</i> 学生信息管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
-				<dd style="display: block">
-					<ul>
-						<li><a data-href="student-list.html" data-title="学生列表" href="javascript:;">学生列表</a></li>
-						<li><a data-href="class-group.html" data-title="班级管理" href="javascript:;">班级管理</a></li>
-						<li><a data-href="miyou-circle.html" data-title="密友圈" href="javascript:;">密友圈</a></li>
-						<li><a data-href="university-list.html" data-title="学校管理" href="javascript:;">学校管理</a></li>
-					</ul>
-				</dd>
-			</dl>
-			<dl id="menu-welfare">
-				<dt><i class="Hui-iconfont">&#xe6bb;</i> 福利管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+		<div class="menu_dropdown bk_2" id="aside-menu">
+			<!-- <dl id="menu-admin">
+				<dt><i class="Hui-iconfont">&#xe62e;</i> 系统管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 				<dd>
 					<ul>
-						<li><a data-href="stu-welfare-list.html" data-title="福利列表" href="javascript:;">福利列表</a></li>
+						<li><a data-href="account-list.html" data-title="账号管理" href="javascript:;">账号管理</a></li>
+						<li><a data-href="role-list.html" data-title="角色管理" href="javascript:;">角色管理</a></li>
+						<li><a data-href="menu-list.html" data-title="菜单管理" href="javascript:;">菜单管理</a></li>
 					</ul>
 				</dd>
-			</dl>
-			<dl id="menu-feedback">
-				<dt><i class="Hui-iconfont">&#xe691;</i> 用户反馈管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
-				<dd>
-					<ul>
-						<li><a data-href="feedback-list.html" data-title="用户反馈列表" href="javascript:;">用户反馈列表</a></li>
-					</ul>
-				</dd>
-			</dl>
-			<dl id="menu-auth">
-				<dt><i class="Hui-iconfont">&#xe638;</i> 用户认证管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
-				<dd>
-					<ul>
-						<li><a data-href="auth-list.html" data-title="用户认证列表" href="javascript:;">用户认证列表</a></li>
-					</ul>
-				</dd>
-			</dl>
+			</dl> -->
+
 		</div>
 	</aside>
 <div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
@@ -112,17 +88,11 @@
 	
 </body>
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
-<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
-<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
-<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
-<script type="text/javascript" src="lib/html5shiv.js"></script>		
-<script type="text/javascript" src="static/js/cookie.js"></script>
-<script type="text/javascript" src="static/js/ajax.js"></script>
-
+<!-- 侧栏菜单加载 -->
 <script>
-	function init(){
-		if(getCookie('login') === ''){
+	$(function(){
+		
+		if(!sessionStorage.getItem('uuid')){
 			layer.open({
 				type: 0,
 				closeBtn: 0,
@@ -135,18 +105,49 @@
 				}
 			})
 		}else{
-			$('#username').text(getCookie('username'))
+			$('#username').text(sessionStorage.getItem('username'))
 		}
-	}
+	
 
-	var successFunc = function(response){
+		var menus = JSON.parse(sessionStorage.getItem('menus'))
+
+		for(var i = 0; i < menus.length; i++){
+			var menu = menus[i]
+			var icon = menu.icon || '&#xe61d;'
+			var dl = $('<dl></dl>')
+			dl.append('<dt><i class="Hui-iconfont">'+icon+'</i>'+menu.menuName+'<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>')
+			var dd = $('<dd></dd>')
+			var ul = $('<ul></ul>')
+			var list = ''
+			for(var j = 0; j < menu.childrenMenus.length; j++){
+				var childMenu = menu.childrenMenus[j]
+				list += '<li><a data-href="'+childMenu.menuUrl+'" data-title="'+childMenu.menuName+'" href="javascript:;">'+childMenu.menuName+'</a></li>'
+			}
+			ul.append(list)
+			dd.append(ul)
+			dl.append(dd)
+			$('#aside-menu').append(dl)
+		}
+	})
+</script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+<script type="text/javascript" src="lib/html5shiv.js"></script>		
+<script type="text/javascript" src="static/js/ajax.js"></script>
+
+<script>
+	
+	var logoutSuccess = function(response){
 				console.log('logoutdata',response)
-				removeCookie('login')
-				removeCookie('username')
+				sessionStorage.removeItem('login')
+				sessionStorage.removeItem('username')
+				sessionStorage.removeItem('uuid')
 				window.open('login.html', '_self')
 			}
 
-	var errorFunc = function(){
+	var logoutFail = function(){
 				layer.open({
 						type: 0,
 						closeBtn:0,
@@ -163,8 +164,8 @@
 		ajax({
 			url: 'logout',
 			method: 'post',
-			successFunc: successFunc,
-			errorFunc: errorFunc
+			successFunc: logoutSuccess,
+			errorFunc: logoutFail
 		})
 	})
 		

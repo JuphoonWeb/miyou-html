@@ -1,0 +1,335 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>账号管理</title>
+</head>
+<body >
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span>  账号管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
+		<button id="add-btn" onclick="addAccount()" title="新增账号" class="btn btn-success-outline radius" ><i class="Hui-iconfont">&#xe607;</i>新增账号</button>
+		<input id="username" type="text" style="width:300px" class="input-text radius" placeholder="根据用户名查询账号">
+		<button id="search-btn" title="根据用户名查询账号" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+	</div>
+	<div class="mt-20">
+	<table class="table table-bordered table-border table-hover table-bg " id="admin-table">
+		<thead>
+			<tr class="text-c">
+				<th width="100">序号</th>
+				<th width="200">用户名</th>
+				<th width="200">手机号</th>
+				<th width="200">邮箱</th>
+				<th width="200">角色</th>
+				<th width="150">状态</th>		
+				<th width="200">操作</th>
+			</tr>
+		</thead>
+		<tbody id="account-tobody" class="text-c" >	
+		</tbody>
+	</table>
+	<div class="pagination r" id="pagination"></div>
+	<div class="nodata" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/ajax.js"></script> 
+
+
+<script type="text/javascript">
+	var isPageInit = false;
+	var currPage = 1;
+	var size = 11;
+	var username = '';
+	var accountList = []
+
+	function getData(page,size,username){
+
+		ajax({
+			url: 'admin/user/getUsers',
+			data: {
+				page: page,
+				size: size,
+				username: username,
+			},
+			successFunc: function(response){
+				var status = response.code
+				if(status === 1){
+					$('#account-tobody').children().remove()
+					var data = response.data
+					var list = data.list
+					accountList = list
+					if(list.length == 0){
+						$('#nodata').show()
+					}else{
+						$('#nodata').hide()
+					}
+					var trs = ''
+					for(var i = 0; i<list.length; i++){
+						var sequence = (currPage-1)*size+i+1
+						var id = list[i].id
+						var status = list[i].userStatus ? 
+										'<span class="label label-success radius">已启用</span>'+
+										'<button onclick="disableAccount('+i+')" style="margin-left:15px" class="btn btn-warning-outline radius">'+
+											'<span class="Hui-iconfont">&#xe631;</span>禁用'+
+										'</button>': 
+										'<span class="label label-warning radius">已禁用</span>'+
+										'<button onclick="enableAccount('+i+')" style="margin-left:15px" class="btn btn-success-outline radius">'+
+											'<span class="Hui-iconfont">&#xe6e1;</span>启用'+
+										'</button>'
+						trs += '<tr>'+
+									'<td>'+sequence+'</td>'+
+									'<td>'+list[i].username+'</td>'+
+									'<td>'+list[i].phone+'</td>'+
+									'<td>'+list[i].email+'</td>'+
+									'<td>'+list[i].roleName+'</td>'+
+									'<td>'+status+'</td>'+
+									'<td>'+
+										'<button onclick="editAccount('+i+')" class="btn btn-secondary-outline radius"><span class="Hui-iconfont">&#xe60c;</span>修改'+
+										'</button>'+
+										'<button onclick="deleteAccount('+i+')" style="margin-left:15px" class="btn btn-danger-outline radius">'+
+											'<span class="Hui-iconfont">&#xe609;</span>删除'+
+										'</button>'
+									'</td>'+
+								'</tr>'
+					}
+					$('#account-tobody').append(trs)
+					$('#data-num').text(data.total)
+					if(!isPageInit && data.total > size){
+						$('#pagination').show()
+						var pages = Math.ceil(data.total/size)
+						laypage({
+						    cont: 'pagination',
+						    curr: 1, 
+						    pages: pages,
+						    groups: 5,
+						    jump (obj,first) {
+						    	if(!first){
+						    		console.log(obj.curr)
+						    		currPage =obj.curr
+							    	getData(currPage, size, username)
+								}
+						    }
+					  });
+					
+					}
+					isPageInit = true
+
+				}else if(status === 0){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '获取数据失败',
+						content: response.error
+					})
+
+				}else if(status === -1){
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '重新登录',
+							content: '超过30分钟未操作，已自动登出，请重新登录',
+							yes: function() {
+								parent.window.open('login.html', '_self')
+							}
+						})
+				}
+			}
+			
+		})
+	}
+
+	//ajax error函数
+	function errorFunc(xhr, status){
+		layer.open({
+			type: 0,
+			closeBtn: 0,
+			icon:7, 
+			title: '出现错误',
+			content: status
+		})
+	}
+
+	//	添加
+	function addAccount(){
+		sessionStorage.removeItem('editAccountInfo')
+		layer_show('新增账号','account-add-edit.html','','500');
+	}
+	//禁用
+	function disableAccount(index){
+		var username = accountList[index].username
+		var id = accountList[index].id
+		layer.confirm('确定禁用 '+username+' 吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url: 'admin/user/updateStatus',
+					method: 'post',
+					data: {
+						id: id,
+						userStatus: 0
+					},
+					successFunc: function(){
+						layer.msg('已禁用')
+						setTimeout(function(){
+							window.location.reload()
+						},1500)
+					},
+					errorFunc: errorFunc
+				})
+			}
+		});
+		
+	}
+	//启用
+	function enableAccount(index){
+		var username = accountList[index].username
+		var id = accountList[index].id
+		layer.confirm('确定启用 '+username+' 吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url: 'admin/user/updateStatus',
+					method: 'post',
+					data: {
+						id: id,
+						userStatus: 1
+					},
+					successFunc: function(){
+						layer.msg('已启用')
+						setTimeout(function(){
+							window.location.reload()
+						},1500)
+					},
+					errorFunc: errorFunc
+				})
+			}
+		});
+	}
+	//编辑
+	function editAccount(index){
+		var editAccountInfo = accountList[index]
+		console.log(editAccountInfo)
+		sessionStorage.setItem('editAccountInfo', JSON.stringify(editAccountInfo))
+		layer_show('修改账号','account-add-edit.html','','400');
+	}
+	//删除
+	function deleteAccount(index){
+		var deleteAccountInfo = accountList[index]
+		console.log(deleteAccountInfo.id)
+		layer.confirm('确定删除 '+deleteAccountInfo.username+' 吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url: 'admin/user/deleteUser/'+deleteAccountInfo.id,
+					successFunc: function(response){
+						var status = response.code
+						if(status === 1){
+							layer.msg('已删除')
+							setTimeout(function(){
+								window.location.reload()
+							},1500)
+						}else if(status === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '删除失败',
+								content: response.error
+							})
+						}else if(status === -1){
+							sessionStorage.removeItem('uuid')
+							sessionStorage.removeItem('login')
+							sessionStorage.removeItem('username')
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '重新登录',
+								content: '超过30分钟未操作，已自动登出，请重新登录',
+								yes: function() {
+									parent.window.open('login.html', '_self')
+								}
+							})
+						}
+					},
+					errorFunc: function(xhr, status){
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '出现错误',
+							content: status
+						})
+					}
+				})
+			}
+		});
+		
+	}
+
+	$(function(){
+
+		if(!sessionStorage.getItem('uuid')){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				shade: [1,'#fff'],
+				title: '未登录',
+				icon: 7,
+				content: '请登录',
+				yes: function () {
+					parent.window.open('login.html', '_self')
+				}
+			})
+		}
+		currPage = 1
+		getData(currPage, size, username)		
+	})
+
+	$('#search-btn').click(function(){
+		isPageInit = false
+		currPage = 1
+		$('#pagination').hide()
+		getData(currPage, size, $('#username').val())
+	})
+	
+
+	
+
+</script>  
+</body>
+</html>

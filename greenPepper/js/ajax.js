@@ -1,6 +1,10 @@
 
 function ajax(obj){
 
+
+	// var url = 'http://122.227.209.194:8086/miyou/api/'
+	// var url = 'http://192.168.0.46:8086/miyou/api/'
+
     var url = 'http://218.204.254.209:28812/miyou/api/' 
 
     url += obj.url

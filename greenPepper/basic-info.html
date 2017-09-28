@@ -44,12 +44,14 @@
 		.form-group input{
 			position:absolute;
 			top:5px;
-			padding: 10px 5px;
+			padding-top:5px;
+			padding-bottom:5px;
 			height:40px;
 			line-height:40px;
 			width:70%;
 			border:none;
 			text-align: right;
+
 		}
 		.form-group input:focus{
 			outline: none;
@@ -86,6 +88,9 @@
 			width:80%;height:40px;
 			line-height:40px; 
 			text-align: right;
+			white-space: nowrap;
+			text-overflow: hidden;
+			overflow: hidden;
 			color:rgb(51, 51, 51); 
 			z-index:98;
 		}
@@ -102,29 +107,28 @@
 			height:10px;
 			background-color: rgb(246, 246, 246)
 		}
-		.btn-container{
+		#next-btn{
+			display: block;
 			width:120px;
 			height:50px;
 			margin:19px auto;
-			background-image: url(img/btnNextDis.png);
+			background-color:rgb(244, 200, 113);
+			border:none;
+			border-radius: 25px;
 			color:rgb(255, 255, 255);
 			font-size:18px;
 			text-align: center;
 		}
-		.btn-container p{
-			height:45px;
-			line-height: 45px;
-		} 
 	</style>
 </head>
 <body>
 	
 	<div class="container" id="basic-info">
-		<form action="">
+		<form action="" onsubmit="return false">
 			<div class="fieldset fieldset-1">
 				<div class="form-group">
 					<label for="name">真实姓名</label>
-					<input type="text" id="name" placeholder="请输入姓名" >
+					<input type="text" id="name" placeholder="请输入真实姓名" >
 				</div>
 				<div class="form-group">
 					<label for="sex">性别</label>	
@@ -195,13 +199,13 @@
 					<div class="result" id="clazz-result"></div>
 				</div>
 				<div class="form-group">
-					<label for="student-id">学号</label>
-					<input type="number" id="student-id" placeholder="请输入学号">
+					<label for="number">学号</label>
+					<input type="text" id="number" placeholder="请输入学号">
 				</div>
 			</div>
-			<div class="btn-container" id="next-btn">
-				<p>下一步</p>
-			</div>
+			<button class="btn-container" id="next-btn">
+				下一步
+			</button>
 		</form>
 	</div>
 	<script src="js/zepto.min.js"></script>
@@ -226,7 +230,7 @@
 				year: $('#year').children('option:checked').text(),
 				clazz: $('#clazz').children('option:checked').text(),
 				clazzId: $('#clazz').children('option:checked').val(),
-				number: $('#student-id').val()
+				number: $('#number').val()
 			},
 			studentInfo = {}
 
@@ -239,11 +243,13 @@
 				if(!isInit){
 					studentInfo.university = ''
 					studentInfo.school = ''
+					studentInfo.major = ''
 					studentInfo.clazz = ''
 					studentInfo.clazzId = ''
 				}
 				data.university = ''
 				data.school = ''
+				data.major = ''
 				data.clazz = ''
 				data.clazzId = ''
 				$('select#school, select#clazz').attr('disabled', true)
@@ -252,25 +258,29 @@
 				$('select#clazz').attr('disabled', true)
 				if(!isInit){
 					studentInfo.school = ''
+					studentInfo.major = ''
 					studentInfo.clazz = ''
 					studentInfo.clazzId = ''
 				}
 				data.school = ''
+				data.major = ''
 				data.clazz = ''
 				data.clazzId = ''
 
 			}else if(selectId === 'clazz'){
 				$('#clazz-result').text('')
 				if(!isInit){
+					studentInfo.major = ''
 					studentInfo.clazz = ''
 					studentInfo.clazzId = ''
 				}
+				data.major = ''
 				data.clazz = ''
 				data.clazzId = ''
 			}	
 
 			$(queryStr).children().remove()
-			var options = '<option  value=""></option>'
+			var options = '<option value=""></option>'
 			for(var  i = 0; i<list.length; i++){
 				var val = list[i].id
 				var name = list[i].name || list[i].schoolName || list[i].major || list[i].clazz
@@ -315,17 +325,17 @@
 			})
 
 			var nowYear = (new Date()).getFullYear()
-			var yearsOption ='<option value=""></option>'
+			var yearsOption ='<option  value=""></option>'
 			for(var i = 4; i >= 0; i--){
 				var year = nowYear - i 
 				yearsOption += '<option value="'+year+'" data-name="'+year+'" >'+year+'</option>'
 			}
 			$('select#year').append(yearsOption)
 
-			var sexOption = '<option value=""></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
+			var sexOption = '<option  value="-1"></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
 			$('select#sex').append(sexOption)
 
-			var graduateOption = '<option value=""></option><option value="0" data-name="大专">大专</option><option value="1" data-name="本科">本科</option><option value="2" data-name="硕士">硕士</option><option value="3" data-name="博士">博士</option>'
+			var graduateOption = '<option  value=""></option><option value="0" data-name="大专">大专</option><option value="1" data-name="本科">本科</option><option value="2" data-name="硕士">硕士</option><option value="3" data-name="博士">博士</option>'
 			$('select#graduate').append(graduateOption)
 
 
@@ -349,10 +359,15 @@
 				$('#name').val(studentInfo.name)
 				data.name = studentInfo.name
 				
-				$('#student-id').val(studentInfo.number)
+				$('#number').val(studentInfo.number)
 				data.number = studentInfo.number
 
-				var sexStr = studentInfo.sex ? '男': '女'
+				var sexStr = ''
+				if(studentInfo.sex == 1){
+					sexStr = '男'
+				}else if(studentInfo.sex == 0){
+					sexStr = '女'
+				}
 				$('#sex-result').text(sexStr)
 				$('option[data-name="'+sexStr+'"]').attr('selected', true)			
 				data.sex = studentInfo.sex
@@ -485,7 +500,7 @@
 									var clazz = studentInfo.clazz
 									data.clazzId = studentInfo.clazzId
 									data.clazz = studentInfo.clazz
-
+									data.major = studentInfo.clazz
 									var selected = $('option[data-name="'+clazz+'"]')
 									selected.attr('selected', true)
 									$('#clazz-result').text(clazz)
@@ -494,10 +509,10 @@
 									isFinished = true
 
 									if(isFinished){
-										$('#next-btn').children().hide()
 										$('#next-btn')
-											.css('background-image','url(img/btnNextNor.png)')
-											.click(function(){
+											.css('background-color','rgb(242, 170, 25)')
+											.click(function(e){
+												e.preventDefault()
 												var dataJson = JSON.stringify(data)
 												sessionStorage.setItem('data', dataJson)
 												var studentInfoJson = JSON.stringify(studentInfo)
@@ -507,9 +522,8 @@
 											})
 
 									}else{
-										$('#next-btn').children().show()
 										$('#next-btn')
-											.css('background-image','url(img/btnNextDis.png)')
+											.css('background-color','rgb(244, 200, 113)')
 											.off()
 									}
 
@@ -592,6 +606,7 @@
 					var clazz = $(this).children('option:checked').text()
 					var clazzId = $(this).children('option:checked').val()
 					data.clazz = clazz
+					data.major = clazz
 					data.clazzId = clazzId
 					studentInfo.clazz = clazz
 					studentInfo.clazzId = clazzId
@@ -604,7 +619,8 @@
 			for(i in data){
 				if(i === 'sex'){
 					console.log(i)
-					if(data[i]!=0 && data[i]!=1){
+
+					if(data[i] == -1 || !data[i]){
 						console.log(i,'false')
 						isFinished = false
 						break	
@@ -615,18 +631,20 @@
 						isFinished = false
 						break
 					}
+				
 				}else if(data[i] === ''){
 					console.log(i,'false')
 					isFinished = false
 					break
 				}
+				//记得添加iOS学号检测
 			}
 
 			if(isFinished){
-				$('#next-btn').children().hide()
 				$('#next-btn')
-					.css('background-image','url(img/btnNextNor.png)')
-					.click(function(){
+					.css('background-color','rgb(242, 170, 25)')
+					.click(function(e){
+						e.preventDefault()
 						var dataJson = JSON.stringify(data)
 						sessionStorage.setItem('data', dataJson)
 						var studentInfoJson = JSON.stringify(studentInfo)
@@ -636,9 +654,8 @@
 					})
 
 			}else{
-				$('#next-btn').children().show()
 				$('#next-btn')
-					.css('background-image','url(img/btnNextDis.png)')
+					.css('background-color','rgb(244, 200, 113)')
 					.off()
 			}
 		})	
@@ -650,7 +667,7 @@
 
 				if(i === 'sex'){
 					console.log(i)
-					if(data[i]!=0 && data[i]!=1){
+					if(data[i] == -1 ||!data[i]){
 						console.log(i,'false')
 						isFinished = false
 						break	
@@ -669,10 +686,10 @@
 			}
 
 			if(isFinished){
-				$('#next-btn').children().hide()
 				$('#next-btn')
-					.css('background-image','url(img/btnNextNor.png)')
-					.click(function(){
+					.css('background-color','rgb(242, 170, 25)')
+					.click(function(e){
+						e.preventDefault()
 						var dataJson = JSON.stringify(data)
 						sessionStorage.setItem('data', dataJson)
 						
@@ -683,12 +700,18 @@
 					})
 
 			}else{
-				$('#next-btn').children().show()
 				$('#next-btn')
-					.css('background-image','url(img/btnNextDis.png)')
+					.css('background-color','rgb(244, 200, 113)')
 					.off()
 			}
 			console.log(isFinished)
+		})
+
+		$('#number').change(function(){
+			if(isNaN(Number($(this).val()))){
+				notice('学号只能是数字')
+				$(this).val('').focus()
+			}
 		})
 
 
