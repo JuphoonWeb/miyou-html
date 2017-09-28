@@ -293,7 +293,9 @@
 		}
 
 		$(document).ready(function(){
-
+			$('#next-btn').click(function(e){
+				e.preventDefault()
+			})
 			$('select#university, select#school, select#clazz').attr('disabled',true)
 			
 
