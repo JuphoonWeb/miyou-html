@@ -1,0 +1,210 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>用户邀请</title>
+    <link rel="stylesheet" type="text/css" href="./static/reset.css">
+</head>
+<style type="text/css">
+    .container{
+        text-align: center;
+    }
+    .logo{
+        margin: 25px 0 10px 0;
+    }
+    h3{
+        margin-bottom: 13px;
+        font-size: 16px;
+        line-height:24px;
+        color: rgb(51,51,51);
+    }
+    p{
+        font-size: 16px;
+        line-height:30px;
+        color: rgb(252,174,27);
+    }
+    input::-webkit-input-placeholder {
+        color: rgb(162,162,162);
+    }
+    .phone,.code-line{
+        width: 220px;
+        height: 22px;
+        line-height:22px;
+        display: block;
+        margin:0 auto;
+        border-bottom: rgb(242,170,25) 1px solid;
+        color: rgb(242,170,25);
+        overflow: hidden;
+    }
+    .phone{
+        margin-top: 52px;
+        font-size: 15px;
+        padding: 0 4px;
+    }
+    .code-line .code{
+        width:135px;
+        float: left;
+    }
+    .code{
+        font-size: 15px;
+        padding: 0 4px;
+    }
+    .code-line{
+        margin-top: 24px;
+    }
+    .code-line .send-code{
+        width: 85px;
+        float: right;
+        color: rgb(242,170,25);
+    }
+    .send-code{
+        font-size: 14px;
+        text-align: center;
+        background: #fff;
+        padding:0;
+    }
+    .send-code:disabled{
+        color: rgb(162,162,162);
+    }
+    .submit{
+        margin: 52px 0 0;
+        width: 300px;
+        height: 50px;
+        line-height:50px;
+        text-align: center;
+        border-radius: 30px;
+        background: rgba(250,174,68,1);
+        font-size: 16px;
+        color: #fff;
+        box-shadow: 0 2px 5px rgba(231,119,22,0.44);
+    }
+    .submit:disabled{
+        background: rgba(250,174,68,0.6);
+    }
+    .bottom-text{
+        font-size: 14px;
+        line-height: 20px;
+        margin-top:12px;
+    }
+    .bottom-text span{
+        color: rgb(51,51,51);
+    }
+    .bottom-bg{
+        position: fixed;
+        bottom: 0;
+        left:0;
+        width: 100%;
+    }
+    .about{
+        padding:3px 11px;
+        border-bottom: 1px solid rgb(128,128,128);
+        font-size: 16px;
+        text-align: left;
+        margin-top:75.5px;
+        color: rgb(51,51,51);
+    }
+    .about-text{
+        font-size: 14px;
+        padding: 11px;
+        text-align: left;
+        margin-bottom: 50px;
+        color: rgb(51,51,51);
+    }
+</style>
+
+<body class="z_body">
+<div class="container">
+    <img src="./images/logo_download.png" class="logo">
+    <h3>青椒校园</h3>
+    <p>校园动态尽在手中<br>群组活动在线组织<br>认证学生放心社交</p>
+    <input type="text" pattern="[0-9]*" placeholder="请输入手机号" id="phone" class="phone">
+    <div class="code-line">
+        <input type="text" pattern="[0-9]*" placeholder="输入验证码" id="code" class="code">
+        <button class="send-code" id="sendCode" disabled>发送验证码</button>
+    </div>
+
+    <button class="submit" id="submit" disabled>下载青椒校园</button>
+    <p class="bottom-text"><span>广东移动用户</span>在本产品内产生的<br>所有流量费用全免</p>
+    <img src="./images/bg_down.png" class="bottom-bg">
+
+    <div class="about">关于青椒校园</div>
+    <div class="about-text">
+        青椒校园，为青葱的校园实名社交寻找志同道合的同学，为火辣的青春热情沟通免去通信费用（针对使用本APP的广东移动认证用户）。<br>
+        <br>
+        青椒校园，为青葱的校园实名社交寻找志同道合的同学，为火辣的青春热情沟通免去通信费用（针对使用本APP的广东移动认证用户）。<br>
+        <br>
+        发通知，去哪儿玩，找演讲，身边的学校的各种通知活动不会错过，是的，实名认证的身边小伙伴就是放心。<br>
+        <br>
+        服务校园，比微信更专一。服务学生，比QQ资费更便宜。无聊了，就找小伙伴去聊一聊，去逛一逛，视频聊天发图片流量费用全免， 不用举着手机找wifi了，是的，广东移动专为校园用户提供专属服务，就是这么任性！
+    </div>
+</div>
+<script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="./static/common.js"></script>
+<script type="text/javascript">
+    var name = GetQueryString('name'),
+        token = GetQueryString('token'),
+        reg = /^1[34578]\d{9}$/;
+
+    $(document).on('click','#sendCode',function(){
+        if(!name||!token){
+            toast('获取信息失败',2000);
+            return false;
+        }
+        var phone = $('#phone').val().trim(),
+            sendCode = $(this),
+            timer = null,
+            seconds = 60;
+        _ajax('post','/api/h5/sendCode',{'phone':phone},function(data){
+            sendCode.attr('disabled',true).text(seconds+'s');
+            timer = setInterval(function(){
+                if(seconds<=0){
+                    clearInterval(timer);
+                    sendCode.attr('disabled',false).text('发送验证码');
+                }else{
+                    seconds = seconds-1;
+                    sendCode.attr('disabled',true).text(seconds+'s');
+                }
+            },1000);
+            if(data.code==1){
+                toast('发送成功',2000);
+            }
+        })
+    }).on('click','#submit',function(){
+        if(!name||!token){
+            toast('获取信息失败',2000);
+            return false;
+        }
+        toast('提交中');
+        var phone = $('#phone').val().trim(),
+            code = $('#code').val().trim();
+        _ajax('post','/api/h5/validateCode',{
+            'phone':phone,
+            'code':code,
+            'token':token
+        },function(data){
+            toast('正在跳转');
+            location.href = 'tencent1106402476://';
+        },function(){
+            toast('验证码错误');
+        })
+    }).on('keyup','#phone,#code',function(){
+        var phone = $('#phone').val().trim(),
+            code = $('#code').val().trim(),
+            checkPhone = reg.test(phone),
+            sendCode = $('#sendCode'),
+            submit = $('#submit'),
+            ifInterval = sendCode.text()=='发送验证码';
+        if(checkPhone&&ifInterval){
+            sendCode.attr('disabled',false);
+        }else{
+            sendCode.attr('disabled',true);
+        }
+        if(checkPhone&&code.length==4){
+            submit.attr('disabled',false);
+        }else{
+            submit.attr('disabled',true);
+        }
+    })
+</script>
+</body>
+</html>

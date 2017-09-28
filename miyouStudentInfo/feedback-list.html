@@ -35,7 +35,9 @@
             <tr class="text-c">
                 <th>序号</th>
                 <th>用户</th>
-                <th width="80%">反馈内容</th>
+                <th width="60%">反馈内容</th>
+                <th width="10%">日志文件</th>
+                <th>提交时间</th>
             </tr>
             </thead>
             <tbody id="feedback-tbody" class="text-c">
@@ -69,7 +71,11 @@
             $('#nodata').hide()
             var trs = '';
             for(var i = 0; i < list.length; i++){
-                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].phone+'</td><td>'+list[i].content+'</td></tr>'
+                var download = '无';
+                if(list[i].logUrl != null){
+                    download = '<a href="'+list[i].logUrl+'">下载</a>'
+                }
+                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].phone+'</td><td>'+list[i].content+'</td><td>'+download+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td></tr>'
             }
 
             // 判断数据是否取得成功
