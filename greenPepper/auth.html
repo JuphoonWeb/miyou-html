@@ -6,7 +6,7 @@
 	<title>认证信息</title>
 	<link rel="stylesheet" href="css/dialog.css">
 	
-
+	<!-- 未认证 -->
 	<style>
 		*{
 			padding:0;margin:0;
@@ -48,6 +48,7 @@
 		}
 	</style>
 
+	<!-- 已认证 -->
 	<style>
 		*{
 			padding:0;margin:0;
@@ -61,36 +62,50 @@
 		li{
 			list-style: none
 		}
+		
 		.content{
-			width:95%;
-			height: 300px;
-			margin:20px 10px;
-			padding-top: 20px;
+			margin:0 10px;
+
+		}
+		.content-head{
+			width:100%;
+			height:280px;
+			padding-top: 45px;
+		}
+		img#school-badge{
+			display: block;
+			width:120px;
+			height:120px;
+			margin:0 auto;
+		}
+		.basic-info{
+			position: relative;
+			margin:30px auto 0;
+			text-align: center
+		}
+		.basic-info .name{
+			font-size:20px;
+		}
+		.basic-info #auth-badge{
+			position: absolute;
+			top:5px;
+		}
+		.basic-info .university{
+			margin-top: 10px;
+			font-size: 18px;
+		}
+		.content-body{
+			height:86px;
 			border-radius: 8px;
+			margin-top: 10px;
 			box-shadow: 0 2px 4px 3px rgba(227, 227, 227, .5);
 			font-size: 16px;
 		}
-		.content-head{
-			position:relative;
-			width:100%;
-			height:62px;
-			margin:0 11px 10px;
-		}
-		img#school-badge{
-			width:62px;
-			height:62px;
-		}
-		.basic-info{
-			position:absolute;
-			top:2px;
-			left: 80px;
-		}
-		.content-body{
-			margin:0 8px;
-		}
 		.content-list li{
-			height:40px;
-			line-height: 40px;
+			height:42px;
+			margin:0 10px;
+			padding:0 5px;
+			line-height: 42px;
 			border-bottom:1px solid rgb(230, 230, 230);
 			color:rgb(115, 115, 115);
 		}
@@ -101,21 +116,9 @@
 			float:right;
 			color:rgb(54, 54, 54);
 		}
-		#school-badge-bg-container{
-			position:absolute;
-			top:180px;left:131px;
-			width:234px;
-			height:140px;
-			overflow: hidden;
-			opacity: .1;
-		}
-		#school-badge-bg{
-			width:260px;
-			height:260px;
-		}
 		#auth-info div.btn-container{
 			width:37%;
-			margin: 60px auto;
+			margin: 50px auto;
 		}
 		#change-btn{
 			width:100%;
@@ -164,25 +167,14 @@
 			</div>
 			<div class="content-body">
 				<ul class="content-list">
-				  <li class="">在读学历
-					  <span class="value" id="graduate"></span>
-				  </li>
 				  <li class="">学院
 				  	   <span class="value" id="school"></span>
-				  </li>
-				  <li class="">专业
-					   <span class="value" id="clazz"></span>
 				  </li>
 				  <li class="">学号
 					   <span class="value" id="number"></span>
 				  </li>
-				  <li class="">入学年份
-					   <span class="value" id="year"></span>
-				  </li>
 				</ul>
-				<div class="school-badge" id="school-badge-bg-container">
-					<img id="school-badge-bg" src="" alt="">
-				</div>
+				
 			</div>	
 		</div>
 		<div class="btn-container">
@@ -211,38 +203,20 @@
 						studentInfo = data
 						$('#name').text(data.name)
 						$('#university').text(data.university)
-						$('#school-badge, #school-badge-bg').attr('src',data.schoolBadgeUrl)
-						switch(data.graduate){
-							case 0:{
-								studentInfo.graduateStr = '大专'
-								break
-							}
-							case 1:{
-								studentInfo.graduateStr = '本科'
-								break
-							}
-							case 2:{
-								studentInfo.graduateStr = '硕士'
-								break
-							}
-							case 3:{
-								studentInfo.graduateStr = '博士'
-								break
-							} 
-						}
-						$('#graduate').text(studentInfo.graduateStr)
-						$('#school').text(data.school)
-						$('#clazz').text(data.clazz)
-						$('#number').text(data.number)
-						$('#year').text(data.year)
+						$('#school-badge').attr('src',data.schoolBadgeUrl)
+						
+						var school = data.school || '暂无'
+						var number = data.number || '暂无'	
+						$('#school').text(school)
+						$('#number').text(number)
 					}else if(response.code === 0){
 						notice(response.error)
 					}else{
 						notice('网络错误')	
 					}
 				},
-				error: function() {
-					notice('网络错误')
+				error: function(xhr, status) {
+					notice(status)
 				}
 			})
 		}
@@ -288,13 +262,31 @@
 
 						}
 					}else if(response.code === 0){
-						notice(response.error)
+						// notice(response.error)
+						dialog({
+							text: response.error,
+							ok: function(){
+								native.dismissWebView()
+							}
+						})
 					}else{
-						notice('网络错误')	
+						// notice('网络错误')
+						dialog({
+							text: '网络错误',
+							ok: function(){
+								native.dismissWebView()	
+							}
+						})	
 					}
 				},
-				error: function(){
-					notice('网络错误')
+				error: function(xhr, status){
+					// notice('网络错误')
+					dialog({
+						text: status,
+						ok: function(){
+							native.dismissWebView()	
+						}
+					})
 				}
 			})
 		})
@@ -302,7 +294,7 @@
 			if(!isEmpty(studentInfo)){
 				sessionStorage.setItem('studentInfo', JSON.stringify(studentInfo))
 			}
-			window.open('basic-info.html','_self')
+			window.open('phone-auth.html','_self')
 		})
 	</script>
 </body>
