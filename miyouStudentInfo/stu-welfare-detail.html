@@ -36,6 +36,7 @@
                 <th>学校</th>
                 <th>手机号</th>
                 <th>福利</th>
+                <th>领取时间</th>
             </tr>
             </thead>
             <tbody id="welfare-tbody" class="text-c">
@@ -69,7 +70,7 @@
                 $('#nodata').hide()
                 var trs = '';
                 for(var i = 0; i < list.length; i++){
-                    trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td>'+list[i].university+'</td><td>'+list[i].phone+'</td><td>'+list[i].welfareName+'</td></tr>'
+                    trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td>'+list[i].university+'</td><td>'+list[i].phone+'</td><td>'+list[i].welfareName+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td></tr>'
                 }
 
                 // 判断数据是否取得成功
