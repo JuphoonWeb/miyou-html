@@ -68,6 +68,8 @@
 	var searchPhone = ''
 	var uuid = sessionStorage.getItem('uuid')
 
+	console.log(window.location.href)
+	console.log( window.location.href.split('/').reverse()[0])
 	var successFunc = function(response){
 				layer.closeAll()
 				if(response.code === 1){

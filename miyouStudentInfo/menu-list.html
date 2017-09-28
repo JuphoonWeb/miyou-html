@@ -74,12 +74,15 @@ var setting = {
 		beforeClick: function(treeId, treeNode) {
 			var zTree = $.fn.zTree.getZTreeObj("menu-tree");
 			console.log('zTree', zTree)
-			if (treeNode.isParent) {
+			if (treeNode.pId == 0) {
 				zTree.expandNode(treeNode);
 				return false;
 			} else {
-				demoIframe.attr("src","menu-edit.html?id="+treeNode.id);
-				return true;
+			if(treeNode.getParentNode().pId){
+				return false
+			}
+			demoIframe.attr("src","menu-edit.html?id="+treeNode.id);
+			return true;
 			}
 		}
 	}

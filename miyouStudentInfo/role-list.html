@@ -50,7 +50,7 @@
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="static/js/ajax.js"></script> 
+<script type="text/javascript" src="static/js/index.js"></script> 
 
 
 <script type="text/javascript">
@@ -98,15 +98,19 @@
 					roleList = list
 					var trs = ''
 					for(var i = 0; i<list.length; i++){
+
 						var sequence = (currPage-1)*size+i+1
+						//超级管理员id为0，不可修改，不可删除
+						var isBtnDisabled = list[i].id ? '':' disabled'
+						console.log(list[i].roleName, isBtnDisabled)
 						trs += '<tr>'+
 									'<td>'+sequence+'</td>'+
 									'<td>'+list[i].roleName+'</td>'+
 									'<td>'+list[i].roleDesc+'</td>'+
 									'<td>'+
-										'<button onclick="editRole('+i+')" class="btn btn-secondary-outline radius"><span class="Hui-iconfont">&#xe60c;</span>修改'+
+										'<button '+isBtnDisabled+' onclick="editRole('+i+')" class="btn btn-secondary-outline radius '+isBtnDisabled+' "><span class="Hui-iconfont">&#xe60c;</span>修改'+
 										'</button>'+
-										'<button onclick="deleteRole('+i+')" style="margin-left:15px" class="btn btn-danger-outline radius">'+
+										'<button  onclick="deleteRole('+i+')" style="margin-left:15px" class="btn btn-danger-outline radius '+isBtnDisabled+' ">'+
 											'<span class="Hui-iconfont">&#xe609;</span>删除'+
 										'</button>'
 									'</td>'+

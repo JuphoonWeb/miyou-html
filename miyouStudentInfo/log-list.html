@@ -1,0 +1,262 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>日志管理</title>
+</head>
+<body>
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span>  日志管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+	<div class="cl pd-5 bg-1 bk-gray mt-20 skin-minimal">
+		
+		<div class="radio-box">
+			<input type="radio" name="type" id="server-log" value="0" checked ><label for="server-log">后台日志</label>
+		</div>
+		<div class="radio-box">
+			<input type="radio" name="type" id="client-log" value="1" ><label for="client-log">客户端日志</label>
+		</div>
+		<div class="radio-box">
+			<input type="radio" name="type" id="exception-log" value="2"><label for="exception-log">异常日志</label> 
+		</div>
+
+		<input id="search-username" type="text" style="width:200px" class="input-text radius" placeholder="根据操作人查询日志 ">
+		<input id="search-phone" type="text" style="width:200px" class="input-text radius" placeholder="根据操作人手机号码查询日志 ">
+		<button id="search-btn" title="根据输入条件查询日志" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+	</div>
+	<div class="mt-20">
+	<table class="table table-bordered table-border table-hover table-bg" id="operate-table">
+		<thead class="text-c">
+			<tr>
+				<th width="100">序号</th>
+				<th width="200">操作</th>
+				<th width="200">操作人</th>
+				<th width="200">ip</th>
+				<th width="150">日期</th>		
+			</tr>
+		</thead>
+		<tbody id="operate-tbody" class="text-c">
+		</tbody>
+	</table>
+	<table class="table table-bordered table-border table-hover table-bg" id="exception-table" style="display: none">
+		<thead class="text-c">
+			<tr>
+				<th width="50">序号</th>
+				<th width="100">异常</th>
+				<th width="200">异常类</th>
+				<th width="200">异常详情</th>
+				<th width="100">操作人</th>
+				<th width="100">ip</th>
+				<th width="100">日期</th>		
+			</tr>
+		</thead>
+		<tbody id="exception-tbody" class="text-c">
+		</tbody>
+	</table>
+	<div class="pagination r" id="pagination"></div>
+	<div class="nodata" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script> 
+
+
+<script type="text/javascript">
+	var clazzData = {}
+	var url = 'admin/getAllClazz'
+	var isPageInit = false
+	var currPage = 1
+	var size = 5
+	var type = 0
+
+
+	
+	function getData(page, size, type, phone, username){
+		$('#pagination').hide()
+		ajax({
+			url: 'admin/log/getSysLogs',
+			data: {
+				page: page,
+				type: type,
+				phone: phone,
+				username: username,
+				size: size,
+			},
+			successFunc: function(response){
+				layer.closeAll()
+				var status = response.code
+				if(status === 1){
+					var data = response.data
+					var list = data.list
+					var trs = ''
+					$('#nodata').hide()
+					$('#operate-tbody').children().remove()
+					$('#exception-tbody').children().remove()
+					if(type == 2){
+						$('#operate-table').hide()
+						$('#exception-table').show()
+						for(var i = 0;i < list.length; i++){
+							var sequence = (page-1)*size+i+1
+							var username = list[i].username || list[i].phone
+							var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss')
+							trs += '<tr>'+
+										'<td>'+sequence+'</td>'+
+										'<td>'+list[i].description+'</td>'+
+										'<td>'+list[i].exceptionClass+'</td>'+
+										'<td>'+list[i].exceptionDetail+'</td>'+
+										'<td>'+username+'</td>'+
+										'<td>'+list[i].ip+'</td>'+
+										'<td>'+date+'</td>'+
+									'</tr>'
+						}
+						$('#exception-tbody').append(trs)
+					}else{
+						$('#exception-table').hide()
+						$('#operate-table').show()
+						for(var i=0; i<list.length; i++){						
+							var sequence = (page-1)*size+i+1
+							var username = list[i].username || list[i].phone
+							var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss')
+							trs += '<tr>'+
+									'<td>'+sequence+'</td>'+
+									'<td>'+list[i].description+'</td>'+
+									'<td>'+username+'</td>'+
+									'<td>'+list[i].ip+'</td>'+
+									'<td>'+date+'</td>'+
+								'</tr>'
+							
+						}
+						$('#operate-tbody').append(trs)
+					}
+					
+					$('#data-num').text(data.total)
+					if(data.total > size){
+						$('#pagination').show()
+						if(!isPageInit){
+							
+							var pages = Math.ceil(data.total/size)
+							laypage({
+							    cont: 'pagination',
+							    curr: 1, 
+							    pages: pages,
+							    groups: 5,
+							    jump (obj,first) {
+							    	if(!first){
+							    		console.log(obj.curr)
+					    				
+							    		currPage = obj.curr
+								    	getData(currPage, size, type, $('#search-phone').val(), $('#search-username').val())
+									}
+							    }
+						  })
+						}
+					}
+					isPageInit = true
+				}else if(status === 0){	
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '出现错误',
+						content: response.error
+					})
+
+				}else if(status === -1){
+						sessionStorage.removeItem('uuid')
+						sessionStorage.removeItem('login')
+						sessionStorage.removeItem('username')
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '重新登录',
+							content: '超过30分钟未操作，已自动登出，请重新登录',
+							yes: function() {
+								parent.window.open('login.html', '_self')
+							}
+						})
+				}		
+			},
+			errorFunc: function(xhr, status){
+				layer.closeAll()
+				if(!isPageInit){	
+					layer.closeAll()
+					$('#nodata').show()
+				}else{
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '获取数据失败',
+						content: '请检查网络'
+					})
+				}
+			}
+		})
+	}			    
+
+
+	$(function(){
+		if(!sessionStorage.getItem('uuid')){
+			layer.open({
+				type: 0,
+				closeBtn: 0,
+				shade: [1,'#fff'],
+				title: '未登录',
+				icon: 7,
+				content: '请登录',
+				yes: function() {
+					parent.window.open('login.html', '_self')
+				}
+			})
+		}
+		$('.skin-minimal input').iCheck({
+			radioClass: 'iradio-green',
+			increaseArea: '20%',
+		})
+		$('input[type=radio][name=type]').on('ifChecked', function(event){
+			  console.log('radio', this.value)
+			  $('#search-phone, #search-username').val('')
+			  type = this.value
+			  currPage = 1
+			  isPageInit =false
+			  getData(currPage, size, type)
+		});
+
+		currPage = 1
+		getData(currPage, size, 0)
+	})
+
+	$('#search-btn').click(function(){ 
+		currPage = 1
+		isPageInit = false
+		getData(currPage, size, type, $('#search-phone').val(), $('#search-username').val())
+	})
+
+	
+	
+	
+</script> 
+</body>
+</html>

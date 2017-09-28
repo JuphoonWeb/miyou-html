@@ -39,6 +39,7 @@ function ajax(dataObj){
 			data.size = data.size || 12
 		}
 	console.log('async', async)
+	console.log('menuUrl', window.location.href.split('/').reverse()[0].split('?')[0])
 
 	$.ajax({
 		
@@ -50,7 +51,7 @@ function ajax(dataObj){
 	    contentType: contentType,
 		headers: {
 			token: sessionStorage.getItem('uuid'),
-			'Menu-Url': window.location.href.split('/').reverse()[0] 
+			'Menu-Url': window.location.href.split('/').reverse()[0].split('?')[0] 
 
 		},
 		dataType : 'json',

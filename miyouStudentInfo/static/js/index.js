@@ -6,8 +6,9 @@ function ajax(dataObj){
 		layer.load()
 
 	})
-    var url = 'http://192.168.0.46:8086/miyou/'
-    // var url = 'http://218.204.254.209:28812/miyou/'
+    // var url = 'http://192.168.0.46:8086/miyou/'
+    // var url = 'http://192.168.15.161:8086/miyou/'
+    var url = 'http://218.204.254.209:28812/miyou/'
 
 
     url += dataObj.url
@@ -38,7 +39,7 @@ function ajax(dataObj){
 			data.size = data.size || 12
 		}
 	console.log('async', async)
-
+	console.log('menuUrl', window.location.href.split('/').reverse()[0].split('?')[0])
 
 	$.ajax({
 		
@@ -50,7 +51,8 @@ function ajax(dataObj){
 	    contentType: contentType,
 		headers: {
 			token: sessionStorage.getItem('uuid'),
-			// "Access-Control-Allow-Headers": "Content-Type"
+			'Menu-Url': window.location.href.split('/').reverse()[0].split('?')[0] 
+
 		},
 		dataType : 'json',
 		data: data,
@@ -61,6 +63,22 @@ function ajax(dataObj){
 	})
 }
 
+// Date对象格式化
+Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+}
 
 Array.prototype.remove = function(val){
 	var index = this.indexOf(val)

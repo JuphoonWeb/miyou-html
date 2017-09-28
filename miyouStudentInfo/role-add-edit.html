@@ -75,8 +75,7 @@
 <script type="text/javascript">
 	
 	var editRoleInfo = null
-	var menuIds = [1,2]
-	var editMenuIds = []
+	var menuIds = []
 	var roleId = null
 
 	//zTree配置
@@ -112,29 +111,29 @@
 			onCheck: function(event, treeId, treeNode){
 				
 				if(treeNode.checked){
-					editMenuIds.push(treeNode.id)
+					menuIds.push(treeNode.id)
 					if(treeNode.pId == 0){
 						var pId = treeNode.id
 						for(var i = 0; i < zNodes.length; i++){
 							if(zNodes[i].pId == pId){
-								editMenuIds.push(zNodes[i].id)
+								menuIds.push(zNodes[i].id)
 							}
 						}
 					}else{
-						editMenuIds.push(treeNode.pId)
+						menuIds.push(treeNode.pId)
 					}
 				}else{
-					editMenuIds.remove(treeNode.id)
+					menuIds.remove(treeNode.id)
 					if(treeNode.pId == 0){
 						var pId = treeNode.id
 						for(var i = 0; i < zNodes.length; i++){
 							if(zNodes[i].pId === pId){
-								editMenuIds.remove(zNodes[i].id)
+								menuIds.remove(zNodes[i].id)
 							}
 						}
 					}
 				}
-				console.log('editMenuIds',editMenuIds)
+				console.log('menuIds',menuIds)
 			}
 		}
 	}
@@ -160,9 +159,10 @@
 			$('#role-name').val(editRoleInfo.roleName)
 			$('#role-desc').val(editRoleInfo.roleDesc)
 			console.log('editRoleInfo', editRoleInfo)
-			// roleId = editRoleInfo.id
+			roleId = editRoleInfo.id
 		}
 		
+		console.log('roleId', roleId)
 
 		ajax({
 			url: 'admin/role/getRoleMenus',
@@ -173,15 +173,13 @@
 				var status = response.code
 				if(status === 1){
 					zNodes = response.data
-					for(var i = 0; i < zNodes.length; i++){
-						for(var j = 0; j < menuIds.length; j++){
-							if(zNodes[i].id === menuIds[j]){
-								zNodes[i].checked = true
-							}
-						}
-					}
 					var t = $("#treeDemo");
 					t = $.fn.zTree.init(t, setting, zNodes);
+					for(var i = 0; i < zNodes.length; i++){
+						if(zNodes[i].checked){
+							menuIds.push(zNodes[i].id)
+						}
+					}
 
 
 				}else if(status === 0){
@@ -237,7 +235,7 @@
 		var data = {
 				roleName: roleName,
 				roleDesc: roleDesc,
-				menuIds: removeRepeat(menuIds.concat(editMenuIds)),
+				menuIds: removeRepeat(menuIds),
 		}
 		
 		if(roleName === ''){
