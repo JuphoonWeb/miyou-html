@@ -62,7 +62,7 @@
 					if(response.code === 1){
 						var list = response.data
 						var listHtml = ''
-						for(let i = 0; i < list.length; i++){
+						for(var i = 0; i < list.length; i++){
 							var date = new Date(list[i].createTime).Format('yyyy/MM/dd')
 							var status = ''
 							var statusCode = list[i].authStatus

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<title>手机验证</title>
+	<style>
+		*{
+			padding:0;margin:0;
+			box-sizing: border-box;
+			font-family: 'Heiti SC';
+			font-size: 16px;
+			-webkit-tap-highlight-color: transparent;
+		}
+		.container{
+			text-align: center;
+		}
+		.notice-info{
+			padding:35px;
+		}
+		.auth-code{
+			width:225px;
+			height:70px;
+			margin: 0 auto;
+		}
+		.auth-code input{
+			display: inline-block;
+			width:45px;
+			height:45px;
+			padding-left: 15px;
+			font-size:25px;
+			outline:none;
+			border:1px solid rgb(185, 185, 185);
+			border-radius: 5px;
+			
+		}
+		.auth-code input+input{
+			margin-left: 10px;
+		}
+		.auth-code input:focus,.auth-code input.hasValue{
+			color:rgb(249, 173, 68);
+			border:1px solid rgb(249, 173, 68);
+		}
+		.error{
+			text-align: center;
+			color:rgb(209, 0, 0);
+			font-size:12px;
+			margin-top: 10px;
+			display: none;
+		}
+		.btn{
+			position: relative;
+			display: block;
+			width: 300px;
+			height: 50px;
+			margin: 20px auto;
+			border: none;
+			color:rgb(255, 255, 255);
+			background-color: rgb(242, 170, 25);
+			font-size: 20px;
+			border-radius:30px;
+			box-shadow: 0 2px 5px 0 rgba(231, 119, 22, 0.44);
+		}
+		#spinner{
+			position: absolute;
+			top:10px;left:90px;
+			width:30px;
+			height:30px;
+			color:white;
+			margin-right:5px;
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="notice-info">
+			<p>为确保当前操作是由本人发起，
+		青椒校园已向你注册的手机发送短信，
+		请输入短信中的验证码完成手机验证</p>
+		</div>
+	</div>
+	<div class="auth-code">
+		<input type="text" id="code-1" maxlength="1">
+		<input type="text" id="code-2" maxlength="1">
+		<input type="text" id="code-3" maxlength="1">
+		<input type="text" id="code-4" maxlength="1">
+		<div class="error">验证码错误，请重新获取并输入</div>
+	</div>
+	<button class="btn send-btn"><img id="spinner"  src="img/auth-phone-loading.gif" alt="" /><p class="text-in-btn">发送验证码</p></button>
+</body>
+<script src="js/zepto.min.js"></script>
+<script src="js/ajax.js"></script>
+<script src="js/dialog.min.js"></script>
+<script src="js/index.js"></script>
+<script>
+	
+	$(document).on('input','input',function(){
+		if($(this).val()){
+			console.log('hasValue')
+			$(this).addClass('hasValue')
+			$(this).next().focus()
+		}else{
+			$(this).removeClass('hasValue')
+			console.log('clear')
+			$(this).prev().focus()
+		}
+
+		var code = $('#code-1').val()+$('#code-2').val()+$('#code-3').val()+$('#code-4').val()
+		console.log('code: ',code)
+		console.log('lenght' , code.length)
+		if(code.length == 4){
+			$('#spinner').show();
+			$('.text-in-btn').text('验证中').attr('disabled',true)
+		}
+	})
+
+	$(document).on('change','input',function(){
+
+	})
+
+	$('.send-btn').click(function(){
+		$(this).css('background-color','rgba(231, 119, 22, 0.44)')
+			   .attr('disabled', true)
+		var second = 10
+		$('.text-in-btn').text(second+'s后可重发')
+		var that = $(this)
+		var intervalId = setInterval(function(){
+			second--
+			$('.text-in-btn').text(second+'s后可重发')
+			if(second == 0){
+				clearInterval(intervalId)
+				$('.text-in-btn').text('发送验证码')
+				that.css('background-color', 'rgb(242, 170, 25)')
+					.removeAttr('disabled')
+			}
+		},1000)
+
+	})
+	
+
+</script>
+</html>

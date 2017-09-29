@@ -24,16 +24,25 @@
 		}
 		.fieldset{
 			width:100%;
-			margin-top: 10px;
 			padding: 0 10px;
 			background-color: rgb(255, 255, 255);
 			border-top:1px solid rgb(230, 230, 230);
 			border-bottom: 1px solid rgb(230, 230, 230);
 		}
+		.title{
+			height:45px;
+			padding:20px 10px 0;
+			color:rgb(136, 136, 136);
+			font-size:14px;
+
+		}
 		.form-group{
 			position: relative;
 			height:50px;
 			border-bottom:2px solid rgb(230, 230, 230);
+		}
+		.form-group-lg{
+			height:56px;
 		}
 		.form-group label{
 			display: inline-block;
@@ -124,13 +133,14 @@
 <body>
 	
 	<div class="container" id="basic-info">
-		<form action="" onsubmit="return false">
+		<form action="">
+			<div class="title">基本信息</div>
 			<div class="fieldset fieldset-1">
-				<div class="form-group">
+				<div class="form-group form-group-lg">
 					<label for="name">真实姓名</label>
 					<input type="text" id="name" placeholder="请输入真实姓名" >
 				</div>
-				<div class="form-group">
+				<div class="form-group form-group-lg">
 					<label for="sex">性别</label>	
 					<select name="sex" id="sex" >
 						<!-- <option value="" selected=""></option>
@@ -143,6 +153,7 @@
 					<div class="result" id="sex-result"></div>
 				</div>	
 			</div>
+			<div class="title">学校信息</div>
 			<div class="fieldset fieldset-2">
 				<div class="form-group">
 					<label for="city">城市</label>
@@ -160,19 +171,19 @@
 					</div>
 					<div class="result" id="university-result"></div>
 				</div>
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label for="graduate">在读学历</label>
 					<select name="graduate" id="graduate" >
-						<!-- <option value="0" data-name="大专">大专</option>
+						<option value="0" data-name="大专">大专</option>
 						<option value="1" data-name="本科">本科</option>
 						<option value="2" data-name="硕士">硕士</option>
-						<option value="3" data-name="博士">博士</option> -->
+						<option value="3" data-name="博士">博士</option>
 					</select>
 					<div class="arrow-box">
 						<div class="arrow"></div>
 					</div>
 					<div class="result" id="graduate-result"></div>
-				</div>
+				</div> -->
 				<div class="form-group">
 					<label for="school">学院</label>
 					<select name="school" id="school" ></select>
@@ -181,7 +192,7 @@
 					</div>
 					<div class="result" id="school-result"></div>
 				</div>
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label for="year">入学年份</label>
 					<select name="year" id="year">
 					</select>
@@ -189,15 +200,15 @@
 						<div class="arrow"></div>
 					</div>
 					<div class="result" id="year-result"></div>
-				</div>
-				<div class="form-group">
+				</div> -->
+				<!-- <div class="form-group">
 					<label for="clazz">专业</label>
 					<select name="clazz" id="clazz"></select>
 					<div class="arrow-box">
 						<div class="arrow"></div>
 					</div>
 					<div class="result" id="clazz-result"></div>
-				</div>
+				</div> -->
 				<div class="form-group">
 					<label for="number">学号</label>
 					<input type="text" id="number" placeholder="请输入学号">
@@ -293,6 +304,7 @@
 		}
 
 		$(document).ready(function(){
+
 			$('#next-btn').click(function(e){
 				e.preventDefault()
 			})
@@ -622,7 +634,7 @@
 				if(i === 'sex'){
 					console.log(i)
 
-					if(data[i] == -1 || !data[i]){
+					if(data[i] == -1){
 						console.log(i,'false')
 						isFinished = false
 						break	
@@ -669,7 +681,7 @@
 
 				if(i === 'sex'){
 					console.log(i)
-					if(data[i] == -1 ||!data[i]){
+					if(data[i] == -1){
 						console.log(i,'false')
 						isFinished = false
 						break	
