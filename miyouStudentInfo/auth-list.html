@@ -28,11 +28,15 @@
         <form action="" class="form-inline" style="margin-top: 10px" class="search-box">
             <input id="search-name" type="text" style="width:150px" class="input-text radius" placeholder="根据名字查询">
             <input id="search-phone" type="text" style="width:150px" class="input-text radius" placeholder="根据手机号查询">
-            <span class="select-box" style="width: 100px">
+            <span class="select-box" style="width: 150px">
                 <select class="select J_select">
-                    <option value="0">未审核</option>
-                    <option value="1">审核未通过</option>
-                    <option value="2">审核通过</option>
+                    <option value="">全部</option>
+                    <option value="0">一级未审核</option>
+                    <option value="1">一级审核拒绝</option>
+                    <option value="2">一级审核通过</option>
+                    <option value="3">二级未审核</option>
+                    <option value="4">二级审核拒绝</option>
+                    <option value="5">二级审核通过</option>
                 </select>
             </span>
             <button id="search-btn" title="根据名字查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
@@ -49,11 +53,11 @@
                 <th>手机号</th>
                 <th>市</th>
                 <th>大学</th>
-                <th width="15%">学院</th>
-                <th>班级</th>
+                <th width="10%">学院</th>
+                <th width="15%">班级</th>
                 <th>提交认证时间</th>
-                <th>身份证</th>
-                <th>学生证</th>
+                <!--<th>身份证</th>-->
+                <!--<th>学生证</th>-->
                 <th width="10%">审核状态</th>
                 <!--<th width="25%">操作</th>-->
             </tr>
@@ -67,34 +71,12 @@
         </div>
     </div>
 </div>
-<div id="modal-examine" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content radius">
-            <div class="modal-header">
-                <h3 class="modal-title">审核拒绝</h3>
-            </div>
-            <div class="modal-body">
-                <div class="row cl" style="width: 100%">
-                    <label class="form-label col-xs-4 col-sm-3" style="margin: 0">拒绝理由：</label>
-                    <div class="formControls col-xs-8 col-sm-9">
-                        <input type="text" class="input-text" autocomplete="off" id="refuse_reason">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="submit_refuse">确定</button>
-                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
-            </div>
-        </div>
-    </div>
-</div>
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
 <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="lib/lightbox2/2.8.1/js/lightbox.min.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="static/js/cookie.js"></script>
 <script type="text/javascript" src="static/js/ajax.js"></script>
 
 
@@ -102,10 +84,10 @@
     var isPageInit = false
     var currPage = 1
     var size = 12
-    var url = '/admin/auth/getAuthLogs'
+    var url = 'admin/auth/getAuthLogs2'
     var searchName = ''
     var phone = ''
-    var authStatus = null
+    var authLevel = null
 
     var successFunc = function(response){
         layer.closeAll()
@@ -114,22 +96,24 @@
             $('#nodata').hide()
             var trs = '';
             for(var i = 0; i < list.length; i++){
-                var status = '未知',
-                    idCardUrl = '<a href="'+list[i].student.identityUrl+'" data-lightbox="gallery" data-title="'+list[i].student.name+'的身份证"><img src="'+list[i].student.identityUrl+'" style="width: 100px"></a>',
-                    stuCardUrl = '<a href="'+list[i].student.stuCardUrl+'" data-lightbox="gallery" data-title="'+list[i].student.name+'的学生证"><img src="'+list[i].student.stuCardUrl+'" style="width: 100px"></a>';
-                switch(list[i].authStatus){
-                    case 0:
-                        status = '<a title="审核通过" href="javascript:;" onclick="update('+list[i].id+','+list[i].student.id+',2)" class="btn btn-success-outline radius">通过</a>' +
-                                 '<a title="审核拒绝" href="javascript:;" onclick="show_modal('+list[i].id+','+list[i].student.id+')" class="btn btn-danger-outline radius ml-10">拒绝</a>';
-                        break;
-                    case 1:
-                        status = '审核未通过';
-                        break;
-                    case 2:
-                        status = '审核通过';
-                        break;
-                }
-                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].student.name+'</td><td>'+list[i].student.number+'</td><td>'+list[i].student.phone+'</td><td>'+list[i].student.city+'</td><td>'+list[i].student.university+'</td><td>'+list[i].student.school+'</td><td>'+list[i].student.clazz+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td><td>'+idCardUrl+'</td><td>'+stuCardUrl+'</td><td>'+status+'</td></tr>'
+//                var status = '未知',
+//                    idCardUrl = '<a href="'+list[i].student.identityUrl+'" data-lightbox="gallery" data-title="'+list[i].student.name+'的身份证"><img src="'+list[i].student.identityUrl+'" style="width: 100px"></a>',
+//                    stuCardUrl = '<a href="'+list[i].student.stuCardUrl+'" data-lightbox="gallery" data-title="'+list[i].student.name+'的学生证"><img src="'+list[i].student.stuCardUrl+'" style="width: 100px"></a>';
+//                switch(list[i].authStatus){
+//                    case 0:
+//                        status = '<a title="审核通过" href="javascript:;" onclick="update('+list[i].id+','+list[i].student.id+',2)" class="btn btn-success-outline radius">通过</a>' +
+//                                 '<a title="审核拒绝" href="javascript:;" onclick="show_modal('+list[i].id+','+list[i].student.id+')" class="btn btn-danger-outline radius ml-10">拒绝</a>';
+//                        break;
+//                    case 1:
+//                        status = '审核未通过';
+//                        break;
+//                    case 2:
+//                        status = '审核通过';
+//                        break;
+//                }
+                var authLevel = list[i].authLevel||0,
+                    status = '<a href="javascript:;" onclick="layer_show(\'认证详情\',\'auth-detail.html#'+list[i].id+'\',\'\',\'500\');">'+authLevelStatus[authLevel]+'</a>';
+                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td>'+list[i].number+'</td><td>'+list[i].phone+'</td><td>'+list[i].city+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td><td>'+status+'</td></tr>'
             }
 
             // 判断数据是否取得成功
@@ -153,7 +137,7 @@
                                     size: size,
                                     stuName:searchName,
                                     phone:phone,
-                                    authStatus:authStatus
+                                    authLevel:authLevel
                                 },
                                 successFunc: successFunc,
                                 errorFunc: errorFunc
@@ -233,7 +217,7 @@
                 'size':12,
                 'stuName':searchName,
                 'phone':phone,
-                'authStatus':authStatus
+                'authLevel':authLevel
             },
             successFunc: successFunc,
             errorFunc: errorFunc
@@ -243,56 +227,17 @@
     $('#search-btn').click(function(event){
         event.preventDefault()
 
-//            $('#pagination').hide()
+        $('#pagination').hide()
         isPageInit = false
         searchName = $('#search-name').val()
         phone = $('#search-phone').val()
-        authStatus = $('.J_select').val()
+        authLevel = $('.J_select').val()
         init()
 
     })
 
 
-    function update(id,stuId,type,reason){
-        ajax({
-            method:'post',
-            url: '/admin/auth/updateAuthLog',
-            z_type:0,
-            data:{
-                id:id,
-                stuId:stuId,
-                authStatus:type,
-                authNote:reason
-            },
-            successFunc: function(data){
-                if(data.code==1){
-                    init();
-                }else{
-                    layer.open({
-                        type: 0,
-                        closeBtn: 0,
-                        icon:7,
-                        title: '出现错误',
-                        content: data.error
-                    })
-                }
-            }
-        })
-    }
 
-    $(document).on('click','#submit_refuse',function(){
-        var reason = $('#refuse_reason').val().trim(),
-            id = $(this).attr('data-id'),
-            stuId = $(this).attr('data-stuid');
-        if(!reason){
-            $.Huimodalalert('拒绝理由不能为空',1000);
-            return false;
-        }
-        update(id,stuId,1,reason)
-    });
-    function show_modal(id,stuId){
-        $("#modal-examine").modal("show").find('#submit_refuse').attr({'data-id':id,'data-stuid':stuId});
-    }
 </script>
 </body>
 </html>

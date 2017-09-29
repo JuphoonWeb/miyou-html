@@ -1,0 +1,209 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/main.css" />
+    <title>认证详情</title>
+</head>
+<style>
+    .row{
+        margin: 10px 0;
+    }
+    .row img{
+        width: 200px;
+    }
+    .btn{
+        margin: 0 5px;
+    }
+</style>
+<body>
+<div class="page-container" id="authDetail"></div>
+<div id="modal-examine" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content radius">
+            <div class="modal-header">
+                <h3 class="modal-title">审核拒绝</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row cl" style="width: 100%">
+                    <label class="form-label col-xs-4 col-sm-3" style="margin: 0">拒绝理由：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text" autocomplete="off" id="refuse_reason">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="submit_refuse">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/ajax.js"></script>
+<script>
+    var stuId = location.hash.split('#')[1],
+        level = null,
+        number = null,
+        university = null,
+        id = null,
+        accept = null,
+        refuse = null;
+    ajax({
+        url: 'admin/auth/getAuthInfo/'+stuId,
+        beforeSendFunc:function(request){
+            request.setRequestHeader("Menu-Url", "auth-list.html");
+        },
+        successFunc: function(data){
+            if(data.code == -1){
+                sessionStorage.removeItem('uuid');
+                sessionStorage.removeItem('login');
+                sessionStorage.removeItem('username');
+                layer.open({
+                    type: 0,
+                    closeBtn: 0,
+                    icon:7,
+                    title: '重新登录',
+                    content: '超过30分钟未操作，已自动登出，请重新登录',
+                    yes: function() {
+                        parent.window.open('login.html', '_self')
+                    }
+                })
+            }
+            if(data.code==1){
+                var res = data.data,
+                    stu = res.student,
+                    idCard = stu.identityUrl?'<img src="'+stu.identityUrl+'">':'',
+                    stuCard = stu.stuCardUrl?'<img src="'+stu.stuCardUrl+'">':'',
+                    status = '';
+
+                if(res.authLevel<=2){
+                    level = 1;
+                    accept = 2;
+                    refuse = 1;
+                }else{
+                    level = 2;
+                    accept = 5;
+                    refuse = 4;
+                }
+                if(res.authLevel==0||res.authLevel==3){
+                    status = '<input class="btn btn-success-outline radius" type="button" value="审核通过" onclick="update('+accept+')">' +
+                        '<input class="btn btn-danger-outline radius" type="button" value="审核拒绝"onclick="show_modal()">';
+                }
+                else if(res.authLevel==2||res.authLevel==5){
+                    status = authLevelStatus[res.authLevel];
+                }
+                else if(res.authLevel==1||res.authLevel==4){
+                    status = authLevelStatus[res.authLevel]+'<br>原因：'+res.authNote;
+                }
+                number = stu.number;
+                university = stu.university;
+                id = res.id;
+                var str =   '<div class="row cl">' +
+                                '<label class="col-sm-3">姓名：</label>' +
+                                '<div class="col-sm-9">'+stu.name+'</div>' +
+                            '</div>'+
+                            '<div class="row cl">' +
+                                '<label class="col-sm-3">学号：</label>' +
+                                '<div class="col-sm-9">'+stu.number+'</div>' +
+                            '</div>'+
+                            '<div class="row cl">' +
+                                '<label class="col-sm-3">手机号：</label>' +
+                                '<div class="col-sm-9">'+stu.phone+'</div>' +
+                            '</div>'+
+                            '<div class="row cl">' +
+                                '<label class="col-sm-3">市：</label>' +
+                                '<div class="col-sm-9">'+stu.city+'</div>' +
+                            '</div>'+
+                            '<div class="row cl">' +
+                                '<label class="col-sm-3">大学：</label>' +
+                                '<div class="col-sm-9">'+stu.university+'</div>' +
+                            '</div>'+
+                            '<div class="row cl">' +
+                                '<label class="col-sm-3">学院：</label>' +
+                                '<div class="col-sm-9">'+stu.school+'</div>' +
+                            '</div>'+
+                            '<div class="row cl">' +
+                                '<label class="col-sm-3">班级：</label>' +
+                                '<div class="col-sm-9">'+stu.clazz+'</div>' +
+                            '</div>'+
+                            '<div class="row cl">' +
+                                '<label class="col-sm-3">身份证：</label>' +
+                                '<div class="col-sm-9">'+idCard+'</div>' +
+                            '</div>'+
+                            '<div class="row cl">' +
+                                '<label class="col-sm-3">学生证：</label>' +
+                                '<div class="col-sm-9">'+stuCard+'</div>' +
+                            '</div>'+
+                            '<div class="row cl">' +
+                                '<label class="col-sm-3">认证状态：</label>' +
+                                '<div class="col-sm-9">'+status+'</div>' +
+                            '</div>';
+                $('#authDetail').html(str);
+            }
+        }
+    })
+    function update(type,reason){
+        ajax({
+            method:'post',
+            url: 'admin/auth/updateAuthLog',
+            z_type:0,
+            data:{
+                id:id,
+                stuId:stuId,
+                authLevel:type,
+                authNote:reason,
+                number:number,
+                university:university
+            },
+            beforeSendFunc: function(request){
+                request.setRequestHeader("Menu-Url", "auth-detail"+level+".html");
+            },
+            successFunc: function(data){
+                if(data.code==1){
+                    parent.init();
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                }else{
+                    layer.open({
+                        type: 0,
+                        closeBtn: 0,
+                        icon:7,
+                        title: '出现错误',
+                        content: data.error
+                    })
+                }
+            }
+        })
+    }
+
+    $(document).on('click','#submit_refuse',function(){
+        var reason = $('#refuse_reason').val().trim();
+        if(!reason){
+            $.Huimodalalert('拒绝理由不能为空',1000);
+            return false;
+        }
+        update(refuse,reason);
+    });
+    function show_modal(){
+        $("#modal-examine").modal("show");
+    }
+</script>
+</body>
+</html>
