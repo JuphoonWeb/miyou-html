@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 	<title>手机验证</title>
+	<link rel="stylesheet" href="css/dialog.css">
 	<style>
 		*{
 			padding:0;margin:0;
@@ -81,10 +82,10 @@
 		</div>
 	</div>
 	<div class="auth-code">
-		<input type="text" id="code-1" maxlength="1">
-		<input type="text" id="code-2" maxlength="1">
-		<input type="text" id="code-3" maxlength="1">
-		<input type="text" id="code-4" maxlength="1">
+		<input type="number" id="code-1" maxlength="1">
+		<input type="number" id="code-2" maxlength="1">
+		<input type="number" id="code-3" maxlength="1">
+		<input type="number" id="code-4" maxlength="1">
 		<div class="error">验证码错误，请重新获取并输入</div>
 	</div>
 	<button class="btn send-btn"><img id="spinner"  src="img/auth-phone-loading.gif" alt="" /><p class="text-in-btn">发送验证码</p></button>
@@ -95,49 +96,120 @@
 <script src="js/index.js"></script>
 <script>
 	
+	$(document).ready(function(){
+		$('input[type=number]').val('').removeClass('hasValue')
+		sendCode()
+	})
+
 	$(document).on('input','input',function(){
-		if($(this).val()){
-			console.log('hasValue')
-			$(this).addClass('hasValue')
+		var value = $(this).val()
+		if(value){
+			$(this).addClass('hasValue').blur()
 			$(this).next().focus()
+			
+			if(value.length > 1){
+				
+				for(var i = 0;i < value.length; i++){
+					var sequence = parseInt($(this).attr('id').split('-')[1])+i	
+					$('#code-'+sequence)
+						.val(value[i])
+						.addClass('hasValue')
+						.blur()
+						.next().focus()	
+				}
+			}
 		}else{
 			$(this).removeClass('hasValue')
-			console.log('clear')
 			$(this).prev().focus()
 		}
 
 		var code = $('#code-1').val()+$('#code-2').val()+$('#code-3').val()+$('#code-4').val()
-		console.log('code: ',code)
-		console.log('lenght' , code.length)
+
 		if(code.length == 4){
-			$('#spinner').show();
-			$('.text-in-btn').text('验证中').attr('disabled',true)
-		}
+			$('input[type=number]').blur()
+			validate(code)
+		}		
 	})
 
-	$(document).on('change','input',function(){
-
-	})
-
-	$('.send-btn').click(function(){
-		$(this).css('background-color','rgba(231, 119, 22, 0.44)')
-			   .attr('disabled', true)
-		var second = 10
-		$('.text-in-btn').text(second+'s后可重发')
-		var that = $(this)
+	function sendCode(){
+		ajax({
+			url: 'h5/sendCode',
+			type: 'post',
+			data: {
+				phone: sessionStorage.getItem('phone')
+			},
+			success: function(response){
+				if(response.code != 1){
+				
+					notice('出现错误')
+				}
+			},
+			error: function(xhr, status){
+				notice(status)
+			}
+		})
+	
+		$('.send-btn').css('background-color','rgba(231, 119, 22, 0.44)')
+					  .attr('disabled', true)
+		var second = 60
+		$('.text-in-btn')
+			.text(second+'s后可重发')
+			.addClass('countdown-text')
+		var that = $('.send-btn')
 		var intervalId = setInterval(function(){
 			second--
-			$('.text-in-btn').text(second+'s后可重发')
-			if(second == 0){
+			$('.countdown-text').text(second+'s后可重发')
+			if(second == 0 || $('.countdown-text').length == 0){
 				clearInterval(intervalId)
-				$('.text-in-btn').text('发送验证码')
 				that.css('background-color', 'rgb(242, 170, 25)')
 					.removeAttr('disabled')
+				if(second == 0){
+					$('.text-in-btn').text('发送验证码')
+				}
 			}
 		},1000)
+	}
 
-	})
-	
+	function validate(code){
+			$('#spinner').attr('src','img/auth-phone-loading.gif').show()
+			$('.text-in-btn').removeClass('countdown-text').text('验证中')
+			$('.send-btn').attr('disabled',true).css('background-color', 'rgb(242, 170, 25)')
+			ajax({
+				url: 'h5/validateCode',
+				type: 'post',
+				data: {
+					phone: sessionStorage.getItem('phone'),
+					code: code,
+				},
+				success: function(response){
+					if(response.code === 1){
+						$('input[type=number]').attr('readonly',true)
+						$('#spinner').attr('src', 'img/auth-phone-ok.svg').css('width','20px').show()
+						$('.text-in-btn').text('验证成功')
+						$('.send-btn')
+							.removeAttr('disabled')
+							.off()
+							.click(function(){
+								window.open('basic-info-new.html','_self')
+							})	
+					}else{
+						notice('验证失败，请重新验证')
+						$('input[type=number]').val('').removeClass('hasValue').blur() 
+						$('#spinner').hide()
+						$('.text-in-btn')
+							.text('发送验证码')
+						$('.send-btn')
+							.removeAttr('disabled')
+							.click(function(){
+								sendCode()
+							})
+					}
+				},
+				error: function(xhr, status){
+					notice(status)
+				}
+			})
+	}
 
 </script>
 </html>

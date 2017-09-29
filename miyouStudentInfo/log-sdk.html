@@ -16,58 +16,33 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
-<title>操作日志</title>
+<title>sdk日志</title>
 </head>
 <body>
 
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 日志管理 <span class="c-gray en">&gt;</span>  操作日志 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 日志管理 <span class="c-gray en">&gt;</span> sdk日志<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
-	<div class="cl pd-5 bg-1 bk-gray mt-20 skin-minimal">
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		
-		<div class="radio-box">
-			<input type="radio" name="type" id="server-log" value="0" checked ><label for="server-log">后台日志</label>
-		</div>
-		<div class="radio-box">
-			<input type="radio" name="type" id="client-log" value="1" ><label for="client-log">客户端日志</label>
-		</div>
-		<div class="radio-box">
-			<input type="radio" name="type" id="exception-log" value="2"><label for="exception-log">异常日志</label> 
-		</div>
-
-		<input id="search-username" type="text" style="width:200px" class="input-text radius" placeholder="根据操作人查询日志 ">
-		<input id="search-phone" type="text" style="width:200px" class="input-text radius" placeholder="根据操作人手机号码查询日志 ">
+		<input id="search-phone" type="text" style="width:200px" class="input-text radius" placeholder="根据手机号码查询日志 ">
 		<button id="search-btn" title="根据输入条件查询日志" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
-	<table class="table table-bordered table-border table-hover table-bg" id="operate-table">
-		<thead class="text-c">
-			<tr>
-				<th width="100">序号</th>
-				<th width="200">操作</th>
-				<th width="200">操作人</th>
-				<th width="200">ip</th>
-				<th width="150">日期</th>		
-			</tr>
-		</thead>
-		<tbody id="operate-tbody" class="text-c">
-		</tbody>
-	</table>
-	<table class="table table-bordered table-border table-hover table-bg" id="exception-table" style="display: none">
+	<table class="table table-bordered table-border table-hover table-bg" id="sdk-table">
 		<thead class="text-c">
 			<tr>
 				<th width="50">序号</th>
-				<th width="100">异常</th>
-				<th width="200">异常类</th>
-				<th width="200">异常详情</th>
-				<th width="100">操作人</th>
-				<th width="100">ip</th>
-				<th width="100">日期</th>		
+				<th width="100">号码</th>
+				<th width="200">原因</th>
+				<th width="200">下载地址</th>
+				<th width="100">时间</th>		
 			</tr>
 		</thead>
-		<tbody id="exception-tbody" class="text-c">
+		<tbody id="sdk-tbody" class="text-c">
 		</tbody>
 	</table>
+	
 	<div class="pagination r" id="pagination"></div>
 	<div class="nodata" id="nodata">
 		<img src="static/images/nodata.svg" alt="">
@@ -85,21 +60,17 @@
 <script type="text/javascript">
 	var isPageInit = false
 	var currPage = 1
-	var size = 5
-	var type = 0
-
-
+	var size = 10
+	var searchPhone = ''
 	
-	function getData(page, size, type, phone, username){
+	function getData(page, size, phone){
 		$('#pagination').hide()
 		ajax({
-			url: 'admin/log/getSysLogs',
+			url: 'admin/feedBack/getFeedbackSdk',
 			data: {
 				page: page,
-				type: type,
-				phone: phone,
-				username: username,
 				size: size,
+				phone: phone,
 			},
 			successFunc: function(response){
 				layer.closeAll()
@@ -109,44 +80,26 @@
 					var list = data.list
 					var trs = ''
 					$('#nodata').hide()
-					$('#operate-tbody').children().remove()
-					$('#exception-tbody').children().remove()
-					if(type == 2){
-						$('#operate-table').hide()
-						$('#exception-table').show()
-						for(var i = 0;i < list.length; i++){
-							var sequence = (page-1)*size+i+1
-							var username = list[i].username || list[i].phone
-							var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss')
-							trs += '<tr>'+
-										'<td>'+sequence+'</td>'+
-										'<td>'+list[i].description+'</td>'+
-										'<td>'+list[i].exceptionClass+'</td>'+
-										'<td>'+list[i].exceptionDetail+'</td>'+
-										'<td>'+username+'</td>'+
-										'<td>'+list[i].ip+'</td>'+
-										'<td>'+date+'</td>'+
-									'</tr>'
-						}
-						$('#exception-tbody').append(trs)
-					}else{
-						$('#exception-table').hide()
-						$('#operate-table').show()
-						for(var i=0; i<list.length; i++){						
-							var sequence = (page-1)*size+i+1
-							var username = list[i].username || list[i].phone
-							var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss')
-							trs += '<tr>'+
-									'<td>'+sequence+'</td>'+
-									'<td>'+list[i].description+'</td>'+
-									'<td>'+username+'</td>'+
-									'<td>'+list[i].ip+'</td>'+
-									'<td>'+date+'</td>'+
-								'</tr>'
-							
-						}
-						$('#operate-tbody').append(trs)
+					$('#sdk-tbody').children().remove()
+					if(list.length === 0){
+						$('#nodata').show()
 					}
+
+					for(var i=0; i<list.length; i++){						
+						var sequence = (page-1)*size+i+1
+						var phone = list[i].username || ''
+						var date = (new Date(list[i].createDate)).Format('yyyy-MM-dd hh:mm:ss')
+						trs += '<tr>'+
+								'<td>'+sequence+'</td>'+
+								'<td>'+phone+'</td>'+
+								'<td>'+list[i].reason+'</td>'+
+								'<td>'+list[i].logUrl+'</td>'+
+								'<td>'+date+'</td>'+
+							'</tr>'
+						
+					}
+					$('#sdk-tbody').append(trs)
+					
 					
 					$('#data-num').text(data.total)
 					if(data.total > size){
@@ -164,7 +117,7 @@
 							    		console.log(obj.curr)
 					    				
 							    		currPage = obj.curr
-								    	getData(currPage, size, type, $('#search-phone').val(), $('#search-username').val())
+								    	getData(currPage, size, searchPhone )
 									}
 							    }
 						  })
@@ -229,31 +182,17 @@
 				}
 			})
 		}
-		$('.skin-minimal input').iCheck({
-			radioClass: 'iradio-green',
-			increaseArea: '20%',
-		})
-		$('input[type=radio][name=type]').on('ifChecked', function(event){
-			  console.log('radio', this.value)
-			  $('#search-phone, #search-username').val('')
-			  type = this.value
-			  currPage = 1
-			  isPageInit =false
-			  getData(currPage, size, type)
-		});
-
 		currPage = 1
-		getData(currPage, size, 0)
+		getData(currPage, size)
 	})
 
 	$('#search-btn').click(function(){ 
 		currPage = 1
 		isPageInit = false
-		getData(currPage, size, type, $('#search-phone').val(), $('#search-username').val())
+		searchPhone = $('#search-phone').val().trim()
+		getData(currPage, size, searchPhone)
 	})
 
-	
-	
 	
 </script> 
 </body>

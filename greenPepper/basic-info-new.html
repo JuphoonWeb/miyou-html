@@ -143,9 +143,6 @@
 				<div class="form-group form-group-lg">
 					<label for="sex">性别</label>	
 					<select name="sex" id="sex" >
-						<!-- <option value="" selected=""></option>
-						<option value="0" id="sex-0">女</option>
-						<option value="1" id="sex-1">男</option> -->
 					</select>
 					<div class="arrow-box">
 						<div class="arrow"></div>
@@ -171,19 +168,6 @@
 					</div>
 					<div class="result" id="university-result"></div>
 				</div>
-				<!-- <div class="form-group">
-					<label for="graduate">在读学历</label>
-					<select name="graduate" id="graduate" >
-						<option value="0" data-name="大专">大专</option>
-						<option value="1" data-name="本科">本科</option>
-						<option value="2" data-name="硕士">硕士</option>
-						<option value="3" data-name="博士">博士</option>
-					</select>
-					<div class="arrow-box">
-						<div class="arrow"></div>
-					</div>
-					<div class="result" id="graduate-result"></div>
-				</div> -->
 				<div class="form-group">
 					<label for="school">学院</label>
 					<select name="school" id="school" ></select>
@@ -192,23 +176,6 @@
 					</div>
 					<div class="result" id="school-result"></div>
 				</div>
-				<!-- <div class="form-group">
-					<label for="year">入学年份</label>
-					<select name="year" id="year">
-					</select>
-					<div class="arrow-box">
-						<div class="arrow"></div>
-					</div>
-					<div class="result" id="year-result"></div>
-				</div> -->
-				<!-- <div class="form-group">
-					<label for="clazz">专业</label>
-					<select name="clazz" id="clazz"></select>
-					<div class="arrow-box">
-						<div class="arrow"></div>
-					</div>
-					<div class="result" id="clazz-result"></div>
-				</div> -->
 				<div class="form-group">
 					<label for="number">学号</label>
 					<input type="text" id="number" placeholder="请输入学号">
@@ -221,7 +188,6 @@
 	</div>
 	<script src="js/zepto.min.js"></script>
 	<script src="js/ajax.js"></script>
-	<script src="js/cookie.js"></script>
 	<script src="js/dialog.min.js"></script>
 	<script src="js/index.js"></script>
 	<script>
@@ -230,17 +196,11 @@
 		var isFinished = false,
 			isInit = true,
 			data = {	
-			    province: '广东',
-				month: 9,
 			    name: $('#name').val(),
 			    sex: $('#sex').children('option:checked').val(),
 			    city: $('#city').children('option:checked').text(),
 			    university: $('#university').children('option:checked').text(),
-			    graduate: $('#graduate').children('option:checked').val(),
 				school: $('#school').children('option:checked').text(),
-				year: $('#year').children('option:checked').text(),
-				clazz: $('#clazz').children('option:checked').text(),
-				clazzId: $('#clazz').children('option:checked').val(),
 				number: $('#number').val()
 			},
 			studentInfo = {}
@@ -250,57 +210,46 @@
 			var queryStr = 'select#'+selectId
 			
 			if(selectId === 'university'){
-				$('#university-result, #school-result, #clazz-result').text('')
+				$('#university-result, #school-result').text('')
 				if(!isInit){
 					studentInfo.university = ''
 					studentInfo.school = ''
-					studentInfo.major = ''
-					studentInfo.clazz = ''
-					studentInfo.clazzId = ''
 				}
 				data.university = ''
 				data.school = ''
-				data.major = ''
-				data.clazz = ''
-				data.clazzId = ''
-				$('select#school, select#clazz').attr('disabled', true)
+				$('select#school').attr('disabled', true)
 			}else if(selectId === 'school'){
-				$('#school-result, #clazz-result').text('')
-				$('select#clazz').attr('disabled', true)
+				$('#school-result').text('')
 				if(!isInit){
 					studentInfo.school = ''
-					studentInfo.major = ''
-					studentInfo.clazz = ''
-					studentInfo.clazzId = ''
 				}
 				data.school = ''
-				data.major = ''
-				data.clazz = ''
-				data.clazzId = ''
 
-			}else if(selectId === 'clazz'){
-				$('#clazz-result').text('')
-				if(!isInit){
-					studentInfo.major = ''
-					studentInfo.clazz = ''
-					studentInfo.clazzId = ''
-				}
-				data.major = ''
-				data.clazz = ''
-				data.clazzId = ''
 			}	
 
 			$(queryStr).children().remove()
 			var options = '<option value=""></option>'
 			for(var  i = 0; i<list.length; i++){
 				var val = list[i].id
-				var name = list[i].name || list[i].schoolName || list[i].major || list[i].clazz
+				var name = list[i].name || list[i].schoolName
 				options += '<option value="'+val+'" data-name="'+name+'" >'+name+'</option>'
 			}
-			if(selectId === 'clazz'){
-				options += '<option value="-1">其他-不在列表内</option>'
-			}
 			$(queryStr).append(options)
+		}
+
+		function enableBtn(){
+			$('#next-btn')
+				.removeAttr('disabled')
+				.css('background-color','rgb(242, 170, 25)')
+				.click(function(e){
+					e.preventDefault()
+					var dataJson = JSON.stringify(data)
+					sessionStorage.setItem('data', dataJson)
+					var studentInfoJson = JSON.stringify(studentInfo)
+					sessionStorage.setItem('studentInfo', studentInfoJson)
+
+					window.open('student-idcard.html', '_self')
+				})
 		}
 
 		$(document).ready(function(){
@@ -308,7 +257,7 @@
 			$('#next-btn').click(function(e){
 				e.preventDefault()
 			})
-			$('select#university, select#school, select#clazz').attr('disabled',true)
+			$('select#university, select#school').attr('disabled',true)
 			
 
 			ajax({
@@ -338,20 +287,8 @@
 				}
 			})
 
-			var nowYear = (new Date()).getFullYear()
-			var yearsOption ='<option  value=""></option>'
-			for(var i = 4; i >= 0; i--){
-				var year = nowYear - i 
-				yearsOption += '<option value="'+year+'" data-name="'+year+'" >'+year+'</option>'
-			}
-			$('select#year').append(yearsOption)
-
 			var sexOption = '<option  value="-1"></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
 			$('select#sex').append(sexOption)
-
-			var graduateOption = '<option  value=""></option><option value="0" data-name="大专">大专</option><option value="1" data-name="本科">本科</option><option value="2" data-name="硕士">硕士</option><option value="3" data-name="博士">博士</option>'
-			$('select#graduate').append(graduateOption)
-
 
 			var arrowList = $('.arrow-box')
 			var resultList = $('.result')
@@ -385,33 +322,11 @@
 				$('#sex-result').text(sexStr)
 				$('option[data-name="'+sexStr+'"]').attr('selected', true)			
 				data.sex = studentInfo.sex
-
-
-				var graduate = studentInfo.graduate
-				
-				var graduateStr = studentInfo.graduateStr
-				$('#graduate-result').text(graduateStr)
-				$('option[data-name="'+graduateStr+'"]').attr('selected', true)
-				data.graduate = graduate
-
-
-				var year = studentInfo.year
-				$('#year-result').text(year)
-				$('option[data-name="'+year+'"]').attr('selected', true)
-				data.year = studentInfo.year
 			}else{
 				isInit = false
 			}
 
 		})
-
-		// $('input')
-		// 	.focus(function(){
-		// 		$(this).css('text-align', 'left')
-		// 	})
-		// 	.blur(function(){
-		// 		$(this).css('text-align', 'right')  
-		// 	})
 
 		function getUniversity(selected){
 				ajax({
@@ -432,8 +347,8 @@
 								var selected = $('option[data-name="'+university+'"]')
 								selected.attr('selected', true)
 								$('#university-result').text(university)
-
 								getSchool(selected)
+
 							}
 
 							if(list.length > 0){
@@ -477,8 +392,9 @@
 									var selected = $('option[data-name="'+school+'"]')
 									selected.attr('selected', true)
 									$('#school-result').text(school)
+									enableBtn()
+									isInit = false
 
-									getClazz(selected)
 								}
 
 								if(list.length > 0){
@@ -499,63 +415,10 @@
 					})
 		}
 
-		function getClazz(selected){
-			ajax({
-						url: 'h5/getClazz',
-						data: {
-							pid: selected.val()
-						},
-						success: function(response){
-							if(response.code === 1){
-								var list = response.data
-								fillSelect('clazz', list )
-								if(studentInfo.clazzId && isInit){		
-									var clazzId = studentInfo.clazzId
-									var clazz = studentInfo.clazz
-									data.clazzId = studentInfo.clazzId
-									data.clazz = studentInfo.clazz
-									data.major = studentInfo.clazz
-									var selected = $('option[data-name="'+clazz+'"]')
-									selected.attr('selected', true)
-									$('#clazz-result').text(clazz)
-
-									isInit = false
-									isFinished = true
-
-									if(isFinished){
-										$('#next-btn')
-											.css('background-color','rgb(242, 170, 25)')
-											.click(function(e){
-												e.preventDefault()
-												var dataJson = JSON.stringify(data)
-												sessionStorage.setItem('data', dataJson)
-												var studentInfoJson = JSON.stringify(studentInfo)
-												sessionStorage.setItem('studentInfo', studentInfoJson)
-
-												window.open('student-idcard.html', '_self')
-											})
-
-									}else{
-										$('#next-btn')
-											.css('background-color','rgb(244, 200, 113)')
-											.off()
-									}
-
-								}
-								$('select#clazz').removeAttr('disabled')
-							}else if(response.code === 0){
-								notice(response.error)
-							}else{
-								notice('出现错误')
-							}
-						},
-						error: function(xhr, status){
-							notice(status)
-						}
-
-					})
-		}	
-
+		$(document).on('focus','input,select',function(){
+			$('#next-btn').attr('disabled', true)
+						  .css('background-color','rgb(244, 200, 113)')
+		})
 
 		$(document).on('change', 'input, select', function(){
 			var tagName = $(this).prop('tagName')
@@ -598,34 +461,13 @@
 					studentInfo.university = university
 					
 					getSchool(selected)
-				}else if(selectId === 'graduate'){
-					var graduate = $(this).children('option:checked').val()
-					var graduateStr = $(this).children('option:checked').text()
-					data.graduate = graduate
-					studentInfo.graduateStr = graduateStr
-					studentInfo.graduate = graduate
-
 				}else if(selectId === 'school'){
 					var selected = $(this).children('option:checked')
 					var school = selected.text()
 					data.school = school
 					studentInfo.school = school	
 					
-					getClazz(selected)
-				}else if(selectId === 'year'){
-					var year = $(this).children('option:checked').text()
-					data.year = year
-					studentInfo.year = year
-				}else if(selectId === 'clazz'){
-					var clazz = $(this).children('option:checked').text()
-					var clazzId = $(this).children('option:checked').val()
-					data.clazz = clazz
-					data.major = clazz
-					data.clazzId = clazzId
-					studentInfo.clazz = clazz
-					studentInfo.clazzId = clazzId
-				}
-			
+				}			
 			}
 		
 			console.log('data', data)
@@ -639,13 +481,6 @@
 						isFinished = false
 						break	
 					}
-				}else if(i === 'graduate'){
-					if(parseInt(data[i])<0 || parseInt(data[i])>3){
-						console.log(i,'false')
-						isFinished = false
-						break
-					}
-				
 				}else if(data[i] === ''){
 					console.log(i,'false')
 					isFinished = false
@@ -655,23 +490,14 @@
 			}
 
 			if(isFinished){
-				$('#next-btn')
-					.css('background-color','rgb(242, 170, 25)')
-					.click(function(e){
-						e.preventDefault()
-						var dataJson = JSON.stringify(data)
-						sessionStorage.setItem('data', dataJson)
-						var studentInfoJson = JSON.stringify(studentInfo)
-						sessionStorage.setItem('studentInfo', studentInfoJson)
-
-						window.open('student-idcard.html', '_self')
-					})
+				enableBtn()
 
 			}else{
 				$('#next-btn')
 					.css('background-color','rgb(244, 200, 113)')
 					.off()
 			}
+			$('#next-btn').attr('disabled', true)
 		})	
 
 		$(document).on('blur', 'input, select',function(){
@@ -686,12 +512,6 @@
 						isFinished = false
 						break	
 					}
-				}else if(i === 'graduate'){
-					if(parseInt(data[i])<0 || parseInt(data[i])>3){
-						console.log(i,'false')
-						isFinished = false
-						break
-					}
 				}else if(data[i] === ''){
 					console.log(i,'false')
 					isFinished = false
@@ -700,18 +520,7 @@
 			}
 
 			if(isFinished){
-				$('#next-btn')
-					.css('background-color','rgb(242, 170, 25)')
-					.click(function(e){
-						e.preventDefault()
-						var dataJson = JSON.stringify(data)
-						sessionStorage.setItem('data', dataJson)
-						
-						var studentInfoJson = JSON.stringify(studentInfo)
-						sessionStorage.setItem('studentInfo', studentInfoJson)
-
-						window.open('student-idcard.html', '_self')
-					})
+				enableBtn()
 
 			}else{
 				$('#next-btn')

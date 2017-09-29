@@ -83,7 +83,7 @@
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="static/js/ajax.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script>
 
 <script type="text/javascript">
 	var isPageInit = false
@@ -125,8 +125,9 @@
 				}
 				// 判断数据是否取得成功
 				$('#student-tbody').append(trs)
-				$('#data-num').text(data.total)
+				
 			}
+			$('#data-num').text(data.total)
 
 			if(!isPageInit){
 				if(data.total > size){

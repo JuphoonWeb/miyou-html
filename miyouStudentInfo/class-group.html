@@ -54,7 +54,7 @@
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="static/js/ajax.js"></script> 
+<script type="text/javascript" src="static/js/index.js"></script> 
 
 
 <script type="text/javascript">
@@ -64,8 +64,19 @@
 	var currPage = 1
 	var size = 13
 	var uuid = sessionStorage.getItem('uuid')
+	
 
-	var successFunc = function(response){
+	function getData(page, size, university, major){
+		ajax({
+			url: url,
+
+			data: {
+				page: page, 
+				size: size,
+				university: university,
+				major: major,
+			},
+			successFunc: function(response){
 						layer.closeAll()
 						console.log('success')
 						console.log(response)
@@ -89,6 +100,7 @@
 							$('#clazz-tbody').append(trs)
 							$('#data-num').text(data.total)
 							if(!isPageInit && data.total > size){
+								$('#pagination').show()
 								var pages = Math.ceil(data.total/size)
 								laypage({
 								    cont: 'pagination',
@@ -99,15 +111,8 @@
 								    	if(!first){
 								    		console.log(obj.curr)
 								    		currPage = obj.curr
-									    	ajax({
-												url: url,
-												data: {
-													page: currPage, 
-													size: size,
-												},
-												successFunc: successFunc,
-												errorFunc: errorFunc
-											})
+
+									    	getData(currPage, size, $('#search-university').val(), $('#search-major').val())
 										}
 								    }
 							  })
@@ -140,9 +145,8 @@
 								})
 
 						}		
-			    	}
-
-	var errorFunc = function(xhr,status) {
+			    	},
+			errorFunc: function(xhr,status) {
 						console.log('error', status)
 						layer.closeAll()
 						if(!isPageInit){	
@@ -157,8 +161,9 @@
 								content: '请检查网络'
 							})
 						}
-				    } 
-		
+				    }
+		})
+	}	
 
 	//申请开通班级圈
 	function applyGroup(clazzId){
@@ -234,22 +239,16 @@
 		}
 		
 		currPage = 1
-		
-		ajax({
-			url: url,
-
-			data: {
-				page: currPage, 
-				size: size,
-			},
-			successFunc: successFunc,
-			errorFunc: errorFunc
-		})
-			
+		getData(currPage, size)			
 		 	
 	}
 
-	
+	$('#search-btn').click(function(){
+		currPage = 1
+		isPageInit = false
+		$('#pagination').hide()
+		getData(currPage, size, $('#search-university').val(), $('#search-major').val())
+	})
 	
 </script> 
 </body>

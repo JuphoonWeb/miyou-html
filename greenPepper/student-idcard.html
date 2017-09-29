@@ -132,7 +132,6 @@
 	<script src="js/zepto.min.js"></script>
 	<script src="js/dialog.min.js"></script>
 	<script src="js/ajax.js"></script>
-	<script src="js/cookie.js"></script>
 	<script src="js/index.js"></script>
 	<script>
 
@@ -188,32 +187,8 @@
 							data.stuCardUrl = response.data
 
 							$('#upload-2').show()
-							$('#submit').css('background-color','rgb(242, 170, 25)')
-							$('#submit').click(function(e){
-								e.preventDefault()
-								ajax({
-									url: 'h5/authStudent',
-									type: 'post',
-									data: data,
-									success: function(response){
-										if(response.code === 1){
-											window.open('submit-success.html', '_self')
-										}else if(response.code === 0){
-											$(document).dialog({
-												type: 'toast',
-												infoIcon: 'img/fail.png',
-												infoText: response.error,
-												autoClose: 1500
-											})				
-										}else{
-											toast('出现错误', 'fail')
-										}
-									},
-									error: function(xhr, status) {
-										toast(status, 'fail')
-									}
-								})
-							})
+							enableBtn()
+							
 						}else if(response.code === 0){
 							$(document).dialog({
 									type: 'toast',
@@ -294,6 +269,30 @@
 
 			upload('upload/studentImage', form, successFunc2, errorFunc)
 		})
+
+		function enableBtn(){
+			$('#submit').css('background-color','rgb(242, 170, 25)')
+					    .click(function(e){
+								e.preventDefault()
+								ajax({
+									url: 'h5/authStudent',
+									type: 'post',
+									data: data,
+									success: function(response){
+										if(response.code === 1){
+											window.open('submit-success.html', '_self')
+										}else if(response.code === 0){
+											notice(response.error)				
+										}else{
+											notice('出现错误')
+										}
+									},
+									error: function(xhr, status) {
+										notice(status)
+									}
+								})
+							})
+		}
 		
 
 	</script>

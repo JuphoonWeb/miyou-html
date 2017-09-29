@@ -20,6 +20,15 @@ function ajax(dataObj){
 	    contentType = dataObj.contentType,
 	    successFunc = function(res){
 	    	layer.closeAll()
+	    	if(res.code === -2){
+	    		layer.open({
+	    			type: 0,
+					closeBtn: 0,
+					title: '提示',
+					icon: 7,
+					content: '您没有权限'
+	    		})
+	    	}
 	    	console.log('success',res)
 	    	dataObj.successFunc && dataObj.successFunc(res)
 	    },
