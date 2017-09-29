@@ -23,23 +23,30 @@
         line-height:30px;
         color: rgb(252,174,27);
     }
+    input{
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
+    }
     input::-webkit-input-placeholder {
         color: rgb(162,162,162);
     }
-    .phone,.code-line{
+    .phone-line,.code-line{
         width: 220px;
         height: 22px;
         line-height:22px;
-        display: block;
         margin:0 auto;
         border-bottom: rgb(242,170,25) 1px solid;
         color: rgb(242,170,25);
         overflow: hidden;
+        padding-bottom: 5px;
+    }
+    .phone-line{
+        margin-top: 52px;
     }
     .phone{
-        margin-top: 52px;
+        width: 100%;
         font-size: 15px;
         padding: 0 4px;
+        color: rgb(242,170,25);
     }
     .code-line .code{
         width:135px;
@@ -48,6 +55,7 @@
     .code{
         font-size: 15px;
         padding: 0 4px;
+        color: rgb(242,170,25);
     }
     .code-line{
         margin-top: 24px;
@@ -117,7 +125,9 @@
     <img src="./images/logo_download.png" class="logo">
     <h3>青椒校园</h3>
     <p>校园动态尽在手中<br>群组活动在线组织<br>认证学生放心社交</p>
-    <input type="text" pattern="[0-9]*" placeholder="请输入手机号" id="phone" class="phone">
+    <div class="phone-line">
+        <input type="text" pattern="[0-9]*" placeholder="请输入手机号" id="phone" class="phone">
+    </div>
     <div class="code-line">
         <input type="text" pattern="[0-9]*" placeholder="输入验证码" id="code" class="code">
         <button class="send-code" id="sendCode" disabled>发送验证码</button>
@@ -141,12 +151,11 @@
 <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="./static/common.js"></script>
 <script type="text/javascript">
-    var name = GetQueryString('name'),
-        token = GetQueryString('token'),
+    var token = GetQueryString('token').trim(),
         reg = /^1[34578]\d{9}$/;
-
+    console.log(token);
     $(document).on('click','#sendCode',function(){
-        if(!name||!token){
+        if(!token){
             toast('获取信息失败',2000);
             return false;
         }
@@ -154,7 +163,12 @@
             sendCode = $(this),
             timer = null,
             seconds = 60;
+        toast('正在发送');
         _ajax('post','/api/h5/sendCode',{'phone':phone},function(data){
+            toast('发送成功',1000);
+            setTimeout(function(){
+                $('#code').focus();
+            },1500);
             sendCode.attr('disabled',true).text(seconds+'s');
             timer = setInterval(function(){
                 if(seconds<=0){
@@ -165,12 +179,9 @@
                     sendCode.attr('disabled',true).text(seconds+'s');
                 }
             },1000);
-            if(data.code==1){
-                toast('发送成功',2000);
-            }
         })
     }).on('click','#submit',function(){
-        if(!name||!token){
+        if(!token){
             toast('获取信息失败',2000);
             return false;
         }
@@ -182,10 +193,8 @@
             'code':code,
             'token':token
         },function(data){
-            toast('正在跳转');
+            toast('正在跳转',5000);
             location.href = 'tencent1106402476://';
-        },function(){
-            toast('验证码错误');
         })
     }).on('keyup','#phone,#code',function(){
         var phone = $('#phone').val().trim(),
