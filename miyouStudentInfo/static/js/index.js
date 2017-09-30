@@ -28,10 +28,10 @@ function ajax(dataObj){
 					icon: 7,
 					content: '您没有权限'
 	    		})
-	    		return
-	    	}
-	    	console.log('success',res)
-	    	dataObj.successFunc && dataObj.successFunc(res)
+	    	}else{
+		    	console.log('success',res)
+		    	dataObj.successFunc && dataObj.successFunc(res)
+		    }
 	    },
 	    errorFunc = function(xhr, status){
 	    	layer.closeAll()
