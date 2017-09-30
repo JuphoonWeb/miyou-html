@@ -149,9 +149,9 @@
 		})
 	}).on('click','.J_feedback',function(){
         toast('意见反馈提交中');
-        _ajax('post','/api/h5/submitFeedback',{
-            'phone':phone,
-            'content':$('.J_feedback_text').text()
+        _ajax('post','/api/upload/sdkLog',{
+            'userName':phone,
+            'reason':$('.J_feedback_text').text()
         },function(data){
             if(data.code==1){
                 toast('意见反馈提交成功',2000,function(){
