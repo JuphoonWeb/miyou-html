@@ -59,7 +59,7 @@ function ajax(dataObj){
 	    contentType: contentType,
 		headers: {
 			token: sessionStorage.getItem('uuid'),
-			'Menu-Url': window.location.href.split('/').reverse()[0].split('?')[0] 
+			'Menu-Url': window.location.href.replace('#','').split('/').reverse()[0].split('?')[0] 
 
 		},
 		dataType : 'json',
