@@ -46,7 +46,7 @@
 				<th width="100">序号</th>
 				<th width="200">操作</th>
 				<th width="200">操作人</th>
-				<th width="200">ip</th>
+				<th width="200">操作方法 </th>
 				<th width="150">日期</th>		
 			</tr>
 		</thead>
@@ -61,7 +61,7 @@
 				<th width="200">异常类</th>
 				<th width="200">异常详情</th>
 				<th width="100">操作人</th>
-				<th width="100">ip</th>
+				<th width="100">操作方法</th>
 				<th width="100">日期</th>		
 			</tr>
 		</thead>
@@ -85,13 +85,18 @@
 <script type="text/javascript">
 	var isPageInit = false
 	var currPage = 1
-	var size = 5
+	var size = 14
 	var type = 0
 
 
 	
 	function getData(page, size, type, phone, username){
 		$('#pagination').hide()
+		if(type == 2){
+			size = 10
+		}else{
+			size = 14
+		}
 		ajax({
 			url: 'admin/log/getSysLogs',
 			data: {
@@ -124,7 +129,7 @@
 										'<td>'+list[i].exceptionClass+'</td>'+
 										'<td>'+list[i].exceptionDetail+'</td>'+
 										'<td>'+username+'</td>'+
-										'<td>'+list[i].ip+'</td>'+
+										'<td>'+list[i].method+'</td>'+
 										'<td>'+date+'</td>'+
 									'</tr>'
 						}
@@ -140,7 +145,7 @@
 									'<td>'+sequence+'</td>'+
 									'<td>'+list[i].description+'</td>'+
 									'<td>'+username+'</td>'+
-									'<td>'+list[i].ip+'</td>'+
+									'<td>'+list[i].method+'</td>'+
 									'<td>'+date+'</td>'+
 								'</tr>'
 							

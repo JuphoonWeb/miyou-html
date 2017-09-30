@@ -44,7 +44,7 @@
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限分配：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<ul id="treeDemo" class="ztree" style=""></ul>
+					<ul id="tree" class="ztree" style=""></ul>
 				</div>
 			</div>
 			
@@ -100,6 +100,7 @@
 		callback: {
 			beforeClick: function(treeId, treeNode) {
 				var zTree = $.fn.zTree.getZTreeObj("tree");
+				console.log(treeNode.id)
 				if (treeNode.isParent) {
 					zTree.expandNode(treeNode);
 					return false;
@@ -112,24 +113,19 @@
 				
 				if(treeNode.checked){
 					menuIds.push(treeNode.id)
-					if(treeNode.pId == 0){
-						var pId = treeNode.id
-						for(var i = 0; i < zNodes.length; i++){
-							if(zNodes[i].pId == pId){
-								menuIds.push(zNodes[i].id)
-							}
+					var pId = treeNode.id
+					for(var i = 0; i < zNodes.length; i++){
+						if(zNodes[i].pId == pId){
+							menuIds.push(zNodes[i].id)
 						}
-					}else{
-						menuIds.push(treeNode.pId)
 					}
+					menuIds.push(treeNode.pId)
 				}else{
 					menuIds.remove(treeNode.id)
-					if(treeNode.pId == 0){
-						var pId = treeNode.id
-						for(var i = 0; i < zNodes.length; i++){
-							if(zNodes[i].pId === pId){
-								menuIds.remove(zNodes[i].id)
-							}
+					var pId = treeNode.id
+					for(var i = 0; i < zNodes.length; i++){
+						if(zNodes[i].pId == pId){
+							menuIds.remove(zNodes[i].id)
 						}
 					}
 				}
@@ -173,7 +169,7 @@
 				var status = response.code
 				if(status === 1){
 					zNodes = response.data
-					var t = $("#treeDemo");
+					var t = $("#tree");
 					t = $.fn.zTree.init(t, setting, zNodes);
 					for(var i = 0; i < zNodes.length; i++){
 						if(zNodes[i].checked){
@@ -220,7 +216,7 @@
 			}
 		})
 
-		var t = $("#treeDemo");
+		var t = $("#tree");
 		t = $.fn.zTree.init(t, setting, zNodes);
 		demoIframe = $("#testIframe");
 		var zTree = $.fn.zTree.getZTreeObj("tree");

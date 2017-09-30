@@ -78,14 +78,11 @@
 			},
 			successFunc: function(response){
 						layer.closeAll()
-						console.log('success')
-						console.log(response)
 						if(response.code === 1){
 							var data = response.data
 							var list = data.list
 
 							var trs = ''
-							console.log(response)
 							$('#nodata').hide()
 							$('#clazz-tbody').children().remove()
 							for(var  i=0; i<list.length; i++){						

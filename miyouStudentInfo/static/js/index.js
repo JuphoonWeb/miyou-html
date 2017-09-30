@@ -28,6 +28,7 @@ function ajax(dataObj){
 					icon: 7,
 					content: '您没有权限'
 	    		})
+	    		return
 	    	}
 	    	console.log('success',res)
 	    	dataObj.successFunc && dataObj.successFunc(res)
@@ -47,8 +48,6 @@ function ajax(dataObj){
 			data.page = data.page || 1
 			data.size = data.size || 12
 		}
-	console.log('async', async)
-	console.log('menuUrl', window.location.href.split('/').reverse()[0].split('?')[0])
 
 	$.ajax({
 		
@@ -60,7 +59,7 @@ function ajax(dataObj){
 	    contentType: contentType,
 		headers: {
 			token: sessionStorage.getItem('uuid'),
-			'Menu-Url': window.location.href.split('/').reverse()[0].split('?')[0] 
+			'Menu-Url': window.location.href.replace('#','').split('/').reverse()[0].split('?')[0] 
 
 		},
 		dataType : 'json',
