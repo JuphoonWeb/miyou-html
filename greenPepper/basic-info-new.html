@@ -13,9 +13,6 @@
 			font-size: 16px;
 			-webkit-tap-highlight-color: transparent;
 		}
-		html,body{
-			/*height:100%;*/
-		}
 		body{
 			background-color: rgb(246, 246, 246)
 		}
@@ -415,7 +412,7 @@
 					})
 		}
 
-		$(document).on('focus','input,select',function(){
+		$(document).on('focus','input',function(){
 			$('#next-btn').attr('disabled', true)
 						  .css('background-color','rgb(244, 200, 113)')
 		})
@@ -496,8 +493,9 @@
 				$('#next-btn')
 					.css('background-color','rgb(244, 200, 113)')
 					.off()
+					.attr('disabled', true)
 			}
-			$('#next-btn').attr('disabled', true)
+		
 		})	
 
 		$(document).on('blur', 'input, select',function(){
