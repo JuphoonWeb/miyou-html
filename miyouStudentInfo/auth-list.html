@@ -53,13 +53,9 @@
                 <th>手机号</th>
                 <th>市</th>
                 <th>大学</th>
-                <th width="10%">学院</th>
-                <th width="15%">班级</th>
+                <th width="15%">学院</th>
                 <th>提交认证时间</th>
-                <!--<th>身份证</th>-->
-                <!--<th>学生证</th>-->
                 <th width="10%">审核状态</th>
-                <!--<th width="25%">操作</th>-->
             </tr>
             </thead>
             <tbody id="welfare-tbody" class="text-c">
@@ -113,7 +109,7 @@
 //                }
                 var level = list[i].level||0,
                     status = '<a href="javascript:;" onclick="layer_show(\'认证详情\',\'auth-detail.html#'+list[i].id+'\',\'\',\'500\');">'+authLevelStatus[level]+'</a>';
-                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td>'+list[i].number+'</td><td>'+list[i].phone+'</td><td>'+list[i].city+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td><td>'+new Date(list[i].modifyTime).Format("yyyy-MM-dd hh:mm:ss")+'</td><td>'+status+'</td></tr>'
+                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td>'+list[i].number+'</td><td>'+list[i].phone+'</td><td>'+list[i].city+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+new Date(list[i].modifyTime).Format("yyyy-MM-dd hh:mm:ss")+'</td><td>'+status+'</td></tr>'
             }
 
             // 判断数据是否取得成功
