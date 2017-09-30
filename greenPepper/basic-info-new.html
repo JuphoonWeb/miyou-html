@@ -476,7 +476,7 @@
 				if(i === 'sex'){
 					console.log(i)
 
-					if(data[i] == -1){
+					if(data[i] == -1 || !data[i]){
 						console.log(i,'false')
 						isFinished = false
 						break	
@@ -507,7 +507,7 @@
 
 				if(i === 'sex'){
 					console.log(i)
-					if(data[i] == -1){
+					if(data[i] == -1 || !data[i]){
 						console.log(i,'false')
 						isFinished = false
 						break	
