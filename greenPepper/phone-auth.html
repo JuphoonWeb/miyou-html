@@ -102,6 +102,7 @@
 	})
 
 	$(document).on('input','input',function(){
+		$('.error').hide()
 		var value = $(this).val()
 		if(value){
 			$(this).addClass('hasValue').blur()
@@ -130,8 +131,10 @@
 			validate(code)
 		}		
 	})
+	
 
 	function sendCode(){
+		$('.error').hide()
 		ajax({
 			url: 'h5/sendCode',
 			type: 'post',
@@ -193,7 +196,8 @@
 								window.open('basic-info-new.html','_self')
 							})	
 					}else{
-						notice('验证失败，请重新验证')
+						// notice('验证失败，请重新验证')
+						$('.error').show()
 						$('input[type=number]').val('').removeClass('hasValue').blur() 
 						$('#spinner').hide()
 						$('.text-in-btn')
