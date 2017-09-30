@@ -13,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
     <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="lib/viewer/viewer.min.css" />
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
     <link rel="stylesheet" type="text/css" href="static/css/main.css" />
@@ -54,9 +55,10 @@
 </div>
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="lib/viewer/viewer.min.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="static/js/ajax.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script>
 <script>
     var stuId = location.hash.split('#')[1],
         level = null,
@@ -110,7 +112,10 @@
                     status = authLevelStatus[res.authLevel];
                 }
                 else if(res.authLevel==1||res.authLevel==4){
-                    status = authLevelStatus[res.authLevel]+'<br>原因：'+res.authNote;
+                    status = authLevelStatus[res.authLevel]+'<br>原因：'+res.authNote+'<br><br>'+
+                            '<input class="btn btn-success-outline radius J_examine" type="button" value="审核通过" onclick="update('+accept+')" style="display: none">' +
+                            '<input class="btn btn-primary radius J_re_examine" type="button" value="重新认证">' +
+                            '<input class="btn btn-danger-outline radius J_examine" type="button" value="审核拒绝"onclick="show_modal()" style="display: none">';
                 }
                 number = stu.number;
                 university = stu.university;
@@ -139,23 +144,20 @@
                                 '<label class="col-sm-3">学院：</label>' +
                                 '<div class="col-sm-9">'+stu.school+'</div>' +
                             '</div>'+
-                            '<div class="row cl">' +
-                                '<label class="col-sm-3">班级：</label>' +
-                                '<div class="col-sm-9">'+stu.clazz+'</div>' +
-                            '</div>'+
-                            '<div class="row cl">' +
+                            '<div class="viewer"><div class="row cl">' +
                                 '<label class="col-sm-3">身份证：</label>' +
                                 '<div class="col-sm-9">'+idCard+'</div>' +
                             '</div>'+
                             '<div class="row cl">' +
                                 '<label class="col-sm-3">学生证：</label>' +
                                 '<div class="col-sm-9">'+stuCard+'</div>' +
-                            '</div>'+
+                            '</div></div>'+
                             '<div class="row cl">' +
                                 '<label class="col-sm-3">认证状态：</label>' +
                                 '<div class="col-sm-9">'+status+'</div>' +
                             '</div>';
                 $('#authDetail').html(str);
+                $('.viewer').viewer();
             }
         }
     })
@@ -200,6 +202,9 @@
             return false;
         }
         update(refuse,reason);
+    }).on('click','.J_re_examine',function(){
+        $(this).hide();
+        $('.J_examine').show();
     });
     function show_modal(){
         $("#modal-examine").modal("show");

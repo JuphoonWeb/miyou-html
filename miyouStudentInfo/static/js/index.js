@@ -107,3 +107,4 @@ function removeRepeat(array){
 	}
 	return resultArray;
 }
+var authLevelStatus = ["一级未审核","一级审核拒绝","一级审核通过","二级未审核","二级审核拒绝","二级审核通过"];
