@@ -81,7 +81,9 @@
 <!-- 侧栏菜单加载 -->
 <script>
 	$(function(){
-		
+		var userData = JSON.parse(sessionStorage.getItem('userData'))		
+
+
 		if(!sessionStorage.getItem('uuid')){
 			layer.open({
 				type: 0,
@@ -95,11 +97,11 @@
 				}
 			})
 		}else{
-			$('#username').text(sessionStorage.getItem('username'))
+			$('#username').text(userData.username)
 		}
 	
 
-		var menus = JSON.parse(sessionStorage.getItem('menus'))
+		var menus = userData.menus
 
 		for(var i = 0; i < menus.length; i++){
 			var menu = menus[i]

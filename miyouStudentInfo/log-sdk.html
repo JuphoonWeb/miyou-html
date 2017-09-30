@@ -24,7 +24,7 @@
 <div class="page-container" id="student-list">
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
 		
-		<input id="search-phone" type="text" style="width:200px" class="input-text radius" placeholder="根据手机号码查询日志 ">
+		<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据手机号码查询日志 ">
 		<button id="search-btn" title="根据输入条件查询日志" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
@@ -32,11 +32,11 @@
 	<table class="table table-bordered table-border table-hover table-bg" id="sdk-table">
 		<thead class="text-c">
 			<tr>
-				<th width="50">序号</th>
-				<th width="100">号码</th>
+				<th width="100">序号</th>
+				<th width="150">号码</th>
 				<th width="200">原因</th>
-				<th width="200">下载地址</th>
-				<th width="100">时间</th>		
+				<th width="150">时间</th>		
+				<th width="150">操作</th>
 			</tr>
 		</thead>
 		<tbody id="sdk-tbody" class="text-c">
@@ -89,12 +89,17 @@
 						var sequence = (page-1)*size+i+1
 						var phone = list[i].username || ''
 						var date = (new Date(list[i].createDate)).Format('yyyy-MM-dd hh:mm:ss')
+						var url = list[i].logUrl
 						trs += '<tr>'+
 								'<td>'+sequence+'</td>'+
 								'<td>'+phone+'</td>'+
 								'<td>'+list[i].reason+'</td>'+
-								'<td>'+list[i].logUrl+'</td>'+
 								'<td>'+date+'</td>'+
+								'<td>'+
+									'<a href="'+url+'" class="btn btn-secondary-outline radius">'+
+										'<span class="Hui-iconfont">&#xe640;</span>下载日志'+
+									'</a>'+
+								'</td>'+
 							'</tr>'
 						
 					}

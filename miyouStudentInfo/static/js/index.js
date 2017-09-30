@@ -28,6 +28,7 @@ function ajax(dataObj){
 					icon: 7,
 					content: '您没有权限'
 	    		})
+	    		return
 	    	}
 	    	console.log('success',res)
 	    	dataObj.successFunc && dataObj.successFunc(res)
@@ -47,8 +48,6 @@ function ajax(dataObj){
 			data.page = data.page || 1
 			data.size = data.size || 12
 		}
-	console.log('async', async)
-	console.log('menuUrl', window.location.href.split('/').reverse()[0].split('?')[0])
 
 	$.ajax({
 		
@@ -107,3 +106,4 @@ function removeRepeat(array){
 	}
 	return resultArray;
 }
+var authLevelStatus = ["一级未审核","一级审核拒绝","一级审核通过","二级未审核","二级审核拒绝","二级审核通过"];
