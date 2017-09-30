@@ -6,9 +6,9 @@ function ajax(dataObj){
 		layer.load()
 
 	})
-    // var url = 'http://192.168.0.46:8086/miyou/'
+    var url = 'http://192.168.0.46:8086/miyou/'
     // var url = 'http://192.168.15.161:8086/miyou/'
-    var url = 'http://218.204.254.209:28812/miyou/'
+    // var url = 'http://218.204.254.209:28812/miyou/'
 
 
     url += dataObj.url
@@ -28,10 +28,10 @@ function ajax(dataObj){
 					icon: 7,
 					content: '您没有权限'
 	    		})
-	    		return
-	    	}
-	    	console.log('success',res)
-	    	dataObj.successFunc && dataObj.successFunc(res)
+	    	}else{
+		    	console.log('success',res)
+		    	dataObj.successFunc && dataObj.successFunc(res)
+		    }
 	    },
 	    errorFunc = function(xhr, status){
 	    	layer.closeAll()
@@ -59,7 +59,7 @@ function ajax(dataObj){
 	    contentType: contentType,
 		headers: {
 			token: sessionStorage.getItem('uuid'),
-			'Menu-Url': window.location.href.split('/').reverse()[0].split('?')[0] 
+			'Menu-Url': window.location.href.replace('#','').split('/').reverse()[0].split('?')[0] 
 
 		},
 		dataType : 'json',

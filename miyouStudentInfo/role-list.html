@@ -59,7 +59,8 @@
 	var size = 11
 	var roleName = ''
 	var roleList = []
-
+	var userRoleId = JSON.parse(sessionStorage.getItem('userData')).roleId
+	
 	function init(){
 
 		if(!sessionStorage.getItem('uuid')){
@@ -75,6 +76,7 @@
 				}
 			})
 		}
+		
 		currPage = 1
 		getData(currPage, size, roleName)		
 
@@ -100,8 +102,8 @@
 					for(var i = 0; i<list.length; i++){
 
 						var sequence = (currPage-1)*size+i+1
-						//超级管理员id为0，不可修改，不可删除
-						var isEditable = list[i].id ? '':' disabled'
+						//超级管理员roleId为0，不可修改，不可删除
+						var isEditable = list[i].id!=0 ? '':' disabled'
 						var description = list[i].roleDesc || ''
 						trs += '<tr>'+
 									'<td>'+sequence+'</td>'+
