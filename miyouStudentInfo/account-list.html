@@ -94,7 +94,7 @@
 						var id = list[i].id
 						var roleName = list[i].roleName || ''
 						//超级管理员roleId为0，除超超级管理员(roleId=-1)外不可修改或删除
-						var isEditable = (list[i].roleId!=0 || userRoleId == -1) ? '':' disabled'
+						var isEditable = ( list[i].roleId!=-1 && (list[i].roleId!=0 || userRoleId == -1)) ? '':' disabled'
 						var status = list[i].userStatus ? 
 										'<span class="label label-success radius">已启用</span>'+
 										'<button  onclick="disableAccount('+i+')" style="margin-left:15px" class="btn btn-warning-outline radius '+isEditable+' ">'+

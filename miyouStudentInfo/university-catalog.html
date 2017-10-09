@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="lib/layer/2.4/skin/layer.css">
+<link rel="stylesheet" href="lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+<title>菜单管理</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span> 学校目录 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+
+	<!-- <div class="cl pd-5 bg-1 bk-gray mt-20"> 
+		<button class="btn btn-secondary-outline radius" onclick="addMenu('新增菜单','menu-add.html','','400')"><span class="Hui-iconfont">&#xe600;</span>新增菜单</button>
+	</div> -->
+
+	<div class="panel panel-default  mt-20">
+		<div class="panel-header">学校目录</div>
+		<div class="panel-body" style="padding:50px">
+			<div class="mt-30 "  style="margin-left: 100px">
+				<table class="table">
+					<tr>
+						<td width="200" class="va-t"><ul style="margin-top: -20px" id="university-tree" class="ztree "></ul></td>
+						<td class="va-t"><iframe  style="margin-top: -50px" ID="testIframe" Name="testIframe" FRAMEBORDER=0 SCROLLING=AUTO width=100%  height=390px SRC=""></iframe></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="lib/zTree/v3/js/jquery.ztree.all-3.5.min.js"></script> 
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script> 
+<script type="text/javascript" src="static/js/index.js"></script> 
+<script type="text/javascript">
+
+// var url = 'http://192.168.0.46:8086/miyou/api/h5'
+var url = 'http://218.204.254.209:28811/miyou/api/h5'
+
+var setting = {
+	view: {
+		dblClickExpand: false,
+		showLine: false,
+		selectedMulti: false
+	},
+	data: {
+		simpleData: {
+			enable:true,
+			idKey: "id",
+			pIdKey: "pid",
+			rootPId: ""
+		}
+		
+	},
+	callback: {
+		beforeClick: function(treeId, treeNode) {
+			var zTree = $.fn.zTree.getZTreeObj("university-tree");
+			// console.log('treeNode', treeNode)
+			if(!treeNode.children){
+				if(treeNode.parentId == 20){
+					
+					$.ajax({
+						url: url + '/getUniversity',
+						data: {
+							cityId: treeNode.id
+						},
+						success: function(response){
+							console.log(response)
+							var newNodes = response.data
+							zTree.addNodes(treeNode, newNodes)
+						}
+					})
+					
+				}else if(!treeNode.universityId) {
+					
+					$.ajax({
+						url: url + '/getSchool',
+						data: {
+							uid: treeNode.id
+						},
+						success: function(response){
+							console.log(response)
+							var newNodes = response.data
+							for(var i in newNodes){
+								newNodes[i].name = newNodes[i].schoolName
+							}
+							zTree.addNodes(treeNode, newNodes)
+						}
+					})
+					
+				}
+			}else if(treeNode.isParent){
+				zTree.expandNode(treeNode)
+			}
+			return true
+		}
+	}
+};
+
+var zNodes =[];
+		
+$(document).ready(function(){
+	if(!sessionStorage.getItem('uuid')){
+		layer.open({
+			type: 0,
+			closeBtn: 0,
+			shade: [1,'#fff'],
+			title: '未登录',
+			icon: 7,
+			content: '请登录',
+			yes: function () {
+				parent.window.open('login.html', '_self')
+			}
+		})
+	}
+
+	$.ajax({
+		url: url + '/getCity',
+		success: function(response){
+			var status = response.code
+			if(status === 1){
+				console.log(response)
+				zNodes = response.data
+
+				var t = $("#university-tree");
+				t = $.fn.zTree.init(t, setting, zNodes);
+
+				sessionStorage.setItem('menuList', JSON.stringify(zNodes))
+
+			}else if(status === 0){
+				layer.open({
+					type: 0,
+					closeBtn: 0,
+					icon:7, 
+					title: '获取数据失败',
+					content: response.error
+				})
+
+			}else if(status === -1){
+					sessionStorage.removeItem('uuid')
+					sessionStorage.removeItem('login')
+					sessionStorage.removeItem('username')
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '重新登录',
+						content: '超过30分钟未操作，已自动登出，请重新登录',
+						yes: function() {
+							parent.window.open('login.html', '_self')
+						}
+					})
+			}
+
+		},
+		errorFunc: function(xhr, status){
+			layer.open({
+					type: 0,
+					closeBtn: 0,
+					icon:7, 
+					title: '出现错误',
+					content: status
+				})
+
+		}
+	})
+
+	var t = $("#university-tree");
+	t = $.fn.zTree.init(t, setting, zNodes);
+	demoIframe = $("#testIframe");
+	
+	//demoIframe.on("load", loadReady);
+	
+	var zTree = $.fn.zTree.getZTreeObj("tree");
+	
+	//zTree.selectNode(zTree.getNodeByParam("id",'11'));
+});
+</script>
+</body>
+</html>
