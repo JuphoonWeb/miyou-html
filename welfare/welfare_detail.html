@@ -142,9 +142,10 @@
                 $('.validity').hide();
 			}else{
                 $('.J_receive').addClass('enable');
-                toast('福利领取失败，请重试',2000);
+                toast(data.data.retmsg,2000);
 			}
 		},function(data){
+            toast(data.error,2000);
             $('.J_receive').addClass('enable');
 		})
 	}).on('click','.J_feedback',function(){
