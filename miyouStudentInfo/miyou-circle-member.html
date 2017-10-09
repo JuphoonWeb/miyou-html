@@ -18,7 +18,7 @@
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
 <title>密友圈成员</title>
 </head>
-<body  onload="init()"   >
+<body>
 
 <div class="page-container" id="member-list">
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
@@ -67,7 +67,7 @@
 					var list = data.list
 					console.log('data:',data)
 					$('#nodata').hide()
-					if(data.total === 0){
+					if(data.total == 0){
 						$('#nodata').show()
 						$('#member-table').hide()
 						return
@@ -95,7 +95,7 @@
 						    curr: 1, 
 						    pages: pages,
 						    groups: 5,
-						    jump (obj,first) {
+						    jump: function(obj,first) {
 						    	if(!first){
 						    		console.log(obj.curr)
 						    		currPage = obj.curr
@@ -193,9 +193,9 @@
 			successFunc: successFunc,
 			errorFunc: errorFunc
 		})
-			
-		 	
 	}
+
+	init()
 
 	
 	

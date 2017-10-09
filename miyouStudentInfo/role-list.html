@@ -18,7 +18,7 @@
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
 <title>角色管理</title>
 </head>
-<body  onload="init()"   >
+<body>
 
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 角色管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
@@ -56,7 +56,7 @@
 <script type="text/javascript">
 	var isPageInit = false
 	var currPage = 1
-	var size = 11
+	var size = 12
 	var roleName = ''
 	var roleList = []
 	var userRoleId = JSON.parse(sessionStorage.getItem('userData')).roleId
@@ -94,6 +94,7 @@
 			successFunc: function(response){
 				var status = response.code
 				if(status === 1){
+					$('#nodata').hide()
 					$('#role-tbody').children().remove()
 					var data = response.data
 					var list = data.list
@@ -127,7 +128,7 @@
 						    curr: 1, 
 						    pages: pages,
 						    groups: 5,
-						    jump (obj,first) {
+						    jump: function(obj,first) {
 						    	if(!first){
 						    		console.log(obj.curr)
 						    		currPage =obj.curr
@@ -163,6 +164,10 @@
 							}
 						})
 				}
+			},
+			errorFunc: function(xhr, status){
+				layer.msg(status)
+				$('#nodata').show()
 			}
 			
 		})
@@ -235,6 +240,8 @@
 		});
 		
 	}
+
+	init()
 
 </script> 
 </body>
