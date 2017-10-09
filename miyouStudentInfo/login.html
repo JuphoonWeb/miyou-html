@@ -38,7 +38,8 @@
 			width:30%;
 			border-bottom: 3px rgb(66, 176, 244) solid;
 			color:rgb(66, 176, 244);
-			cursor:default; 
+			cursor:default;
+			text-align: center; 
 		}
 		#form-popup{
 			text-align: center;
@@ -52,11 +53,13 @@
 			margin-top: -10px;
 		}
 	</style>
+	<!-- 背景动画 -->
 	<style>
 		.background{
 			position: relative;
 			height:900px;
 			z-index:1;
+			display: none\0;
 		}
 		.box{
 			position:absolute;
@@ -353,15 +356,7 @@
 
     var errorFunc = function(xhr,status){
 		 			layer.closeAll()
-		 			console.log('error')
-		 			console.log(status)
-		 			if(status === 'error'){
-			 			layer.msg('请检查网络连接')
-		 			}else if(status === 'timeout'){
-		 				layer.msg('登录超时')
-		 			}else{
-		 				layer.msg(status)
-		 			}
+	 				layer.msg(status)
 		 		}
 
 

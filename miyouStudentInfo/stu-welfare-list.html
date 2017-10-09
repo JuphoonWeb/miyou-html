@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="static/css/main.css" />
     <title>福利管理</title>
 </head>
-<body  onload="init()"   >
+<body>
 
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 福利管理 <span class="c-gray en">&gt;</span>  福利列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
@@ -147,7 +147,7 @@
                     icon:7,
                     title: '重新登录',
                     content: '超过30分钟未操作，已自动登出，请重新登录',
-                    yes () {
+                    yes: function() {
                         parent.window.open('login.html', '_self')
                     }
                 })
@@ -181,7 +181,7 @@
                     title: '未登录',
                     icon: 7,
                     content: '请登录',
-                    yes () {
+                    yes:function () {
                         parent.window.open('login.html', '_self')
                     }
                 })
@@ -239,6 +239,8 @@
             var id = $('#submit_delete').attr('data-id');
             deleteWelfare(id);
         })
+
+        init()
     </script>
 </body>
 </html>
