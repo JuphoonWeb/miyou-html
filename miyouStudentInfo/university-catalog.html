@@ -52,8 +52,53 @@
 <script type="text/javascript" src="static/js/index.js"></script> 
 <script type="text/javascript">
 
-// var url = 'http://192.168.0.46:8086/miyou/api/h5'
-var url = 'http://218.204.254.209:28811/miyou/api/h5'
+var addNodes = function(treeId, treeNode, isClick) {
+			var zTree = $.fn.zTree.getZTreeObj("university-tree");
+			// console.log('treeNode', treeNode)
+			if(treeNode.isParent && !treeNode.children){
+				if(treeNode.pId == 0){
+					
+					ajax({
+						url: 'admin/school/getZtreeUn/'+treeNode.id,
+						successFunc: function(response){
+							var status = response.code
+							if(status == 1){
+								console.log('data', response.data)
+								var newNodes = response.data
+								zTree.addNodes(treeNode, newNodes)
+							}else if(status == -1){
+								layer.msg(response.error)
+							}
+						},
+						errorFunc: function(zhr, status){
+							layer.msg(status)
+						}
+					})
+					
+				}else if(treeNode.pId != 0) {
+					
+					ajax({
+						url: 'admin/school/getZtreeSchool/'+treeNode.id,
+						successFunc: function(response){
+							var status = response.code
+							if(status == 1){
+								var newNodes = response.data
+								zTree.addNodes(treeNode, newNodes)
+							}else if(status == -1){
+								layer.msg(response.error)
+							}
+						},
+						errorFunc: function(zhr, status){
+							layer.msg(status)
+						}
+					})
+					
+				}
+			}else if(isClick){
+				zTree.expandNode(treeNode)
+			}
+			return true
+		}
 
 var setting = {
 	view: {
@@ -71,47 +116,10 @@ var setting = {
 		
 	},
 	callback: {
-		beforeClick: function(treeId, treeNode) {
-			var zTree = $.fn.zTree.getZTreeObj("university-tree");
-			// console.log('treeNode', treeNode)
-			if(!treeNode.children){
-				if(treeNode.parentId == 20){
-					
-					$.ajax({
-						url: url + '/getUniversity',
-						data: {
-							cityId: treeNode.id
-						},
-						success: function(response){
-							console.log(response)
-							var newNodes = response.data
-							zTree.addNodes(treeNode, newNodes)
-						}
-					})
-					
-				}else if(!treeNode.universityId) {
-					
-					$.ajax({
-						url: url + '/getSchool',
-						data: {
-							uid: treeNode.id
-						},
-						success: function(response){
-							console.log(response)
-							var newNodes = response.data
-							for(var i in newNodes){
-								newNodes[i].name = newNodes[i].schoolName
-							}
-							zTree.addNodes(treeNode, newNodes)
-						}
-					})
-					
-				}
-			}else if(treeNode.isParent){
-				zTree.expandNode(treeNode)
-			}
-			return true
-		}
+		beforeClick: function(treeId, treeNode){
+			addNodes(treeId, treeNode, true)
+		},
+		beforeExpand: addNodes,
 	}
 };
 
@@ -132,12 +140,12 @@ $(document).ready(function(){
 		})
 	}
 
-	$.ajax({
-		url: url + '/getCity',
-		success: function(response){
+	ajax({
+		url: 'admin/school/getZtreeCity',
+		successFunc: function(response){
 			var status = response.code
 			if(status === 1){
-				console.log(response)
+				// console.log(response)
 				zNodes = response.data
 
 				var t = $("#university-tree");
@@ -172,13 +180,7 @@ $(document).ready(function(){
 
 		},
 		errorFunc: function(xhr, status){
-			layer.open({
-					type: 0,
-					closeBtn: 0,
-					icon:7, 
-					title: '出现错误',
-					content: status
-				})
+			layer.msg(status)
 
 		}
 	})
