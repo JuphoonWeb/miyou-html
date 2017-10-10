@@ -20,12 +20,20 @@
 			text-align: center;
 			height:100%;
 		}
-		.title{
-			margin:37px auto 20px;
+		.description{
+			margin:5px auto;
+		}
+		.description .title{
 			color:rgb(255, 168, 11);
+			margin:37px auto 20px;
+		}
+		.description .content{
+			margin-top: 5px;
+			color:rgb(153, 153, 153);
+			font-size:12px;
 		}
 		.upload-container{
-			height:400px;
+			height:430px;
 		}
 		#upload-1{
 			position: relative;
@@ -62,7 +70,7 @@
 			position:relative;
 			width: 82%;
 			height:190px;
-			margin:20px 33px;
+			margin:20px 33px 0;
 			border-radius:8px;
 		}
 		#upload-2 img#image-example-2{
@@ -109,7 +117,9 @@
 </head>
 <body>
 	<div class="container">
-		<p class="title">手持学生证照片及个人信息页</p>
+		<div class="description">
+			<p class="title">手持学生证拍照上传</p>
+		</div>
 		<div class="upload-container">	
 			<div class="upload" id="upload-1">
 				<img id="image-example-1" src="img/imgExample.png" alt="">
@@ -125,6 +135,10 @@
 				</div>
 				<input type="file" accept="image/*" id="image-upload-2">
 			</div>
+			<div class="description">
+				<p class="content">1. 学生证中的证件照和学籍信息需显示清晰</p>
+				<p class="content">2. 若证件照和学籍信息不在同一页，请分别拍照添加</p>
+			</div>	
 		</div>	
 		<button id="submit">提交</button>
 

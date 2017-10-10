@@ -105,7 +105,7 @@
 		$('.error').hide()
 		var value = $(this).val()
 		if(value){
-			$(this).addClass('hasValue').blur()
+			$(this).addClass('hasValue')
 			$(this).next().focus()
 			
 			if(value.length > 1){
@@ -115,7 +115,6 @@
 					$('#code-'+sequence)
 						.val(value[i])
 						.addClass('hasValue')
-						.blur()
 						.next().focus()	
 				}
 			}
