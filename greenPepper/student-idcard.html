@@ -152,7 +152,12 @@
 		var data = JSON.parse(sessionStorage.getItem('data'))
 		data.phone = sessionStorage.getItem('phone')
 
-	
+		$('#test').click(function(){
+			console.log('click')
+			errorFunc()
+		})
+		
+
 		function getObjectURL(file){
 			var url = null;
 		    if (window.createObjectURL != undefined) { // basic
@@ -191,10 +196,18 @@
 		}
 
 		var errorFunc = function(xhr, status){
-					popup.close()
+					
 					dialog({
 						text: '上传失败,请重新上传',
-						type: 'confirm'
+						type: 'confirm',
+						ok: function(){
+							$('#image-example-1').attr('src', 'img/imgExample.png')
+							$('#upload-btn').show()
+							$('#image-upload-1').val('')
+							$('#image-example-2').attr('src', 'img/imgAddBg.png')
+							$('#info-container').show()
+							$('#image-upload-2').val('')
+						}
 					})
 		}
 		var successFunc1 = function (response){
