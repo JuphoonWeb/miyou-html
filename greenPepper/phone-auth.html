@@ -106,7 +106,7 @@
 		</div>
 	</div>
 	<div class="auth-code">
-		<input type="number" pattern="[0-9]"  id="code" maxlength="4">
+		<input type="text" pattern="[0-9]" id="code" maxlength="4">
 		<div class="code-cube-container">
 			<div class="code-cube" id="code-cube-1">*</div>
 			<div class="code-cube" id="code-cube-2">*</div>
@@ -132,17 +132,19 @@
 		$('#code-cube-1').addClass('focus')
 	})
 
+
 	$(document).on('input','input',function(){
 		$('.error').hide()
 		var code = $(this).val()
-		if(isNaN(Number(code))){
-			this.val('')
-			code = ''
-		}
+
+		code = code.replace(/[^\d]/g,'')
+		$(this).val(code)
+
 		var codeLength = code.length
-		$('.code-cube').removeClass('hasValue')
+
+		$('.code-cube').removeClass('hasValue').text('*')
 		for(var i = 1; i <= codeLength; i++){
-			$('#code-cube-'+i).addClass('hasValue').text(code[i-1])		
+			$('#code-cube-'+i).addClass('hasValue').text(code[i-1])
 		}
 		if(codeLength > 4){
 			$(this).val(code.slice(0,4))
