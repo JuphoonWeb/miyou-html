@@ -27,30 +27,15 @@
 		.auth-code input{
 			position: absolute;
 			z-index: 1;
-			width: 280px;
+			width:350px;
 			height: 45px;
-			left:-20px;
+			left:-120px;
 			border:none;
 			background-color: transparent;			
-			padding-left: 38px;
-			letter-spacing: 45px;
-			text-shadow: rgb(249, 173, 68);
-			color:rgb(249, 173, 68);
-			font-size: 25px;
-			text-overflow: clip;
-			overflow: hidden;
+			color: transparent;
 		}
 		.auth-code input:focus{
 			outline: none;
-		}
-		
-		.auth-code .input-mask{
-			position: absolute;
-			z-index: 100;
-			height:45px;
-			width:35px;
-			background-color: rgb(255, 255, 255);
-			left:230px;
 		}
 		.code-cube-container{
 			margin:0 auto;
@@ -59,7 +44,9 @@
 			display: inline-block;
 			width:45px;
 			height:45px;
+			line-height: 45px;
 			font-size:25px;
+			color: transparent;
 			border:1px solid rgb(185, 185, 185);
 			border-radius: 5px;
 			
@@ -72,7 +59,11 @@
 				margin-left: 8px;
 			}
 		}
+		.auth-code .code-cube.focus{
+			border-color:rgb(249, 173, 68);
+		}
 		.auth-code .code-cube.hasValue{
+			color:rgb(249, 173, 68);
 			border-color:rgb(249, 173, 68);
 		}
 		.error{
@@ -116,12 +107,11 @@
 	</div>
 	<div class="auth-code">
 		<input type="number" pattern="[0-9]"  id="code" maxlength="4">
-		<div class="input-mask" ></div>
 		<div class="code-cube-container">
-			<div class="code-cube" id="code-cube-1"></div>
-			<div class="code-cube" id="code-cube-2"></div>
-			<div class="code-cube" id="code-cube-3"></div>
-			<div class="code-cube" id="code-cube-4"></div>
+			<div class="code-cube" id="code-cube-1">*</div>
+			<div class="code-cube" id="code-cube-2">*</div>
+			<div class="code-cube" id="code-cube-3">*</div>
+			<div class="code-cube" id="code-cube-4">*</div>
 		</div>
 		<div class="error">验证码错误，请重新获取并输入</div>
 	</div>
@@ -138,6 +128,10 @@
 		sendCode()
 	})
 
+	$(document).on('focus','input', function(){
+		$('#code-cube-1').addClass('focus')
+	})
+
 	$(document).on('input','input',function(){
 		$('.error').hide()
 		var code = $(this).val()
@@ -148,16 +142,16 @@
 		var codeLength = code.length
 		$('.code-cube').removeClass('hasValue')
 		for(var i = 1; i <= codeLength; i++){
-			$('#code-cube-'+i).addClass('hasValue')		
+			$('#code-cube-'+i).addClass('hasValue').text(code[i-1])		
 		}
 		if(codeLength > 4){
-			$(this).val(code.slice(0,4)).attr('readonly', true).blur()
+			$(this).val(code.slice(0,4))
 			code = $(this).val()
 			codeLength = code.codeLength
 			validate(code)
 		}
 		if(codeLength == 4){
-			$('input').attr('readonly', true).blur()
+			// $('input').blur()
 			validate(code)
 		}
 	})
@@ -165,7 +159,7 @@
 
 	function sendCode(){
 		$('.error').hide()
-		$('input').val('').removeAttr('readonly')
+		$('input').val('').focus()
 		$('.code-cube').removeClass('hasValue')
 		ajax({
 			url: 'h5/sendCode',
