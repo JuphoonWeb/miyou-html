@@ -218,14 +218,17 @@
 		var data = {
 				roleName: roleName,
 				roleDesc: roleDesc,
-				menuIds: removeRepeat(menuIds),
+				menuIds: menuIds,
 		}
 		
 		if(roleName === ''){
 			layer.msg('请输入角色名')
 		}else if(roleDesc === ''){
 			layer.msg('请输入角色描述')
-		}else{
+		}else if(menuIds.length == 0){	
+			layer.msg('请为角色分配权限')
+		}
+		else{
 
 			if(editRoleInfo){
 				data.id = editRoleInfo.id

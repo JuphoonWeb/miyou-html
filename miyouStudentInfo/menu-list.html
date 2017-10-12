@@ -69,7 +69,7 @@ var setting = {
 	callback: {
 		beforeClick: function(treeId, treeNode) {
 			var zTree = $.fn.zTree.getZTreeObj("menu-tree");
-			console.log('zTree', zTree)
+			// console.log('zTree', zTree)
 			if (treeNode.pId == 0) {
 				zTree.expandNode(treeNode);
 				return false;

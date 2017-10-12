@@ -35,13 +35,14 @@
 		<form action="" method="post" class="form-inline" id="table-upload">
 			<span class="btn-upload form-group">
 					
-					<input class="input-text upload-url" type="text" name="uploadfile" id="uploadfile" readonly nullmsg="请添加附件！" style="width:300px" placeholder="导入Excel文件">
+					<input class="input-text upload-url" type="text" name="uploadfile" id="uploadfile" readonly nullmsg="请添加附件！" style="width:300px" placeholder="Excel文件导入学生信息">
 					<a href="javascript:void();" class="btn btn-primary radius upload-btn"><i class="Hui-iconfont">&#xe642;</i> Excel导入</a>
 					<input type="file" name="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="input-file" id="file" :value="file">
 			</span>
 			<span>
 				<button title="上传已选Excel" class="btn btn-success radius" type="submit" id="file-upload-btn" >&nbsp;&nbsp;上传&nbsp;&nbsp;</button>
-				<a title="添加单个学生信息" href="javascript:;" onclick="studentAdd('添加学生信息','student-add.html','','650')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>单个添加</a>
+				<a href="static/download/用户信息表 - 模板.xlsx" class="btn btn-secondary radius">Excel模板下载</a>
+				<a href="javascript:;" onclick="studentAdd('添加学生信息','student-add.html','','650')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>单个添加</a>
 			</span>
 			
 		</form>
@@ -141,7 +142,6 @@
 					    jump: function(obj,first) {
 					    	if(!first){
 					    		currPage = obj.curr
-					    		console.log(obj.curr)
 						    	ajax({
 									url: url,
 									method: 'post',
@@ -215,7 +215,6 @@
 
 
 	function init(){
-		console.log('parent', window.parent)
 
 		if(!sessionStorage.getItem('uuid')){
 			layer.open({
@@ -232,7 +231,6 @@
 		}
 		currPage = 1
 		
-		console.log('uuid',uuid) 
 	
 		ajax({
 			url: url,
@@ -505,7 +503,7 @@
 						closeBtn: 0,
 						icon:7, 
 						title: '上传失败',
-						content: '请检查所选Excel文件内容'
+						content: response.error
 					})
 
 				}else if(response.code === -1){

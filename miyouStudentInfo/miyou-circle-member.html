@@ -16,6 +16,12 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
+<style>
+	.nomember{
+		display: none;
+		font-size: 25px;
+	}
+</style>
 <title>密友圈成员</title>
 </head>
 <body>
@@ -42,8 +48,11 @@
 	</table>
 	<div class="pagination r" id="pagination"></div>
 	
-	<div class="nodata text-c" id="nodata">
+	<!-- <div class="nodata text-c" id="nodata">
 		<img src="static/images/nodata.svg" alt="">
+	</div> -->
+	<div class="nomember text-c" id="nomember">
+		<p>该密友圈内暂无成员</p>
 	</div>
 </div>
 
@@ -68,11 +77,11 @@
 					console.log('data:',data)
 					$('#nodata').hide()
 					if(data.total == 0){
-						$('#nodata').show()
+						$('#nomember').show()
 						$('#member-table').hide()
 						return
 					}else{
-						$('#nodata').hide()
+						$('#nomember').hide()
 						$('#member-table').show()
 					}
 					var trs = ''
