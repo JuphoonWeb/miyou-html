@@ -92,21 +92,6 @@
             $('#nodata').hide()
             var trs = '';
             for(var i = 0; i < list.length; i++){
-//                var status = '未知',
-//                    idCardUrl = '<a href="'+list[i].student.identityUrl+'" data-lightbox="gallery" data-title="'+list[i].student.name+'的身份证"><img src="'+list[i].student.identityUrl+'" style="width: 100px"></a>',
-//                    stuCardUrl = '<a href="'+list[i].student.stuCardUrl+'" data-lightbox="gallery" data-title="'+list[i].student.name+'的学生证"><img src="'+list[i].student.stuCardUrl+'" style="width: 100px"></a>';
-//                switch(list[i].authStatus){
-//                    case 0:
-//                        status = '<a title="审核通过" href="javascript:;" onclick="update('+list[i].id+','+list[i].student.id+',2)" class="btn btn-success-outline radius">通过</a>' +
-//                                 '<a title="审核拒绝" href="javascript:;" onclick="show_modal('+list[i].id+','+list[i].student.id+')" class="btn btn-danger-outline radius ml-10">拒绝</a>';
-//                        break;
-//                    case 1:
-//                        status = '审核未通过';
-//                        break;
-//                    case 2:
-//                        status = '审核通过';
-//                        break;
-//                }
                 var level = list[i].authLevel||0,
                     status = '<a href="javascript:;" onclick="layer_show(\'认证详情\',\'auth-detail.html#'+list[i].id+'\',\'\',\'500\');">'+authLevelStatus[level]+'</a>';
                 trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td>'+list[i].number+'</td><td>'+list[i].phone+'</td><td>'+list[i].city+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+new Date(list[i].modifyTime).Format("yyyy-MM-dd hh:mm:ss")+'</td><td>'+status+'</td></tr>'
