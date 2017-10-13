@@ -80,6 +80,7 @@
 			height: 50px;
 			margin: 20px auto;
 			border: none;
+			outline: none;
 			color:rgb(255, 255, 255);
 			background-color: rgb(242, 170, 25);
 			font-size: 20px;
@@ -161,7 +162,7 @@
 
 	function sendCode(){
 		$('.error').hide()
-		$('input').val('').focus()
+		$('#spinner').hide()
 		$('.code-cube').removeClass('hasValue')
 		ajax({
 			url: 'h5/sendCode',
@@ -193,6 +194,9 @@
 				clearInterval(intervalId)
 				that.css('background-color', 'rgb(242, 170, 25)')
 					.removeAttr('disabled')
+					.click(function(){
+							sendCode()
+						})
 				if(second == 0){
 					$('.text-in-btn').text('发送验证码')
 				}
