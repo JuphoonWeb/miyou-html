@@ -117,6 +117,7 @@
 		<div class="error">验证码错误，请重新获取并输入</div>
 	</div>
 	<button class="btn send-btn" id="send-btn" ><img id="spinner"  src="img/auth-phone-loading.gif" alt="" /><p class="text-in-btn">发送验证码</p></button>
+
 </body>
 <script src="js/zepto.min.js"></script>
 <script src="js/ajax.js"></script>
@@ -196,6 +197,7 @@
 				clearInterval(intervalId)
 				that.css('background-color', 'rgb(242, 170, 25)')
 					.removeAttr('disabled')
+					.off()
 					.on('click',function(){
 						sendCode()
 					})
@@ -236,6 +238,7 @@
 							.text('发送验证码')
 						$('#send-btn')
 							.removeAttr('disabled')
+							.off()
 							.on('click',function(){
 								sendCode()
 							})
