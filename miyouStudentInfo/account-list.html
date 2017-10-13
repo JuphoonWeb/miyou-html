@@ -116,7 +116,7 @@
 										'</button>'+
 										'<button onclick="deleteAccount('+i+')" style="margin-left:15px" class="btn btn-danger-outline radius '+isEditable+' ">'+
 											'<span class="Hui-iconfont">&#xe609;</span>删除'+
-										'</button>'
+										'</button>'+
 									'</td>'+
 								'</tr>'
 					}
@@ -203,11 +203,17 @@
 						id: id,
 						userStatus: 0
 					},
-					successFunc: function(){
-						layer.msg('已禁用')
-						setTimeout(function(){
-							window.location.reload()
-						},1500)
+					successFunc: function(response){
+						if(response.code == 1){
+							layer.msg('已禁用')
+							setTimeout(function(){
+								window.location.reload()
+							},1500)
+						}else if(response.code == 0){
+							layer.msg(response.error)
+						}else{
+							layer.msg('禁用失败')
+						}
 					},
 					errorFunc: errorFunc
 				})
@@ -231,11 +237,17 @@
 						id: id,
 						userStatus: 1
 					},
-					successFunc: function(){
-						layer.msg('已启用')
-						setTimeout(function(){
-							window.location.reload()
-						},1500)
+					successFunc: function(response){
+						if(response.code == 1){
+							layer.msg('已启用')
+							setTimeout(function(){
+								window.location.reload()
+							},1500)
+						}else if(response.code == 0){
+							layer.msg(response.error)
+						}else{
+							layer.msg('禁用失败')
+						}
 					},
 					errorFunc: errorFunc
 				})
