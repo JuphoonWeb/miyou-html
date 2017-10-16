@@ -22,7 +22,6 @@
 					<ul class="cl">
 						<li class="dropDown dropDown_hover"> <a href="#" class="dropDown_A"><span id="username"></span> <i class="Hui-iconfont">&#xe6d5;</i></a>
 							<ul class="dropDown-menu menu radius box-shadow">
-								<li id="reset-psw"><a href="#">重置密码</a></li>
 								<li id="logout"><a href="#">退出</a></li>
 							</ul>
 						</li>
@@ -164,36 +163,7 @@
 		})
 	})
 
-	$('#reset-psw').click(function(){
-		layer.confirm('确定重置当前账号的密码为 123456 吗？', {
-			title: '提示',
-			icon: 3,
-			closeBtn: 0,
-			yes: function(){
-				ajax({
-					url:'admin/user/initPassword/'+JSON.parse(sessionStorage.getItem('userData')).id,
-					successFunc: function(response){
-						if(response.code == 1){
-							layer.msg('重置成功')
-						}else if(response.code == 0){
-							layer.msg(response.error)
-						}else{
-							layer.msg('重置失败')
-						}
-					},
-					errorFunc: function(xhr,status){
-						layer.open({
-							type: 0,
-							closeBtn:0,
-							icon:7, 
-							title: '重置失败',
-							content: status
-						}) 
-					}
-				})
-			}
-		})
-	})
+		
 		
 </script>
 

@@ -34,11 +34,11 @@
 			<tr class="text-c">
 				<th width="100">序号</th>
 				<th width="200">用户名</th>
-				<th width="200">手机号</th>
-				<th width="200">邮箱</th>
+				<th width="150">手机号</th>
+				<th width="150">邮箱</th>
 				<th width="200">角色</th>
 				<th width="150">状态</th>		
-				<th width="200">操作</th>
+				<th width="250">操作</th>
 			</tr>
 		</thead>
 		<tbody id="account-tobody" class="text-c" >	
@@ -112,7 +112,9 @@
 									'<td>'+roleName+'</td>'+
 									'<td>'+status+'</td>'+
 									'<td>'+
-										'<button onclick="editAccount('+i+')" class="btn btn-secondary-outline radius '+isEditable+' "><span class="Hui-iconfont">&#xe60c;</span>修改'+
+										'<button onclick="resetPassword('+i+')" class="btn  btn-secondary-outline radius '+isEditable+' ">重置密码'+
+										'</button>'+
+										'<button onclick="editAccount('+i+')" style="margin-left:15px" class="btn btn-primary-outline radius '+isEditable+' "><span class="Hui-iconfont">&#xe60c;</span>修改'+
 										'</button>'+
 										'<button onclick="deleteAccount('+i+')" style="margin-left:15px" class="btn btn-danger-outline radius '+isEditable+' ">'+
 											'<span class="Hui-iconfont">&#xe609;</span>删除'+
@@ -254,6 +256,33 @@
 			}
 		});
 	}
+
+	//重置密码
+	function resetPassword(index){
+		layer.confirm('确定重置账号'+accountList[index].username+'的密码为 123456 吗？', {
+			title: '提示',
+			icon: 3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url:'admin/user/initPassword/'+accountList[index].id,
+					successFunc: function(response){
+						if(response.code == 1){
+							layer.msg('重置成功')
+						}else if(response.code == 0){
+							layer.msg(response.error)
+						}else{
+							layer.msg('重置失败')
+						}
+					},
+					errorFunc: function(xhr,status){
+						layer.msg(status)
+					}
+				})
+			}
+		})
+	}
+
 	//编辑
 	function editAccount(index){
 		var editAccountInfo = accountList[index]

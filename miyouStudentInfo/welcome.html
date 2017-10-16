@@ -75,27 +75,7 @@
 				}
 			})
 		}
-		ajax({
-			url: 'admin/getUniversity',
-			successFunc: function(response){
-					if(response.code === -1){
-						sessionStorage.removeItem('uuid')
-						sessionStorage.removeItem('login')
-						sessionStorage.removeItem('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes: function() {
-								parent.window.open('login.html', '_self')
-							}
-						})
-
-				} 
-			}
-		})
+	
 
 	})
 </script>
