@@ -145,22 +145,7 @@
 
 	
 					
-	$(document).ready(function(){
-		if(!sessionStorage.getItem('uuid')){
-			layer.open({
-				type: 0,
-				closeBtn: 0,
-				shade: [1,'#fff'],
-				title: '未登录',
-				icon: 7,
-				content: '请登录',
-				yes: function() {
-					parent.window.open('login.html', '_self')
-				}
-			})
-		}
-
-	})
+	
 	$('#api-select').change(function(){
 		index = $(this).children('option:checked').val()
 		if(index == 3){

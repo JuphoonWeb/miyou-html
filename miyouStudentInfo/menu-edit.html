@@ -109,33 +109,18 @@ $(function(){
 				$('option[value="'+menu.pid+'"]').attr('selected', true)
 				// $('#menu-order').val(menu.menuOrder)
 			}else if(code === 0){
-				parent.layer.open({
+				top.layer.open({
 					type: 0,
 					closeBtn: 0,
 					icon:7, 
 					title: '获取数据失败',
 					content: response.error
 				})
-			}else if(response.code === -1){
-				sessionStorage.removeItem('uuid')
-				sessionStorage.removeItem('login')
-				sessionStorage.removeItem('username')
-				parent.layer.open({
-					type: 0,
-					closeBtn: 0,
-					icon:7, 
-					title: '重新登录',
-					content: '超过30分钟未操作，已自动登出，请重新登录',
-					yes: function() {
-						parent.parent.window.open('login.html', '_self')
-					}
-				})
-
 			}
 
 		},
 		errorFunc: function(xhr, status){
-			parent.layer.open({
+			top.layer.open({
 				type: 0,
 				closeBtn: 0,
 				icon:7, 
@@ -156,7 +141,7 @@ $('#submit-btn').click(function(event){
 		parent.layer.msg('请输入菜单地址')
 	}
 	else{
-		parent.layer.confirm('确定修改吗？',{
+		top.layer.confirm('确定修改吗？',{
 			title: '提示',
 			icon:3,
 			closeBtn: 0,
@@ -179,32 +164,17 @@ $('#submit-btn').click(function(event){
 							},1000)
 								
 						}else if(code === 0){
-							parent.layer.open({
+							top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
 								title: '获取数据失败',
 								content: response.error
 							})
-						}else if(response.code === -1){
-							sessionStorage.removeItem('uuid')
-							sessionStorage.removeItem('login')
-							sessionStorage.removeItem('username')
-							parent.layer.open({
-								type: 0,
-								closeBtn: 0,
-								icon:7, 
-								title: '重新登录',
-								content: '超过30分钟未操作，已自动登出，请重新登录',
-								yes: function() {
-									parent.parent.window.open('login.html', '_self')
-								}
-							})
-
 						}
 					},
 					errorFunc: function(xhr, status){
-						parent.layer.open({
+						top.layer.open({
 							type: 0,
 							closeBtn: 0,
 							icon:7, 
@@ -223,7 +193,7 @@ $('#submit-btn').click(function(event){
 
 $('#delete-btn').click(function(event){
 	event.preventDefault()
-	parent.layer.confirm('确定删除该菜单吗？',{
+	top.layer.confirm('确定删除该菜单吗？',{
 			title: '提示',
 			icon:3,
 			closeBtn: 0,
@@ -239,28 +209,13 @@ $('#delete-btn').click(function(event){
 							},1000)
 								
 						}else if(code === 0){
-							parent.layer.open({
+							top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
 								title: '获取数据失败',
 								content: response.error
 							})
-						}else if(response.code === -1){
-							sessionStorage.removeItem('uuid')
-							sessionStorage.removeItem('login')
-							sessionStorage.removeItem('username')
-							parent.layer.open({
-								type: 0,
-								closeBtn: 0,
-								icon:7, 
-								title: '重新登录',
-								content: '超过30分钟未操作，已自动登出，请重新登录',
-								yes: function() {
-									parent.parent.window.open('login.html', '_self')
-								}
-							})
-
 						}
 					}
 

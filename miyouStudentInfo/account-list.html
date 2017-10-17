@@ -145,7 +145,7 @@
 					isPageInit = true
 
 				}else if(status === 0){
-					layer.open({
+					top.layer.open({
 						type: 0,
 						closeBtn: 0,
 						icon:7, 
@@ -153,20 +153,6 @@
 						content: response.error
 					})
 
-				}else if(status === -1){
-						sessionStorage.removeItem('uuid')
-						sessionStorage.removeItem('login')
-						sessionStorage.removeItem('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes: function() {
-								parent.window.open('login.html', '_self')
-							}
-						})
 				}
 			}
 			
@@ -175,7 +161,7 @@
 
 	//ajax error函数
 	function errorFunc(xhr, status){
-		layer.open({
+		top.layer.open({
 			type: 0,
 			closeBtn: 0,
 			icon:7, 
@@ -193,7 +179,7 @@
 	function disableAccount(index){
 		var username = accountList[index].username
 		var id = accountList[index].id
-		layer.confirm('确定禁用 '+username+' 吗？',{
+		top.layer.confirm('确定禁用 '+username+' 吗？',{
 			title: '提示',
 			icon:3,
 			closeBtn: 0,
@@ -213,6 +199,8 @@
 							},1500)
 						}else if(response.code == 0){
 							layer.msg(response.error)
+						}else if(response.code == -1){
+							relogin()
 						}else{
 							layer.msg('禁用失败')
 						}
@@ -227,7 +215,7 @@
 	function enableAccount(index){
 		var username = accountList[index].username
 		var id = accountList[index].id
-		layer.confirm('确定启用 '+username+' 吗？',{
+		top.layer.confirm('确定启用 '+username+' 吗？',{
 			title: '提示',
 			icon:3,
 			closeBtn: 0,
@@ -247,6 +235,8 @@
 							},1500)
 						}else if(response.code == 0){
 							layer.msg(response.error)
+						}else if(response.code == -1){
+							relogin()
 						}else{
 							layer.msg('禁用失败')
 						}
@@ -259,7 +249,7 @@
 
 	//重置密码
 	function resetPassword(index){
-		layer.confirm('确定重置账号'+accountList[index].username+'的密码为 123456 吗？', {
+		top.layer.confirm('确定重置账号'+accountList[index].username+'的密码为 123456 吗？', {
 			title: '提示',
 			icon: 3,
 			closeBtn: 0,
@@ -271,6 +261,8 @@
 							layer.msg('重置成功')
 						}else if(response.code == 0){
 							layer.msg(response.error)
+						}else if(response.code == -1){
+							relogin()
 						}else{
 							layer.msg('重置失败')
 						}
@@ -294,7 +286,7 @@
 	function deleteAccount(index){
 		var deleteAccountInfo = accountList[index]
 		console.log(deleteAccountInfo.id)
-		layer.confirm('确定删除 '+deleteAccountInfo.username+' 吗？',{
+		top.layer.confirm('确定删除 '+deleteAccountInfo.username+' 吗？',{
 			title: '提示',
 			icon:3,
 			closeBtn: 0,
@@ -309,31 +301,17 @@
 								window.location.reload()
 							},1500)
 						}else if(status === 0){
-							layer.open({
+							top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
 								title: '删除失败',
 								content: response.error
 							})
-						}else if(status === -1){
-							sessionStorage.removeItem('uuid')
-							sessionStorage.removeItem('login')
-							sessionStorage.removeItem('username')
-							layer.open({
-								type: 0,
-								closeBtn: 0,
-								icon:7, 
-								title: '重新登录',
-								content: '超过30分钟未操作，已自动登出，请重新登录',
-								yes: function() {
-									parent.window.open('login.html', '_self')
-								}
-							})
 						}
 					},
 					errorFunc: function(xhr, status){
-						layer.open({
+						top.layer.open({
 							type: 0,
 							closeBtn: 0,
 							icon:7, 
@@ -350,7 +328,7 @@
 	$(function(){
 
 		if(!sessionStorage.getItem('uuid')){
-			layer.open({
+			top.layer.open({
 				type: 0,
 				closeBtn: 0,
 				shade: [1,'#fff'],

@@ -16,14 +16,37 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
-<title>角色管理</title>
+<title>活动管理</title>
 </head>
 <body>
 
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 角色管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 应用内容管理 <span class="c-gray en">&gt;</span>  活动管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
-	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
-		<button id="add-btn" title="新增角色" onclick="addRole()" class="btn btn-success-outline radius" ><i class="Hui-iconfont">&#xe607;</i>新增角色</button>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+		<input id="search-phone" type="text" style="width:150px" class="input-text radius" placeholder="活动创建者号码 "> 
+		<span class="select-box" style="width: 150px">
+                <select class="select J_select" id="search-activity-type">
+                    <option value="">活动类型</option>
+                    <option value="0">一级未审核</option>
+                    <option value="1">一级审核拒绝</option>
+                    <option value="3">二级未审核</option>
+                    <option value="4">二级审核拒绝</option>
+                    <option value="5">二级审核通过</option>
+                </select>
+        </span>
+        <input type="text" onfocus="WdatePicker({ maxDate:'\'%y-%M-%d\'}' })" id="enrol-time" class="input-text Wdate formControls" placeholder=" 创建时间" style="width: 150px">
+		<span class="select-box" style="width: 100px">
+                <select class="select J_select" id="search-city">
+                    <option value="">城市</option>
+                </select>
+        </span>
+        <span class="select-box" style="width: 300px">
+                <select class="select J_select" id="search-university">
+                    <option value="">学校</option>
+                    <option value="">请先选择城市</option>
+                </select>
+        </span>
+		<button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
@@ -48,6 +71,7 @@
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
 <script type="text/javascript" src="static/js/index.js"></script> 
@@ -61,10 +85,75 @@
 	var roleList = []
 	var userRoleId = JSON.parse(sessionStorage.getItem('userData')).roleId
 	
-	function init(){
+	$(function(){
 		currPage = 1
-		getData(currPage, size, roleName)		
+		getCity()
+		getData(currPage, size, roleName)
+	})
+
+	$('#search-city').change(function(){
+		var cityId = $(this).val()
+		if(cityId){
+			getUniversity(cityId)
+		}else{
+			fillSelect('#search-university',[{name:'请先选择城市'}])
+		}
+	})
+
+
+	function getCity(){
+		ajax({
+			url: 'admin/getDistrict',
+			async: false,
+			data: {
+				parentId: 20,
+			},
+			successFunc: function(response){
+				if(response.code === 1){
+					fillSelect('#search-city', response.data)
+				}else if(response.code === 0){
+					layer.msg(response.error)
+				}
+			},
+			errorFunc: function(xhr, status){
+				layer.msg(status)
+			}
+		})
 	}
+
+	function getUniversity(cityId){
+		ajax({
+			url: 'admin/getUniversity',
+			data: {
+				city: cityId,
+				size: 500
+			},
+			successFunc: function(response){
+				if(response.code === 1){
+					fillSelect('#search-university', response.data.list)
+				}else if(response.code === 0){
+					layer.msg(response.error)
+				}
+			},
+			errorFunc: function(xhr, status){
+				layer.msg(status)
+			}
+		})
+	}
+
+	//填充select标签
+	function  fillSelect(selectorStr,data){
+		$(selectorStr).children('option+option').remove()
+		var options = ''
+        var data = data
+		for(var i = 0; i < data.length; i++){
+			var name = data[i].name || data[i].schoolName || data[i].major
+			options += '<option value="'+data[i].id+'">'+name+'</option>'
+		}
+		$(selectorStr).append(options)
+	} 
+				
+	
 	function getData(page,size,roleName){
 
 		ajax({
@@ -196,7 +285,6 @@
 		
 	}
 
-	init()
 
 </script> 
 </body>

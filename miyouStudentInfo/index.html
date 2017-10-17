@@ -85,7 +85,7 @@
 
 
 		if(!sessionStorage.getItem('uuid')){
-			layer.open({
+			top.layer.open({
 				type: 0,
 				closeBtn: 0,
 				shade: [1,'#fff'],
@@ -111,9 +111,11 @@
 			var dd = $('<dd></dd>')
 			var ul = $('<ul></ul>')
 			var list = ''
-			for(var j = 0; j < menu.childrenMenus.length; j++){
-				var childMenu = menu.childrenMenus[j]
-				list += '<li><a data-href="'+childMenu.menuUrl+'" data-title="'+childMenu.menuName+'" href="javascript:;">'+childMenu.menuName+'</a></li>'
+			if(menu.childrenMenus){
+				for(var j = 0; j < menu.childrenMenus.length; j++){
+					var childMenu = menu.childrenMenus[j]
+					list += '<li><a data-href="'+childMenu.menuUrl+'" data-title="'+childMenu.menuName+'" href="javascript:;">'+childMenu.menuName+'</a></li>'
+				}
 			}
 			ul.append(list)
 			dd.append(ul)
@@ -130,12 +132,7 @@
 
 <script>
 	
-
-
-
 	$('#logout').click(function(){
-		console.log('退出登录')
-		
 		ajax({
 			url: 'logout',
 			method: 'post',
@@ -152,7 +149,7 @@
 				}
 			},
 			errorFunc: function(xhr, status){
-				layer.open({
+				top.layer.open({
 						type: 0,
 						closeBtn:0,
 						icon:7, 
@@ -163,8 +160,6 @@
 		})
 	})
 
-		
-		
 </script>
 
 

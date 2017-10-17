@@ -107,7 +107,7 @@
 
             }
             else if(response.code === 0){
-                layer.open({
+                top.layer.open({
                     type: 0,
                     closeBtn: 0,
                     icon:7,
@@ -118,7 +118,7 @@
                 sessionStorage.removeItem('uuid')
                 sessionStorage.removeItem('login')
                 sessionStorage.removeItem('username')
-                layer.open({
+                top.layer.open({
                     type: 0,
                     closeBtn: 0,
                     icon:7,
@@ -139,7 +139,7 @@
                 layer.closeAll()
                 $('#nodata').show()
             }else{
-                layer.open({
+                top.layer.open({
                     type: 0,
                     closeBtn: 0,
                     icon:7,
@@ -151,7 +151,7 @@
 
         function init(){
             if(!sessionStorage.getItem('uuid')){
-                layer.open({
+                top.layer.open({
                     type: 0,
                     closeBtn: 0,
                     shade: [1,'#fff'],

@@ -16,27 +16,32 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
-<title>角色管理</title>
+<title>群投票管理</title>
 </head>
 <body>
 
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 角色管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 应用内容管理 <span class="c-gray en">&gt;</span> 群投票管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
-	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
-		<button id="add-btn" title="新增角色" onclick="addRole()" class="btn btn-success-outline radius" ><i class="Hui-iconfont">&#xe607;</i>新增角色</button>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+		<input id="search-phone" type="text" style="width:200px" class="input-text radius" placeholder="发起者号码 "> 
+		<button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
 	<table class="table table-bordered table-border table-hover table-bg " id="admin-table">
 		<thead>
 			<tr class="text-c">
-				<th width="100">序号</th>
-				<th width="200">角色名</th>
-				<th width="200">角色描述</th>
-				<th width="200">操作</th>
+				<th width="50">序号</th>
+				<th width="150">投票项</th>
+				<th width="150">投票结果</th>
+				<th width="150">结束时间</th>
+				<th width="100">群</th>
+				<th width="100">发起人</th>
+				<th width="100">发起人号码</th>
+				<th width="100">操作</th>
 			</tr>
 		</thead>
-		<tbody id="role-tbody" class="text-c" >
+		<tbody id="vote-tbody" class="text-c" >
 		</tbody>
 	</table>
 	<div class="pagination r" id="pagination"></div>
@@ -57,54 +62,66 @@
 	var isPageInit = false
 	var currPage = 1
 	var size = 12
-	var roleName = ''
-	var roleList = []
+	var voteList = []
 	var userRoleId = JSON.parse(sessionStorage.getItem('userData')).roleId
 	
-	function init(){
+	$(function(){
 		currPage = 1
-		getData(currPage, size, roleName)		
-	}
-	function getData(page,size,roleName){
+		getData(currPage, size)
+	})
+
+	$('#search-btn').click(function(){
+		isPageInit = false
+		$('#pagination').hide()
+		getData(currPage, size, $('#search-phone').val())
+	})
+
+	function getData(page,size,phone){
 
 		ajax({
-			url: 'admin/role/getRoleList',
+			url: 'admin/vote/getVotes',
 			data: {
 				page: page,
 				size: size,
-				roleName: roleName,
+				phone: phone
 			},
 			successFunc: function(response){
 				var status = response.code
 				if(status === 1){
 					$('#nodata').hide()
-					$('#role-tbody').children().remove()
+					$('#vote-tbody').children().remove()
 					var data = response.data
 					var list = data.list
-					roleList = list
+					voteList = list
 					var trs = ''
 					for(var i = 0; i<list.length; i++){
 
 						var sequence = (currPage-1)*size+i+1
-						//超级管理员roleId为0，不可修改，不可删除
-						var isEditable = list[i].id!=0 ? '':' disabled'
-						var description = list[i].roleDesc || ''
+						var endTime = new Date(list[i].endTime).Format('yyyy-MM-dd hh:mm')
+						var voteResult = list[i].voteChooses.reduce(function(pre, curr){
+							return (pre.voteCount > curr.voteCount)?pre : curr
+
+						}).chooseName
+						
 						trs += '<tr>'+
 									'<td>'+sequence+'</td>'+
-									'<td>'+list[i].roleName+'</td>'+
-									'<td>'+description+'</td>'+
+									'<td>'+list[i].voteName+'</td>'+
+									'<td>'+voteResult+'</td>'+
+									'<td>'+endTime+'</td>'+
+									'<td>'+list[i].voteGroupName+'</td>'+
+									'<td>'+list[i].initiatorName+'</td>'+
+									'<td>'+list[i].initiatorMobile+'</td>'+
 									'<td>'+
-										'<button '+isEditable+' onclick="editRole('+i+')" class="btn btn-secondary-outline radius '+isEditable+' "><span class="Hui-iconfont">&#xe60c;</span>修改'+
-										'</button>'+
-										'<button  onclick="deleteRole('+i+')" style="margin-left:15px" class="btn btn-danger-outline radius '+isEditable+' ">'+
-											'<span class="Hui-iconfont">&#xe609;</span>删除'+
-										'</button>'
+										'<button class="btn btn-danger-outline radius">'+
+										'<span class="Hui-iconfont">&#xe609;</span>删除</button>'
 									'</td>'+
+										
 								'</tr>'
 					}
-					$('#role-tbody').append(trs)
+					$('#vote-tbody').append(trs)
 					$('#data-num').text(data.total)
 					if(!isPageInit && data.total > size){
+						$('#pagination').show()
 						var pages = Math.ceil(data.total/size)
 						laypage({
 						    cont: 'pagination',
@@ -115,7 +132,7 @@
 						    	if(!first){
 						    		console.log(obj.curr)
 						    		currPage =obj.curr
-							    	getData(currPage, size, roleName)
+							    	getData(currPage, size, $('#search-phone').val())
 								}
 						    }
 					  });
@@ -142,20 +159,9 @@
 		})
 	}
 
-	//	添加
-	function addRole(){
-		sessionStorage.removeItem('editRoleInfo')
-		layer_show('新增角色','role-add-edit.html','','600');
-	}
-	//编辑
-	function editRole(index){
-		var editRoleInfo = roleList[index]
-		sessionStorage.setItem('editRoleInfo',JSON.stringify(editRoleInfo))
-		layer_show('修改角色','role-add-edit.html','','600');	
-	}
-	//删除
+
 	function deleteRole(index){
-		var deleteRoleInfo = roleList[index]
+		var deleteRoleInfo = voteList[index]
 		console.log(deleteRoleInfo.id)
 		top.layer.confirm('确定删除['+deleteRoleInfo.roleName+']吗？',{
 			title: '提示',
@@ -196,7 +202,6 @@
 		
 	}
 
-	init()
 
 </script> 
 </body>
