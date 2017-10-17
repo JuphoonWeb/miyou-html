@@ -138,21 +138,7 @@
 						content: response.error
 					})
 
-				}else if(status === -1){
-						sessionStorage.removeItem('uuid')
-						sessionStorage.removeItem('login')
-						sessionStorage.removeItem('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes: function() {
-								parent.window.open('login.html', '_self')
-							}
-						})
-				}		
+				}
 			},
 			errorFunc: function(xhr, status){
 				layer.closeAll()
@@ -174,19 +160,6 @@
 
 
 	$(function(){
-		if(!sessionStorage.getItem('uuid')){
-			layer.open({
-				type: 0,
-				closeBtn: 0,
-				shade: [1,'#fff'],
-				title: '未登录',
-				icon: 7,
-				content: '请登录',
-				yes: function() {
-					parent.window.open('login.html', '_self')
-				}
-			})
-		}
 		currPage = 1
 		getData(currPage, size)
 	})

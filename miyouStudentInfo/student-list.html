@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <html>
 <head>
 <meta charset="utf-8">
@@ -168,20 +168,6 @@
 				title: '出现错误',
 				content: response.error
 			})
-		}else if(response.code === -1){
-				sessionStorage.removeItem('uuid')
-				sessionStorage.removeItem('login')
-				sessionStorage.removeItem('username')
-				layer.open({
-					type: 0,
-					closeBtn: 0,
-					icon:7, 
-					title: '重新登录',
-					content: '超过30分钟未操作，已自动登出，请重新登录',
-					yes: function() {
-						parent.window.open('login.html', '_self')
-					}
-				})
 		}	
 	}
 
@@ -215,23 +201,7 @@
 
 
 	function init(){
-
-		if(!sessionStorage.getItem('uuid')){
-			layer.open({
-				type: 0,
-				closeBtn: 0,
-				shade: [1,'#fff'],
-				title: '未登录',
-				icon: 7,
-				content: '请登录',
-				yes: function () {
-					parent.window.open('login.html', '_self')
-				}
-			})
-		}
 		currPage = 1
-		
-	
 		ajax({
 			url: url,
 			method: 'post',
@@ -307,22 +277,7 @@
 								title: '添加失败',
 								content: response.error
 							})
-						}else if(response.code === -1){
-								sessionStorage.removeItem('uuid')
-								sessionStorage.removeItem('login')
-								sessionStorage.removeItem('username')
-								layer.open({
-									type: 0,
-									closeBtn: 0,
-									icon:7, 
-									title: '重新登录',
-									content: '超过30分钟未操作，已自动登出，请重新登录',
-									yes: function() {
-										parent.window.open('login.html', '_self')
-									}
-								})
-
-							}
+						}
 					},
 					errorFunc: function() {
 						layer.closeAll()
@@ -382,22 +337,6 @@
 								title: '开通失败',
 								content: response.error
 							})
-
-						}else if(response.code === -1){
-								sessionStorage.removeItem('uuid')
-								sessionStorage.removeItem('login')
-								sessionStorage.removeItem('username')
-								
-								layer.open({
-									type: 0,
-									closeBtn: 0,
-									icon:7, 
-									title: '重新登录',
-									content: '超过30分钟未操作，已自动登出，请重新登录',
-									yes: function() {
-										parent.window.open('login.html', '_self')
-									}
-								})
 
 						}	
 					},
@@ -506,23 +445,7 @@
 						content: response.error
 					})
 
-				}else if(response.code === -1){
-						sessionStorage.removeItem('uuid')
-						sessionStorage.removeItem('login')
-						sessionStorage.removeItem('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes: function() {
-								parent.window.open('login.html', '_self')
-							}
-						})
-
-					}	
-				console.log(response)
+				}	
 			},
 
 			errorFunc: function(xhr,status) {

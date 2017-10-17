@@ -6,6 +6,7 @@ function ajax(dataObj){
 		layer.load()
 
 	})
+	// var url = 'http://192.168.0.46:8086/miyou/'
     // var url = 'http://192.168.12.1:8086/miyou/'
     // var url = 'http://192.168.15.161:8086/miyou/'
     var url = 'http://218.204.254.209:28811/miyou/'
@@ -28,6 +29,8 @@ function ajax(dataObj){
 					icon: 7,
 					content: '您没有权限'
 	    		})
+	    	}else if(res.code === -1){
+	    		relogin()
 	    	}else{
 		    	console.log('success',res)
 		    	dataObj.successFunc && dataObj.successFunc(res)
@@ -107,3 +110,24 @@ function removeRepeat(array){
 	return resultArray;
 }
 var authLevelStatus = ["一级未审核","一级审核拒绝","一级审核通过","二级未审核","二级审核拒绝","二级审核通过"];
+
+
+
+function relogin(){
+
+	sessionStorage.removeItem('uuid')
+	sessionStorage.removeItem('login')
+	sessionStorage.removeItem('username')
+	top.layer.open({
+		type: 0,
+		closeBtn: 0,
+		icon:7, 
+		title: '重新登录',
+		content: '超过30分钟未操作，已自动登出，请重新登录',
+		yes: function() {
+			top.open('login.html', '_self')
+		}
+	})
+}
+
+

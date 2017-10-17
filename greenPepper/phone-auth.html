@@ -170,7 +170,8 @@
 			url: 'h5/sendCode',
 			type: 'post',
 			data: {
-				phone: sessionStorage.getItem('phone')
+				phone: sessionStorage.getItem('phone'),
+				type: '2'
 			},
 			success: function(response){
 				if(response.code != 1){
@@ -212,6 +213,7 @@
 				data: {
 					phone: sessionStorage.getItem('phone'),
 					code: code,
+					type: '2'
 				},
 				success: function(response){
 					if(response.code === 1){

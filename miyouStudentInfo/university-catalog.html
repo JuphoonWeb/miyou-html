@@ -17,16 +17,13 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="lib/layer/2.4/skin/layer.css">
 <link rel="stylesheet" href="lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
-<title>菜单管理</title>
+<title>学校目录</title>
 </head>
 <body>
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 学生信息管理 <span class="c-gray en">&gt;</span> 学校目录 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
 
-	<!-- <div class="cl pd-5 bg-1 bk-gray mt-20"> 
-		<button class="btn btn-secondary-outline radius" onclick="addMenu('新增菜单','menu-add.html','','400')"><span class="Hui-iconfont">&#xe600;</span>新增菜单</button>
-	</div> -->
-
+	
 	<div class="panel panel-default  mt-20">
 		<div class="panel-header">学校目录</div>
 		<div class="panel-body" style="padding:50px">
@@ -126,20 +123,6 @@ var setting = {
 var zNodes =[];
 		
 $(document).ready(function(){
-	if(!sessionStorage.getItem('uuid')){
-		layer.open({
-			type: 0,
-			closeBtn: 0,
-			shade: [1,'#fff'],
-			title: '未登录',
-			icon: 7,
-			content: '请登录',
-			yes: function () {
-				parent.window.open('login.html', '_self')
-			}
-		})
-	}
-
 	ajax({
 		url: 'admin/school/getZtreeCity',
 		successFunc: function(response){
@@ -162,20 +145,6 @@ $(document).ready(function(){
 					content: response.error
 				})
 
-			}else if(status === -1){
-					sessionStorage.removeItem('uuid')
-					sessionStorage.removeItem('login')
-					sessionStorage.removeItem('username')
-					layer.open({
-						type: 0,
-						closeBtn: 0,
-						icon:7, 
-						title: '重新登录',
-						content: '超过30分钟未操作，已自动登出，请重新登录',
-						yes: function() {
-							parent.window.open('login.html', '_self')
-						}
-					})
 			}
 
 		},

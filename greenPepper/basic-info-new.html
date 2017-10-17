@@ -77,7 +77,6 @@
 		}
 		.form-group option:first-child{
 			color:rgba(255, 255, 255, 1);
-			/*visibility: hidden;*/
 			display: none;
 		}
 		.arrow-box{
@@ -175,7 +174,7 @@
 				</div>
 				<div class="form-group">
 					<label for="number">学号</label>
-					<input type="text" id="number" placeholder="请输入学号">
+					<input type="tel" id="number" placeholder="请输入学号">
 				</div>
 			</div>
 			<button class="btn-container" id="next-btn">
@@ -202,58 +201,9 @@
 			},
 			studentInfo = {}
 
-
-		function fillSelect(selectId, list){
-			var queryStr = 'select#'+selectId
-			
-			if(selectId === 'university'){
-				$('#university-result, #school-result').text('')
-				if(!isInit){
-					studentInfo.university = ''
-					studentInfo.school = ''
-				}
-				data.university = ''
-				data.school = ''
-				$('select#school').attr('disabled', true)
-			}else if(selectId === 'school'){
-				$('#school-result').text('')
-				if(!isInit){
-					studentInfo.school = ''
-				}
-				data.school = ''
-
-			}	
-
-			$(queryStr).children().remove()
-			var options = '<option value=""></option>'
-			for(var  i = 0; i<list.length; i++){
-				var val = list[i].id
-				var name = list[i].name || list[i].schoolName
-				options += '<option value="'+val+'" data-name="'+name+'" >'+name+'</option>'
-			}
-			$(queryStr).append(options)
-		}
-
-		function enableBtn(){
-			$('#next-btn')
-				.removeAttr('disabled')
-				.css('background-color','rgb(242, 170, 25)')
-				.click(function(e){
-					e.preventDefault()
-					var dataJson = JSON.stringify(data)
-					sessionStorage.setItem('data', dataJson)
-					var studentInfoJson = JSON.stringify(studentInfo)
-					sessionStorage.setItem('studentInfo', studentInfoJson)
-
-					window.open('student-idcard.html', '_self')
-				})
-		}
-
 		$(document).ready(function(){
 
-			$('#next-btn').click(function(e){
-				e.preventDefault()
-			})
+			disableBtn()
 			$('select#university, select#school').attr('disabled',true)
 			
 
@@ -322,8 +272,86 @@
 			}else{
 				isInit = false
 			}
+		})	
+		
+		function fillSelect(selectId, list){
+			var queryStr = 'select#'+selectId
+			
+			if(selectId === 'university'){
+				$('#university-result, #school-result').text('')
+				if(!isInit){
+					studentInfo.university = ''
+					studentInfo.school = ''
+				}
+				data.university = ''
+				data.school = ''
+				$('select#school').attr('disabled', true)
+			}else if(selectId === 'school'){
+				$('#school-result').text('')
+				if(!isInit){
+					studentInfo.school = ''
+				}
+				data.school = ''
 
-		})
+			}	
+
+			$(queryStr).children().remove()
+			var options = '<option value=""></option>'
+			for(var  i = 0; i<list.length; i++){
+				var val = list[i].id
+				var name = list[i].name || list[i].schoolName
+				options += '<option value="'+val+'" data-name="'+name+'" >'+name+'</option>'
+			}
+			$(queryStr).append(options)
+		}
+
+		function enableBtn(){
+			$('#next-btn')
+				.removeAttr('disabled')
+				.css('background-color','rgb(242, 170, 25)')
+				.click(function(e){
+					e.preventDefault()
+					var dataJson = JSON.stringify(data)
+					sessionStorage.setItem('data', dataJson)
+					var studentInfoJson = JSON.stringify(studentInfo)
+					sessionStorage.setItem('studentInfo', studentInfoJson)
+
+					window.open('student-idcard.html', '_self')
+				})
+		}
+
+		function disableBtn(){
+			$('#next-btn').attr('disabled', true)
+						  .css('background-color','rgb(244, 200, 113)')	
+		}
+
+		function checkInfo(){
+				isFinished = true
+				for(i in data){
+					if(i === 'sex'){
+						console.log(i)
+
+						if(data[i] == -1 || !data[i]){
+							console.log(i,'false')
+							isFinished = false
+							break	
+						}
+					}else if(data[i] === ''){
+						console.log(i,'false')
+						isFinished = false
+						break
+					}
+				}
+
+				if(isFinished){
+					enableBtn()
+
+				}else{
+					disableBtn()
+				}
+		}
+
+		
 
 		function getUniversity(selected){
 				ajax({
@@ -413,8 +441,7 @@
 		}
 
 		$(document).on('focus','input',function(){
-			$('#next-btn').attr('disabled', true)
-						  .css('background-color','rgb(244, 200, 113)')
+			disableBtn()
 		})
 
 		$(document).on('change', 'input, select', function(){
@@ -466,66 +493,12 @@
 					
 				}			
 			}
-		
 			console.log('data', data)
-			isFinished = true
-			for(i in data){
-				if(i === 'sex'){
-					console.log(i)
-
-					if(data[i] == -1 || !data[i]){
-						console.log(i,'false')
-						isFinished = false
-						break	
-					}
-				}else if(data[i] === ''){
-					console.log(i,'false')
-					isFinished = false
-					break
-				}
-				//记得添加iOS学号检测
-			}
-
-			if(isFinished){
-				enableBtn()
-
-			}else{
-				$('#next-btn')
-					.css('background-color','rgb(244, 200, 113)')
-					.off()
-					.attr('disabled', true)
-			}
-		
+			checkInfo()
 		})	
 
 		$(document).on('blur', 'input, select',function(){
-			console.log('data', data)
-			isFinished = true
-			for(i in data){
-
-				if(i === 'sex'){
-					console.log(i)
-					if(data[i] == -1 || !data[i]){
-						console.log(i,'false')
-						isFinished = false
-						break	
-					}
-				}else if(data[i] === ''){
-					console.log(i,'false')
-					isFinished = false
-					break
-				}
-			}
-
-			if(isFinished){
-				enableBtn()
-
-			}else{
-				$('#next-btn')
-					.css('background-color','rgb(244, 200, 113)')
-					.off()
-			}
-			console.log(isFinished)
+			checkInfo()
 		})
 
 		$('#number').change(function(){
