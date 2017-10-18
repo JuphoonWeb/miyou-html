@@ -107,7 +107,7 @@
 		</div>
 	</div>
 	<div class="auth-code">
-		<input type="text" pattern="[0-9]" id="code" maxlength="4">
+		<input type="tel" pattern="[0-9]" id="code" maxlength="4">
 		<div class="code-cube-container">
 			<div class="code-cube" id="code-cube-1">*</div>
 			<div class="code-cube" id="code-cube-2">*</div>
@@ -126,16 +126,12 @@
 <script>
 	
 	$(document).ready(function(){
-		
 		sendCode()
 	})
 
 	$(document).on('focus','input', function(){
 		$('#code-cube-1').addClass('focus')
 	})
-
-
-
 
 	$(document).on('input','input',function(){
 		$('.error').hide()
@@ -165,7 +161,6 @@
 		sendCode()
 	})
 	
-
 	function sendCode(){
 		$('input').val('')
 		$('.error').hide()

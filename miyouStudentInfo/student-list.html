@@ -161,27 +161,13 @@
 			}
 			isPageInit = true
 		}else if(response.code === 0){
-			layer.open({
+			top.layer.open({
 				type: 0,
 				closeBtn: 0,
 				icon:7, 
 				title: '出现错误',
 				content: response.error
 			})
-		}else if(response.code === -1){
-				sessionStorage.removeItem('uuid')
-				sessionStorage.removeItem('login')
-				sessionStorage.removeItem('username')
-				layer.open({
-					type: 0,
-					closeBtn: 0,
-					icon:7, 
-					title: '重新登录',
-					content: '超过30分钟未操作，已自动登出，请重新登录',
-					yes: function() {
-						parent.window.open('login.html', '_self')
-					}
-				})
 		}	
 	}
 
@@ -190,7 +176,7 @@
 			layer.closeAll()
 			$('#nodata').show()
 		}else{
-			layer.open({
+			top.layer.open({
 				type: 0,
 				closeBtn: 0,
 				icon:7, 
@@ -215,23 +201,7 @@
 
 
 	function init(){
-
-		if(!sessionStorage.getItem('uuid')){
-			layer.open({
-				type: 0,
-				closeBtn: 0,
-				shade: [1,'#fff'],
-				title: '未登录',
-				icon: 7,
-				content: '请登录',
-				yes: function () {
-					parent.window.open('login.html', '_self')
-				}
-			})
-		}
 		currPage = 1
-		
-	
 		ajax({
 			url: url,
 			method: 'post',
@@ -250,7 +220,7 @@
 	//添加至班级圈
 	function addToClazzGroup(index){
 		
-		layer.confirm('确定添加'+studentList[index].name+'至班级圈吗？',{
+		top.layer.confirm('确定添加'+studentList[index].name+'至班级圈吗？',{
 			title: '提示',
 			icon:3,
 			closeBtn: 0,
@@ -291,7 +261,7 @@
 									
 								},2000)
 							}else{
-								layer.open({
+								top.layer.open({
 									type: 0,
 									closeBtn: 0,
 									icon:7, 
@@ -300,33 +270,18 @@
 								})	
 							}
 						}else if(response.code === 0){
-							layer.open({
+							top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
 								title: '添加失败',
 								content: response.error
 							})
-						}else if(response.code === -1){
-								sessionStorage.removeItem('uuid')
-								sessionStorage.removeItem('login')
-								sessionStorage.removeItem('username')
-								layer.open({
-									type: 0,
-									closeBtn: 0,
-									icon:7, 
-									title: '重新登录',
-									content: '超过30分钟未操作，已自动登出，请重新登录',
-									yes: function() {
-										parent.window.open('login.html', '_self')
-									}
-								})
-
-							}
+						}
 					},
 					errorFunc: function() {
 						layer.closeAll()
-						layer.open({
+						top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
@@ -343,7 +298,7 @@
 	}
 
 	function openMiyouCircle(index){
-		layer.confirm('确定为'+studentList[index].name+'开通密友圈吗？',{
+		top.layer.confirm('确定为'+studentList[index].name+'开通密友圈吗？',{
 			title: '提示',
 			icon:3,
 			closeBtn: 0,
@@ -366,7 +321,7 @@
 									window.location.reload()
 								}, 1500)
 							}else{
-								layer.open({
+								top.layer.open({
 									type: 0,
 									closeBtn: 0,
 									icon:7, 
@@ -375,29 +330,13 @@
 								})	
 							}
 						}else if(response.code === 0 || response.code === -2) {
-							layer.open({
+							top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
 								title: '开通失败',
 								content: response.error
 							})
-
-						}else if(response.code === -1){
-								sessionStorage.removeItem('uuid')
-								sessionStorage.removeItem('login')
-								sessionStorage.removeItem('username')
-								
-								layer.open({
-									type: 0,
-									closeBtn: 0,
-									icon:7, 
-									title: '重新登录',
-									content: '超过30分钟未操作，已自动登出，请重新登录',
-									yes: function() {
-										parent.window.open('login.html', '_self')
-									}
-								})
 
 						}	
 					},
@@ -439,7 +378,7 @@
 		var fileNum = fileInput.files.length 
 		
 		if(fileNum === 0){
-			layer.open({
+			top.layer.open({
 				type: 0,
 				closeBtn: 0,
 				title: '提示',
@@ -476,7 +415,7 @@
 						if(data.repeateCount <= 3){
 							ellipses = ''
 						}
-						layer.open({
+						top.layer.open({
 							type: 1,
 							closeBtn: 0,
 							area: ['370px','250px'],
@@ -498,7 +437,7 @@
 					}
 
 				}else if(response.code === 0) {
-					layer.open({
+					top.layer.open({
 						type: 0,
 						closeBtn: 0,
 						icon:7, 
@@ -506,28 +445,12 @@
 						content: response.error
 					})
 
-				}else if(response.code === -1){
-						sessionStorage.removeItem('uuid')
-						sessionStorage.removeItem('login')
-						sessionStorage.removeItem('username')
-						layer.open({
-							type: 0,
-							closeBtn: 0,
-							icon:7, 
-							title: '重新登录',
-							content: '超过30分钟未操作，已自动登出，请重新登录',
-							yes: function() {
-								parent.window.open('login.html', '_self')
-							}
-						})
-
-					}	
-				console.log(response)
+				}	
 			},
 
 			errorFunc: function(xhr,status) {
 				layer.closeAll()
-				layer.open({
+				top.layer.open({
 					type: 0,
 					closeBtn: 0,
 					icon:7, 

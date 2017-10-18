@@ -97,7 +97,7 @@
 	function deleteUniversity(index){
 		var name  = universityList[index].name
 		var id = universityList[index].id
-		layer.confirm('确定删除'+name+'的信息吗？',{
+		top.layer.confirm('确定删除'+name+'的信息吗？',{
 			title: '提示',
 			icon:3,
 			closeBtn: 0,
@@ -115,32 +115,17 @@
 								window.location.reload()
 							},1000)
 						}else if(response.code === 0){
-							layer.open({
+							top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
 								title: '删除失败',
 								content: response.error
 							})
-						}else if(response.code === -1){
-							sessionStorage.removeItem('uuid')
-							sessionStorage.removeItem('login')
-							sessionStorage.removeItem('username')
-							layer.open({
-								type: 0,
-								closeBtn: 0,
-								icon:7, 
-								title: '重新登录',
-								content: '超过30分钟未操作，已自动登出，请重新登录',
-								yes: function() {
-									parent.parent.window.open('login.html', '_self')
-								}
-							})
-
 						}
 				    },
 				    errorFunc: function() {
-						layer.open({
+						top.layer.open({
 							type: 0,
 							closeBtn: 0,
 							icon:7, 
@@ -217,28 +202,13 @@
 
 						}
 						else if(response.code === 0){
-							layer.open({
+							top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
 								title: '出现错误',
 								content: response.error
 							})
-						}else if(response.code === -1){
-								sessionStorage.removeItem('uuid')
-								sessionStorage.removeItem('login')
-								sessionStorage.removeItem('username')
-								layer.open({
-									type: 0,
-									closeBtn: 0,
-									icon:7, 
-									title: '重新登录',
-									content: '超过30分钟未操作，已自动登出，请重新登录',
-									yes: function() {
-										parent.window.open('login.html', '_self')
-									}
-								})
-
 						}		
 			    	}
 
@@ -249,7 +219,7 @@
 							layer.closeAll()
 							$('#nodata').show()
 						}else{
-							layer.open({
+							top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
@@ -261,7 +231,7 @@
 
 	function init(){
 		if(!sessionStorage.getItem('uuid')){
-			layer.open({
+			top.layer.open({
 				type: 0,
 				closeBtn: 0,
 				shade: [1,'#fff'],

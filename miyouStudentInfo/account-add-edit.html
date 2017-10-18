@@ -98,7 +98,7 @@
 	var editAccountInfo = JSON.parse(sessionStorage.getItem('editAccountInfo'))
 
 	var errorFunc = function(xhr, status){
-		layer.open({
+		top.layer.open({
 				type: 0,
 				closeBtn: 0,
 				icon:7, 
@@ -140,7 +140,7 @@
 						$('#email').val(editAccountInfo.email)
 						$('option[value="'+editAccountInfo.roleId+'"]').attr('selected', true)
 					}else if(status === 0){
-						layer.open({
+						top.layer.open({
 							type: 0,
 							closeBtn: 0,
 							icon:7, 
@@ -148,11 +148,6 @@
 							content: response.error
 						})
 
-					}else if(status === -1){
-							sessionStorage.removeItem('uuid')
-							sessionStorage.removeItem('login')
-							sessionStorage.removeItem('username')
-							
 					}
 						
 					
@@ -210,7 +205,7 @@
 								parent.location.reload()
 							}, 1000)
 						}else if(status === 0){
-							layer.open({
+							top.layer.open({
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
@@ -218,11 +213,6 @@
 								content: response.error
 							})
 
-						}else if(status === -1){
-								sessionStorage.removeItem('uuid')
-								sessionStorage.removeItem('login')
-								sessionStorage.removeItem('username')
-								
 						}
 
 					},
@@ -247,7 +237,7 @@
 								parent.location.reload()
 							}, 1000)
 						}else if(status === 0){
-								layer.open({
+								top.layer.open({
 									type: 0,
 									closeBtn: 0,
 									icon:7, 
@@ -255,16 +245,11 @@
 									content: response.error
 								})
 
-							}else if(status === -1){
-									sessionStorage.removeItem('uuid')
-									sessionStorage.removeItem('login')
-									sessionStorage.removeItem('username')
-									
 							}
 
 					},
 					errorFunc: function(xhr, status){
-						layer.open({
+						top.layer.open({
 							type: 0,
 							closeBtn: 0,
 							icon:7, 

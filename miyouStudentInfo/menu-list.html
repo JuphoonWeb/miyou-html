@@ -96,7 +96,7 @@ function addMenu(title,url,w,h){
 		
 $(document).ready(function(){
 	if(!sessionStorage.getItem('uuid')){
-		layer.open({
+		top.layer.open({
 			type: 0,
 			closeBtn: 0,
 			shade: [1,'#fff'],
@@ -121,7 +121,7 @@ $(document).ready(function(){
 				sessionStorage.setItem('menuList', JSON.stringify(zNodes))
 
 			}else if(status === 0){
-				layer.open({
+				top.layer.open({
 					type: 0,
 					closeBtn: 0,
 					icon:7, 
@@ -129,25 +129,11 @@ $(document).ready(function(){
 					content: response.error
 				})
 
-			}else if(status === -1){
-					sessionStorage.removeItem('uuid')
-					sessionStorage.removeItem('login')
-					sessionStorage.removeItem('username')
-					layer.open({
-						type: 0,
-						closeBtn: 0,
-						icon:7, 
-						title: '重新登录',
-						content: '超过30分钟未操作，已自动登出，请重新登录',
-						yes: function() {
-							parent.window.open('login.html', '_self')
-						}
-					})
 			}
 
 		},
 		errorFunc: function(xhr, status){
-			layer.open({
+			top.layer.open({
 					type: 0,
 					closeBtn: 0,
 					icon:7, 

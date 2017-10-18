@@ -16,14 +16,15 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
-<title>角色管理</title>
+<title>群通知管理</title>
 </head>
 <body>
 
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 角色管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 应用内容管理 <span class="c-gray en">&gt;</span> 群通知管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
-	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
-		<button id="add-btn" title="新增角色" onclick="addRole()" class="btn btn-success-outline radius" ><i class="Hui-iconfont">&#xe607;</i>新增角色</button>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+		<input id="search-phone" type="text" style="width:200px" class="input-text radius" placeholder="发起者号码 "> 
+		<button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
