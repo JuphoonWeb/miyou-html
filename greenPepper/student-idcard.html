@@ -64,7 +64,6 @@
 			color:rgb(255, 255, 255);
 			background-color: rgb(255, 173, 26);
 			border:none;
-			outline: none;
 			border-radius: 41px;
 		}
 		#upload-2{
@@ -153,10 +152,7 @@
 		var data = JSON.parse(sessionStorage.getItem('data'))
 		data.phone = sessionStorage.getItem('phone')
 
-		$('#test').click(function(){
-			console.log('click')
-			errorFunc()
-		})
+		var imgReg = /^(.+?)\.(png|jpg|jpeg|gif|bmp)$/i
 		
 
 		function getObjectURL(file){
@@ -259,11 +255,10 @@
 
 		$('#image-upload-1').change(function(){
 			var fileInput = $('#image-upload-1')[0];
-			file = fileInput.files[0]
-			var imgReg = /\.(png|jpg|jpeg|gif|bmp)$/
-			console.log('isPicture: ',imgReg.test(file.name))
-			if(file){
-				console.log('file',file)
+			var file = fileInput.files[0]
+
+			console.log('file',file)
+			if(imgReg.test(file.name)){
 				var imgUrl = getObjectURL(file)
 				console.log('url', imgUrl)
 				$('#image-example-1').attr('src', imgUrl)
@@ -275,15 +270,20 @@
 				form.append('file',file)
 
 				upload('upload/studentImage', form, successFunc1, errorFunc)
+			}else{
+				notice('不支持的格式，请重新选择图片')
+				$('#image-upload-1').val('')
 			}
 			
 		})		
 
 		$('#image-upload-2').change(function(){
 			var fileInput = $('#image-upload-2')[0];
-			file = fileInput.files[0]
-			if(file){
-				console.log(file)
+			var file = fileInput.files[0]
+			
+			console.log(file)
+			if(imgReg.test(file.name)){
+			
 				var imgUrl = getObjectURL(file)
 				console.log('url', imgUrl)
 				$('#image-example-2').attr('src', imgUrl)	
@@ -292,7 +292,11 @@
 				form.append('file',file)
 
 				upload('upload/studentImage', form, successFunc2, errorFunc)
+			}else{
+				notice('不支持的格式，请重新选择图片')
+				$('#image-upload-2').val('')
 			}
+
 		})
 
 		function enableBtn(){
