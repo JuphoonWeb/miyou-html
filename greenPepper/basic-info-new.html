@@ -309,15 +309,16 @@
 			$('#next-btn')
 				.removeAttr('disabled')
 				.css('background-color','rgb(242, 170, 25)')
-				.click(function(e){
+				.off()
+				.on('click', function(e){
 					e.preventDefault()
 					var dataJson = JSON.stringify(data)
 					sessionStorage.setItem('data', dataJson)
 					var studentInfoJson = JSON.stringify(studentInfo)
 					sessionStorage.setItem('studentInfo', studentInfoJson)
-
 					window.open('student-idcard.html', '_self')
-				})
+				}) 
+
 		}
 
 		function disableBtn(){
@@ -345,7 +346,6 @@
 
 				if(isFinished){
 					enableBtn()
-
 				}else{
 					disableBtn()
 				}
