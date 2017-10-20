@@ -64,6 +64,7 @@
 			color:rgb(255, 255, 255);
 			background-color: rgb(255, 173, 26);
 			border:none;
+			outline: none;
 			border-radius: 41px;
 		}
 		#upload-2{
@@ -259,33 +260,39 @@
 		$('#image-upload-1').change(function(){
 			var fileInput = $('#image-upload-1')[0];
 			file = fileInput.files[0]
-			console.log('file',file)
-			var imgUrl = getObjectURL(file)
-			console.log('url', imgUrl)
-			$('#image-example-1').attr('src', imgUrl)
-			$('#upload-btn').hide()
+			var imgReg = /\.(png|jpg|jpeg|gif|bmp)$/
+			console.log('isPicture: ',imgReg.test(file.name))
+			if(file){
+				console.log('file',file)
+				var imgUrl = getObjectURL(file)
+				console.log('url', imgUrl)
+				$('#image-example-1').attr('src', imgUrl)
+				$('#upload-btn').hide()
 
-			// reader.readAsDataURL(file)
-			
-			var form = new FormData()
-			form.append('file',file)
+				// reader.readAsDataURL(file)
+				
+				var form = new FormData()
+				form.append('file',file)
 
-			upload('upload/studentImage', form, successFunc1, errorFunc)
+				upload('upload/studentImage', form, successFunc1, errorFunc)
+			}
 			
 		})		
 
 		$('#image-upload-2').change(function(){
 			var fileInput = $('#image-upload-2')[0];
 			file = fileInput.files[0]
-			console.log(file)
-			var imgUrl = getObjectURL(file)
-			console.log('url', imgUrl)
-			$('#image-example-2').attr('src', imgUrl)	
-			$('#info-container').hide()
-			var form = new FormData()
-			form.append('file',file)
+			if(file){
+				console.log(file)
+				var imgUrl = getObjectURL(file)
+				console.log('url', imgUrl)
+				$('#image-example-2').attr('src', imgUrl)	
+				$('#info-container').hide()
+				var form = new FormData()
+				form.append('file',file)
 
-			upload('upload/studentImage', form, successFunc2, errorFunc)
+				upload('upload/studentImage', form, successFunc2, errorFunc)
+			}
 		})
 
 		function enableBtn(){
