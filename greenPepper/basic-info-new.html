@@ -192,12 +192,12 @@
 		var isFinished = false,
 			isInit = true,
 			data = {	
-			    name: $('#name').val(),
+			    name: $('#name').val().trim(),
 			    sex: $('#sex').children('option:checked').val(),
 			    city: $('#city').children('option:checked').text(),
 			    university: $('#university').children('option:checked').text(),
 				school: $('#school').children('option:checked').text(),
-				number: $('#number').val()
+				number: $('#number').val().trim()
 			},
 			studentInfo = {}
 
@@ -449,11 +449,11 @@
 			if(tagName === 'INPUT'){
 				var inputId = $(this).attr('id')
 				if(inputId === 'name'){
-					var name = $(this).val()
+					var name = $(this).val().trim()
 					data.name = name
 					studentInfo.name = name 
 				}else{
-					var number = $(this).val()
+					var number = $(this).val().trim()
 					data.number = number
 					studentInfo.number = number
 				}

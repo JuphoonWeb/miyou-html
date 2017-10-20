@@ -223,64 +223,11 @@
 			successFunc: function(response){
 				var status = response.code
 				if(status === 1){
-					$('#nodata').hide()
-					var data = response.data
-					var list = data.list
-					var activityTypes = {}
-					var options = $('select#search-activity-type').children()
-					for(var i = 1; i < options.length; i++){
-						activityTypes[ options[i].value ] = options[i].text
+					if(response.data.total > 0){
+						renderTable(response.data)
+					}else{
+						showNodata()
 					}
-					activityList = list
-					var trs = ''
-					for(var i = 0; i<list.length; i++){
-
-						var sequence = (searchPara.page-1)*searchPara.size+i+1
-						var createTime = new Date(list[i].createTime).Format('yyyy-MM-dd hh:mm')
-						var beginTime = new Date(list[i].beginTime).Format('yyyy-MM-dd hh:mm')
-						var endTime = new Date(list[i].endTime).Format('yyyy-MM-dd hh:mm')
-						var initiatorName = list[i].initiatorName || ''
-						var initiatorMobile = list[i].initiatorMobile || ''
-						var activityType = activityTypes[ list[i].activityType ]
-
-						
-						trs += '<tr>'+
-									'<td>'+sequence+'</td>'+
-									'<td>'+list[i].activityName+'</td>'+
-									'<td>'+activityType+'</td>'+
-									'<td>'+beginTime+'</td>'+
-									'<td>'+endTime+'</td>'+
-									'<td>'+list[i].school+'</td>'+
-									'<td>'+list[i].location+'</td>'+
-									'<td>'+initiatorName+'</td>'+
-									'<td>'+initiatorMobile+'</td>'+
-									'<td>'+
-										'<button  onclick="deleteActivity('+i+')" class="btn btn-danger-outline radius" >'+
-										'<span class="Hui-iconfont">&#xe609;</span>删除</button>'+
-									'</td>'+
-								'</tr>'
-					}
-					$('#activity-tbody').html(trs)
-					$('#data-num').text(data.total)
-					if(!isPageInit && data.total > searchPara.size){
-						$('#pagination').show()
-						var pages = Math.ceil(data.total/searchPara.size)
-						laypage({
-						    cont: 'pagination',
-						    curr: 1, 
-						    pages: pages,
-						    groups: 5,
-						    jump: function(obj,first) {
-						    	if(!first){
-						    		searchPara.page = obj.curr
-							    	getData(searchPara)
-								}
-						    }
-					  });
-					
-					}
-					isPageInit = true
-
 				}else if(status === 0){
 					layer.open({
 						type: 0,
@@ -293,8 +240,71 @@
 				}
 			},
 			errorFunc: errorFunc
-			
 		})
+	}
+
+	function showNodata(){
+		$('#nodata').show()
+		$('#activity-tbody').children().remove()
+		$('#data-num').text(0)
+	}
+
+	function renderTable(data){
+		$('#nodata').hide()
+
+		var list = data.list
+		var activityTypes = {}
+		var options = $('select#search-activity-type').children()
+		for(var i = 1; i < options.length; i++){
+			activityTypes[ options[i].value ] = options[i].text
+		}
+		activityList = list
+		var trs = ''
+		for(var i = 0; i<list.length; i++){
+			var sequence = (searchPara.page-1)*searchPara.size+i+1
+			var createTime = new Date(list[i].createTime).Format('yyyy-MM-dd hh:mm')
+			var beginTime = new Date(list[i].beginTime).Format('yyyy-MM-dd hh:mm')
+			var endTime = new Date(list[i].endTime).Format('yyyy-MM-dd hh:mm')
+			var initiatorName = list[i].initiatorName || ''
+			var initiatorMobile = list[i].initiatorMobile || ''
+			var activityType = activityTypes[ list[i].activityType ]
+			
+			trs += '<tr>'+
+						'<td>'+sequence+'</td>'+
+						'<td>'+list[i].activityName+'</td>'+
+						'<td>'+activityType+'</td>'+
+						'<td>'+beginTime+'</td>'+
+						'<td>'+endTime+'</td>'+
+						'<td>'+list[i].school+'</td>'+
+						'<td>'+list[i].location+'</td>'+
+						'<td>'+initiatorName+'</td>'+
+						'<td>'+initiatorMobile+'</td>'+
+						'<td>'+
+							'<button  onclick="deleteActivity('+i+')" class="btn btn-danger-outline radius" >'+
+							'<span class="Hui-iconfont">&#xe609;</span>删除</button>'+
+						'</td>'+
+					'</tr>'
+		}
+		$('#activity-tbody').html(trs)
+		$('#data-num').text(data.total)
+		if(!isPageInit && data.total > searchPara.size){
+			$('#pagination').show()
+			var pages = Math.ceil(data.total/searchPara.size)
+			laypage({
+			    cont: 'pagination',
+			    curr: 1, 
+			    pages: pages,
+			    groups: 5,
+			    jump: function(obj,first) {
+			    	if(!first){
+			    		searchPara.page = obj.curr
+				    	getData(searchPara)
+					}
+			    }
+		  });
+		
+		}
+		isPageInit = true
 	}
 	
 	//删除

@@ -61,81 +61,38 @@
 
 <script type="text/javascript">
 	var isPageInit = false
-	var currPage = 1
-	var size = 12
+	var searchPara = {
+		 page: 1,
+		 size: 12,
+		 phone: ''
+	}
 	var noticeList = []
 	
 	$(function(){
-		currPage = 1
-		getData(currPage, size)
+		searchPara.page = 1
+		getData(searchPara)
 	})
 
 	$('#search-btn').click(function(){
 		isPageInit = false
 		$('#pagination').hide()
-		getData(currPage, size, $('#search-phone').val().trim())
+		searchPara.phone = $('#search-phone').val().trim()
+		getData(searchPara)
 	})
 
-	function getData(page,size,phone){
+	function getData(data){
 
 		ajax({
 			url: 'admin/groupNotice/getGroupNotices',
-			data: {
-				page: page,
-				size: size,
-				phone: phone
-			},
+			data: data,
 			successFunc: function(response){
 				var status = response.code
 				if(status === 1){
-					$('#nodata').hide()
-					var data = response.data
-					var list = data.list
-					noticeList = list
-					var trs = ''
-					for(var i = 0; i<list.length; i++){
-
-						var sequence = (currPage-1)*size+i+1
-						var createTime = new Date(list[i].createTime).Format('yyyy-MM-dd hh:mm')
-							
-						
-						trs += '<tr>'+
-									'<td>'+sequence+'</td>'+
-									'<td>'+list[i].noteTitle+'</td>'+
-									'<td>'+list[i].noteContent+'</td>'+
-									'<td>'+createTime+'</td>'+
-									'<td>'+list[i].initiatorName+'</td>'+
-									'<td>'+list[i].initiatorMobile+'</td>'+
-									'<td>'+list[i].noteGroupName+'</td>'+
-									'<td>'+list[i].university+'</td>'+
-									'<td>'+
-										'<button  onclick="deleteNotice('+i+')" class="btn btn-danger-outline radius">'+
-										'<span class="Hui-iconfont">&#xe609;</span>删除</button>'
-									'</td>'+
-										
-								'</tr>'
+					if(response.data.total > 0){
+						renderTable(response.data)
+					}else{
+						showNodata()
 					}
-					$('#notice-tbody').html(trs)
-					$('#data-num').text(data.total)
-					if(!isPageInit && data.total > size){
-						$('#pagination').show()
-						var pages = Math.ceil(data.total/size)
-						laypage({
-						    cont: 'pagination',
-						    curr: 1, 
-						    pages: pages,
-						    groups: 5,
-						    jump: function(obj,first) {
-						    	if(!first){
-						    		console.log(obj.curr)
-						    		currPage =obj.curr
-							    	getData(currPage, size, $('#search-phone').val().trim())
-								}
-						    }
-					  });
-					
-					}
-					isPageInit = true
 
 				}else if(status === 0){
 					layer.open({
@@ -150,12 +107,67 @@
 			},
 			errorFunc: function(xhr, status){
 				layer.msg(status)
-				$('#nodata').show()
 			}
 			
 		})
 	}
 
+	function showNodata(){
+		$('#nodata').show()
+		$('#notice-tbody').children().remove()
+		$('#data-num').text(0)
+	}
+
+	function renderTable(data){
+		$('#nodata').hide()
+
+		var list = data.list
+		noticeList = list
+		var trs = ''
+		for(var i = 0; i<list.length; i++){
+
+			var sequence = (searchPara.page-1)*searchPara.size+i+1
+			var createTime = new Date(list[i].createTime).Format('yyyy-MM-dd hh:mm')
+				
+			
+			trs += '<tr>'+
+						'<td>'+sequence+'</td>'+
+						'<td>'+list[i].noteTitle+'</td>'+
+						'<td>'+list[i].noteContent+'</td>'+
+						'<td>'+createTime+'</td>'+
+						'<td>'+list[i].initiatorName+'</td>'+
+						'<td>'+list[i].initiatorMobile+'</td>'+
+						'<td>'+list[i].noteGroupName+'</td>'+
+						'<td>'+list[i].university+'</td>'+
+						'<td>'+
+							'<button  onclick="deleteNotice('+i+')" class="btn btn-danger-outline radius">'+
+							'<span class="Hui-iconfont">&#xe609;</span>删除</button>'
+						'</td>'+
+							
+					'</tr>'
+		}
+		$('#notice-tbody').html(trs)
+		$('#data-num').text(data.total)
+		if(!isPageInit && data.total > searchPara.size){
+			$('#pagination').show()
+			var pages = Math.ceil(data.total/searchPara.size)
+			laypage({
+			    cont: 'pagination',
+			    curr: 1, 
+			    pages: pages,
+			    groups: 5,
+			    jump: function(obj,first) {
+			    	if(!first){
+			    		console.log(obj.curr)
+			    		searchPara.page =obj.curr
+				    	getData(searchPara)
+					}
+			    }
+		  });
+		
+		}
+		isPageInit = true
+	}
 
 	function deleteNotice(index){
 		var deleteNoticeInfo = noticeList[index]

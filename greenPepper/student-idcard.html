@@ -195,7 +195,7 @@
 		var errorFunc = function(xhr, status){
 					
 					dialog({
-						text: '上传失败,请重新上传',
+						text: '上传失败请重新上传',
 						type: 'confirm',
 						ok: function(){
 							$('#image-example-1').attr('src', 'img/imgExample.png')
@@ -219,6 +219,8 @@
 
 							$('#upload-2').show()
 							enableBtn()
+						}else if(response.code === 0){
+							notice(response.error)
 						}else{
 							errorFunc()
 						}
@@ -232,6 +234,8 @@
 								autoClose: 1500
 							})
 							data.identityUrl = response.data 
+						}else if(response.code === 0){
+							notice(response.error)
 						}else{
 							errorFunc()
 						} 
@@ -263,9 +267,6 @@
 				console.log('url', imgUrl)
 				$('#image-example-1').attr('src', imgUrl)
 				$('#upload-btn').hide()
-
-				// reader.readAsDataURL(file)
-				
 				var form = new FormData()
 				form.append('file',file)
 
@@ -320,6 +321,7 @@
 										notice(status)
 									}
 								})
+
 							})
 		}
 		
