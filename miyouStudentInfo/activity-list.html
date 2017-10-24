@@ -166,7 +166,6 @@
 		})
 	}
 
-
 	function getCity(){
 		ajax({
 			url: 'admin/getDistrict',
@@ -203,7 +202,7 @@
 		})
 	}
 
-	//填充select标签
+	//填充select元素
 	function  fillSelect(selectorStr,data){
 		$(selectorStr).children('option+option').remove()
 		var options = ''
@@ -241,12 +240,6 @@
 			},
 			errorFunc: errorFunc
 		})
-	}
-
-	function showNodata(){
-		$('#nodata').show()
-		$('#activity-tbody').children().remove()
-		$('#data-num').text(0)
 	}
 
 	function renderTable(data){

@@ -1,4 +1,4 @@
-var domain = 'http://218.204.254.209:28812/miyou';
+var domain = 'http://218.204.254.209:28811/miyou';
 // var domain = 'http://192.168.12.1:8086/miyou/';
 
 

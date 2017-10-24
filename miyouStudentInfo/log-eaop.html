@@ -60,73 +60,29 @@
 
 <script type="text/javascript">
 	var isPageInit = false
-	var currPage = 1
-	var size = 13
-	var searchPhone = ''
+	var searchPara = {
+		page: 1,
+		size: 13,
+		phone: ''
+	}
 	
-	function getData(page, size, phone){
+	function getData(data){
 		$('#pagination').hide()
 		ajax({
 			url: 'admin/log/getEaopLogs',
-			data: {
-				page: page,
-				size: size,
-				phone: phone,
-			},
+			data: data,
 			successFunc: function(response){
 				layer.closeAll()
 				var status = response.code
 				if(status === 1){
 					var data = response.data
-					var list = data.list
-					var trs = ''
-					$('#nodata').hide()
-					$('#eaop-tbody').children().remove()
-					if(list.length === 0){
-						$('#nodata').show()
+					if(data.total > 0){
+						renderTable(data)
+					}else{
+						showNodata()
 					}
-					for(var i=0; i<list.length; i++){						
-						var sequence = (page-1)*size+i+1
-						var phone = list[i].phone || ''
-						var status = list[i].status?
-									'<span class="label label-success radius">成功</span>'
-									:'<span class="label label-warning radius">失败</span>'
-						var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss') 
-						trs += '<tr>'+
-								'<td>'+sequence+'</td>'+
-								'<td>'+phone+'</td>'+
-								'<td>'+list[i].description+'</td>'+
-								'<td>'+list[i].msgHeader+'</td>'+
-								'<td>'+status+'</td>'+
-								'<td>'+list[i].executeTime+'</td>'+
-								'<td>'+date+'</td>'+
-							'</tr>'
-						
-					}
-					$('#eaop-tbody').append(trs)
-					$('#data-num').text(data.total)
-					if(data.total > size){
-						$('#pagination').show()
-						if(!isPageInit){
-							
-							var pages = Math.ceil(data.total/size)
-							laypage({
-							    cont: 'pagination',
-							    curr: 1, 
-							    pages: pages,
-							    groups: 5,
-							    jump: function(obj,first) {
-							    	if(!first){
-							    		console.log(obj.curr)
-					    				
-							    		currPage = obj.curr
-								    	getData(currPage, size, searchPhone )
-									}
-							    }
-						  })
-						}
-					}
-					isPageInit = true
+					
+
 				}else if(status === 0){	
 					layer.open({
 						type: 0,
@@ -154,18 +110,74 @@
 				}
 			}
 		})
-	}			    
+	}
+
+	function renderTable(data){
+		$('#nodata').hide()
+
+		var list = data.list
+		var trs = ''
+		$('#nodata').hide()
+		$('#eaop-tbody').children().remove()
+		if(list.length === 0){
+			$('#nodata').show()
+		}
+		for(var i=0; i<list.length; i++){						
+			var sequence = (searchPara.page-1)*searchPara.size+i+1
+			var phone = list[i].phone || ''
+			var status = list[i].status?
+						'<span class="label label-success radius">成功</span>'
+						:'<span class="label label-warning radius">失败</span>'
+
+			var executeTime = list[i].executeTime || ''
+			var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss') 
+			trs += '<tr>'+
+					'<td>'+sequence+'</td>'+
+					'<td>'+phone+'</td>'+
+					'<td>'+list[i].description+'</td>'+
+					'<td class="ellipsis-td" >'+list[i].msgHeader+'</td>'+
+					'<td>'+status+'</td>'+
+					'<td>'+executeTime+'</td>'+
+					'<td>'+date+'</td>'+
+				'</tr>'
+			
+		}
+		$('#eaop-tbody').append(trs)
+		$('#data-num').text(data.total)
+		if(data.total > searchPara.size){
+			$('#pagination').show()
+			if(!isPageInit){
+				
+				var pages = Math.ceil(data.total/searchPara.size)
+				laypage({
+				    cont: 'pagination',
+				    curr: 1, 
+				    pages: pages,
+				    groups: 5,
+				    jump: function(obj,first) {
+				    	if(!first){
+				    		console.log(obj.curr)
+		    				
+				    		searchPara.page = obj.curr
+					    	getData(searchPara)
+						}
+				    }
+			  })
+			}
+		}
+		isPageInit = true
+	}		    
 
 	$(function(){
-		currPage = 1
-		getData(currPage, size)
+		searchPara.page = 1
+		getData(searchPara)
 	})
 
 	$('#search-btn').click(function(){ 
-		currPage = 1
+		searchPara.page = 1
 		isPageInit = false
-		searchPhone = $('#search-phone').val().trim()
-		getData(currPage, size, searchPhone)
+		searchPara.phone = $('#search-phone').val().trim()
+		getData(searchPara)
 	})
 	
 </script> 

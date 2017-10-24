@@ -88,57 +88,11 @@
 			successFunc: function(response){
 				var status = response.code
 				if(status === 1){
-					$('#nodata').hide()
-					var data = response.data
-					var list = data.list
-					voteList = list
-					var trs = ''
-					for(var i = 0; i<list.length; i++){
-
-						var sequence = (currPage-1)*size+i+1
-						var endTime = new Date(list[i].endTime).Format('yyyy-MM-dd hh:mm')
-					
-						trs += '<tr>'+
-									'<td>'+sequence+'</td>'+
-									'<td>'+list[i].voteName+'</td>'+
-									'<td>'+
-										list[i].voteCount+
-									'</td>'+
-									'<td>'+endTime+'</td>'+
-									'<td>'+list[i].initiatorName+'</td>'+
-									'<td>'+list[i].initiatorMobile+'</td>'+
-									'<td>'+list[i].voteGroupName+'</td>'+
-									'<td>'+list[i].university+'</td>'+
-									'<td>'+
-										'<button  onclick="getVoteDetail('+i+')" class="btn btn-secondary-outline radius">'+
-										'<span class="Hui-iconfont">&#xe695;</span>详情</button>'+
-										'<button  onclick="deleteVote('+i+')" class="btn btn-danger-outline radius" style="margin-left:15px;" >'+
-										'<span class="Hui-iconfont">&#xe609;</span>删除</button>'
-									'</td>'+
-										
-								'</tr>'
-					}
-					$('#vote-tbody').html(trs)
-					$('#data-num').text(data.total)
-					if(!isPageInit && data.total > size){
-						$('#pagination').show()
-						var pages = Math.ceil(data.total/size)
-						laypage({
-						    cont: 'pagination',
-						    curr: 1, 
-						    pages: pages,
-						    groups: 5,
-						    jump: function(obj,first) {
-						    	if(!first){
-						    		console.log(obj.curr)
-						    		currPage =obj.curr
-							    	getData(currPage, size, $('#search-phone').val().trim())
-								}
-						    }
-					  });
-					
-					}
-					isPageInit = true
+					if(response.data.total > 0){
+						renderTable(response.data)
+					}else{
+						showNodata()
+					}					
 
 				}else if(status === 0){
 					layer.open({
@@ -159,6 +113,59 @@
 		})
 	}
 
+	function renderTable(data){
+		$('#nodata').hide()
+
+		var list = data.list
+		voteList = list
+		var trs = ''
+		for(var i = 0; i<list.length; i++){
+
+			var sequence = (currPage-1)*size+i+1
+			var endTime = new Date(list[i].endTime).Format('yyyy-MM-dd hh:mm')
+		
+			trs += '<tr>'+
+						'<td>'+sequence+'</td>'+
+						'<td>'+list[i].voteName+'</td>'+
+						'<td>'+
+							list[i].voteCount+
+						'</td>'+
+						'<td>'+endTime+'</td>'+
+						'<td>'+list[i].initiatorName+'</td>'+
+						'<td>'+list[i].initiatorMobile+'</td>'+
+						'<td>'+list[i].voteGroupName+'</td>'+
+						'<td>'+list[i].university+'</td>'+
+						'<td>'+
+							'<button  onclick="getVoteDetail('+i+')" class="btn btn-secondary-outline radius">'+
+							'<span class="Hui-iconfont">&#xe695;</span>详情</button>'+
+							'<button  onclick="deleteVote('+i+')" class="btn btn-danger-outline radius" style="margin-left:15px;" >'+
+							'<span class="Hui-iconfont">&#xe609;</span>删除</button>'
+						'</td>'+
+							
+					'</tr>'
+		}
+		$('#vote-tbody').html(trs)
+		$('#data-num').text(data.total)
+		if(!isPageInit && data.total > size){
+			$('#pagination').show()
+			var pages = Math.ceil(data.total/size)
+			laypage({
+			    cont: 'pagination',
+			    curr: 1, 
+			    pages: pages,
+			    groups: 5,
+			    jump: function(obj,first) {
+			    	if(!first){
+			    		console.log(obj.curr)
+			    		currPage =obj.curr
+				    	getData(currPage, size, $('#search-phone').val().trim())
+					}
+			    }
+		  });
+		
+		}
+		isPageInit = true
+	}
 
 	function deleteVote(index){
 		var deleteVoteInfo = voteList[index]

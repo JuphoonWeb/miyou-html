@@ -16,6 +16,9 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
+<style>
+	
+</style>
 <title>群通知管理</title>
 </head>
 <body>
@@ -112,12 +115,6 @@
 		})
 	}
 
-	function showNodata(){
-		$('#nodata').show()
-		$('#notice-tbody').children().remove()
-		$('#data-num').text(0)
-	}
-
 	function renderTable(data){
 		$('#nodata').hide()
 
@@ -132,8 +129,8 @@
 			
 			trs += '<tr>'+
 						'<td>'+sequence+'</td>'+
-						'<td>'+list[i].noteTitle+'</td>'+
-						'<td>'+list[i].noteContent+'</td>'+
+						'<td class="ellipsis-td" >'+list[i].noteTitle+'</td>'+
+						'<td class="ellipsis-td" >'+list[i].noteContent+'</td>'+
 						'<td>'+createTime+'</td>'+
 						'<td>'+list[i].initiatorName+'</td>'+
 						'<td>'+list[i].initiatorMobile+'</td>'+

@@ -84,94 +84,34 @@
 
 <script type="text/javascript">
 	var isPageInit = false
-	var currPage = 1
-	var size = 14
-	var type = 0
+	var searchPara = {
+		page: 1,
+		type: 0,
+		size: 14,
+		phone: '',
+		username: '',
+	}
 		
-	function getData(page, size, type, phone, username){
+	function getData(data){
 		$('#pagination').hide()
-		if(type == 2){
+		if(searchPara.type == 2){
 			size = 10
 		}else{
 			size = 14
 		}
 		ajax({
 			url: 'admin/log/getSysLogs',
-			data: {
-				page: page,
-				type: type,
-				phone: phone,
-				username: username,
-				size: size,
-			},
+			data: data,
 			successFunc: function(response){
 				layer.closeAll()
 				var status = response.code
 				if(status === 1){
 					var data = response.data
-					var list = data.list
-					var trs = ''
-					$('#nodata').hide()
-					$('#operate-tbody').children().remove()
-					$('#exception-tbody').children().remove()
-					if(type == 2){
-						$('#operate-table').hide()
-						$('#exception-table').show()
-						for(var i = 0;i < list.length; i++){
-							var sequence = (page-1)*size+i+1
-							var username = list[i].username || list[i].phone
-							var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss')
-							trs += '<tr>'+
-										'<td>'+sequence+'</td>'+
-										'<td>'+list[i].description+'</td>'+
-										'<td>'+list[i].exceptionClass+'</td>'+
-										'<td>'+list[i].exceptionDetail+'</td>'+
-										'<td>'+username+'</td>'+
-										'<td>'+list[i].method+'</td>'+
-										'<td>'+date+'</td>'+
-									'</tr>'
-						}
-						$('#exception-tbody').append(trs)
+					if(data.total > 0){
+						renderTable(data)			
 					}else{
-						$('#exception-table').hide()
-						$('#operate-table').show()
-						for(var i=0; i<list.length; i++){						
-							var sequence = (page-1)*size+i+1
-							var username = list[i].username || list[i].phone
-							var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss')
-							trs += '<tr>'+
-									'<td>'+sequence+'</td>'+
-									'<td>'+list[i].description+'</td>'+
-									'<td>'+username+'</td>'+
-									'<td>'+list[i].method+'</td>'+
-									'<td>'+date+'</td>'+
-								'</tr>'
-							
-						}
-						$('#operate-tbody').append(trs)
+						showNodata()
 					}
-					
-					$('#data-num').text(data.total)
-					if(data.total > size){
-						$('#pagination').show()
-						if(!isPageInit){
-							
-							var pages = Math.ceil(data.total/size)
-							laypage({
-							    cont: 'pagination',
-							    curr: 1, 
-							    pages: pages,
-							    groups: 5,
-							    jump: function(obj,first) {
-							    	if(!first){
-							    		currPage = obj.curr
-								    	getData(currPage, size, type, $('#search-phone').val(), $('#search-username').val())
-									}
-							    }
-						  })
-						}
-					}
-					isPageInit = true
 				}else if(status === 0){	
 					layer.open({
 						type: 0,
@@ -199,6 +139,72 @@
 				}
 			}
 		})
+	}
+
+	function renderTable(data){
+		var list = data.list
+		var trs = ''
+		$('#nodata').hide()
+		$('#operate-tbody').children().remove()
+		$('#exception-tbody').children().remove()
+		if(searchPara.type == 2){
+			$('#operate-table').hide()
+			$('#exception-table').show()
+			for(var i = 0;i < list.length; i++){
+				var sequence = (searchPara.page-1)*searchPara.size+i+1
+				var username = list[i].username || list[i].phone
+				var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss')
+				trs += '<tr>'+
+							'<td>'+sequence+'</td>'+
+							'<td>'+list[i].description+'</td>'+
+							'<td class="ellipsis-td">'+list[i].exceptionClass+'</td>'+
+							'<td class="ellipsis-td">'+list[i].exceptionDetail+'</td>'+
+							'<td>'+username+'</td>'+
+							'<td>'+list[i].method+'</td>'+
+							'<td>'+date+'</td>'+
+						'</tr>'
+			}
+			$('#exception-tbody').append(trs)
+		}else{
+			$('#exception-table').hide()
+			$('#operate-table').show()
+			for(var i=0; i<list.length; i++){						
+				var sequence = (searchPara.page-1)*searchPara.size+i+1
+				var username = list[i].username || list[i].phone
+				var date = (new Date(list[i].createTime)).Format('yyyy-MM-dd hh:mm:ss')
+				trs += '<tr>'+
+						'<td>'+sequence+'</td>'+
+						'<td>'+list[i].description+'</td>'+
+						'<td>'+username+'</td>'+
+						'<td>'+list[i].method+'</td>'+
+						'<td>'+date+'</td>'+
+					'</tr>'
+				
+			}
+			$('#operate-tbody').append(trs)
+		}
+		
+		$('#data-num').text(data.total)
+		if(data.total > searchPara.size){
+			$('#pagination').show()
+			if(!isPageInit){
+				
+				var pages = Math.ceil(data.total/searchPara.size)
+				laypage({
+				    cont: 'pagination',
+				    curr: 1, 
+				    pages: pages,
+				    groups: 5,
+				    jump: function(obj,first) {
+				    	if(!first){
+				    		searchPara.page = obj.curr
+					    	getData(searchPara)
+						}
+				    }
+			  })
+			}
+		}
+		isPageInit = true
 	}			    
 
 	$(function(){
@@ -209,21 +215,26 @@
 		})
 		$('input[type=radio][name=type]').on('ifChecked', function(event){
 			  console.log('radio', this.value)
+			  searchPara.type = this.value
+
 			  $('#search-phone, #search-username').val('')
-			  type = this.value
-			  currPage = 1
+			  searchPara.username = $('#search-username').val()
+			  searchPara.phone = $('#search-phone').val()
+			  searchPara.page = 1
 			  isPageInit =false
-			  getData(currPage, size, type)
+			  getData(searchPara)
 		});
 
-		currPage = 1
-		getData(currPage, size, 0)
+		searchPara.page = 1
+		getData(searchPara)
 	})
 
 	$('#search-btn').click(function(){ 
-		currPage = 1
+		searchPara.page = 1
+		searchPara.username = $('#search-username').val().trim()
+		searchPara.phone = $('#search-phone').val().trim()
 		isPageInit = false
-		getData(currPage, size, type, $('#search-phone').val(), $('#search-username').val())
+		getData(searchPara)
 	})
 
 </script> 
