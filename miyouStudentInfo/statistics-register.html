@@ -16,12 +16,13 @@
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
     <link rel="stylesheet" type="text/css" href="static/css/main.css">
-    <title>活动管理</title>
+    <title>注册统计</title>
 </head>
 <body>
 
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计管理 <span class="c-gray en">&gt;</span>  注册统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
+    <h3 id="register-total" style="text-align: center"></h3>
     <div class="cl pd-5 bg-1 bk-gray mt-20">
         <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-time\')}' })" id="search-begin-time" class="input-text Wdate formControls" placeholder=" 开始时间" style="width: 150px">
         <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-begin-time\')}'})" id="search-end-time" class="input-text Wdate formControls" placeholder=" 结束时间" style="width: 150px">
@@ -32,23 +33,15 @@
                 </select>
         </span>
         <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
-        <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
     </div>
-    <canvas id="register-chart"></canvas>
+    <canvas id="register-chart" height="80"></canvas>
     <div class="mt-20">
         <table class="table table-bordered table-border table-hover table-bg " id="activity-table">
             <thead>
             <tr class="text-c">
-                <th width="100">序号</th>
-                <th width="100">活动</th>
-                <th width="100">活动类型</th>
-                <th width="100">开始时间</th>
-                <th width="100">结束时间</th>
-                <th width="100">学校</th>
-                <th width="100">城市</th>
-                <th width="100">发起人</th>
-                <th width="100">发起人号码</th>
-                <th width="100">操作</th>
+                <th width="100">日期</th>
+                <th width="100">新增用户数</th>
+                <th width="100">详情</th>
             </tr>
             </thead>
             <tbody id="activity-tbody" class="text-c" >
@@ -74,19 +67,16 @@
         var isPageInit = false
 
         var searchPara = {
-            page: 1,
-            size: 12,
-            beginTime: null,
-            endTime: null,
+            startDate: null,
+            endDate: null,
             city: ''
         }
 
         $(function(){
-            searchPara.page = 1
             getCity()
-//            getData(searchPara)
-            $('#search-begin-time').val(new Date().Format('yyyy-MM-dd'));
-            $('#search-end-time').val(new Date(new Date()*1+86400000).Format('yyyy-MM-dd'));
+            getTotal();
+            $('#search-end-time').val(new Date().Format('yyyy-MM-dd'));
+            $('#search-begin-time').val(new Date(new Date()*1-86400000*30).Format('yyyy-MM-dd'));
             $('#search-btn').click();
         })
 
@@ -99,16 +89,9 @@
         $('#search-btn').click(function(){
             $('#pagination').hide()
             isPageInit = false
-            searchPara.page = 1
 
-            searchPara.beginTime = new Date($('#search-begin-time').val()).getTime()
-            if(isNaN(searchPara.beginTime)){
-                searchPara.beginTime = null
-            }
-            searchPara.endTime = new Date($('#search-end-time').val()).getTime()
-            if(isNaN(searchPara.endTime)){
-                searchPara.endTime = null
-            }
+            searchPara.startDate = $('#search-begin-time').val()
+            searchPara.endDate = new Date(new Date()*1+86400000).Format('yyyy-MM-dd')
             searchPara.city = $('#search-city').children('option:selected').text()
             if(searchPara.city == '全部'){
                 searchPara.city = ''
@@ -138,6 +121,20 @@
                 errorFunc: errorFunc
             })
         }
+        function getTotal(){
+            ajax({
+                url: 'admin/auth/getAllUser',
+                async: false,
+                successFunc: function(response){
+                    if(response.code === 1){
+                        $('#register-total').text('注册总人数：'+response.data)
+                    }else if(response.code === 0){
+                        layer.msg(response.error)
+                    }
+                },
+                errorFunc: errorFunc
+            })
+        }
 
         //填充select标签
         function  fillSelect(selectorStr,data){
@@ -153,14 +150,14 @@
         //data对象包含 page, size, phone, type, createTime, city, schoolName
         function getData(data){
             ajax({
-                url: 'admin/activity/getActivityList',
+                url: 'admin/auth/getUserStatistics',
                 data: data,
                 successFunc: function(response){
                     var status = response.code
                     if(status === 1){
                         $('#nodata').hide()
                         var data = response.data
-                        var list = data.list
+                        var list = data.user
                         var activityTypes = {}
                         var labels = [];
                         var lineData = [];
@@ -169,57 +166,23 @@
                             activityTypes[ options[i].value ] = options[i].text
                         }
                         var trs = ''
-                        for(var i = 0; i<list.length; i++){
-
-                            var sequence = (searchPara.page-1)*searchPara.size+i+1
-                            var beginTime = new Date(list[i].beginTime).Format('yyyy-MM-dd hh:mm')
-                            var endTime = new Date(list[i].endTime).Format('yyyy-MM-dd hh:mm')
-                            var initiatorName = list[i].initiatorName || ''
-                            var initiatorMobile = list[i].initiatorMobile || ''
-                            var activityType = activityTypes[ list[i].activityType ]
-
-                            labels.push(new Date(list[i].createTime).Format('yyyy-MM-dd'));
-                            lineData.push(list[i].activityId);
-
-                            trs += '<tr>'+
-                                '<td>'+sequence+'</td>'+
-                                '<td>'+list[i].activityName+'</td>'+
-                                '<td>'+activityType+'</td>'+
-                                '<td>'+beginTime+'</td>'+
-                                '<td>'+endTime+'</td>'+
-                                '<td>'+list[i].school+'</td>'+
-                                '<td>'+list[i].location+'</td>'+
-                                '<td>'+initiatorName+'</td>'+
-                                '<td>'+initiatorMobile+'</td>'+
-                                '<td>'+
-                                '<button  onclick="deleteActivity('+i+')" class="btn btn-danger-outline radius" >'+
-                                '<span class="Hui-iconfont">&#xe609;</span>删除</button>'+
-                                '</td>'+
-                                '</tr>'
+                        if(list){
+                            for(var i = 0; i<list.length; i++){
+                                labels.push(list[i].registDate);
+                                lineData.push(list[i].registCount);
+                                trs += '<tr>'+
+                                    '<td>'+list[i].registDate+'</td>'+
+                                    '<td>'+list[i].registCount+'</td>'+
+                                    '<td>'+
+                                    '<button  onclick="layer_show(\'当日注册详情\',\'statistics-daily-register.html?infoDate='+list[i].registDate+'&city='+searchPara.city+'\',\'\',\'600\');" class="btn btn-primary-outline radius" >查看</button>'+
+                                    '</td>'+
+                                    '</tr>'
+                            }
+                        }else{
+                            $('#nodata').show();
                         }
                         $('#activity-tbody').html(trs)
                         showChart(labels,lineData);
-                        $('#data-num').text(data.total)
-                        if(data.total==0){
-                            $('#nodata').show();
-                        }
-                        if(!isPageInit && data.total > searchPara.size){
-                            $('#pagination').show()
-                            var pages = Math.ceil(data.total/searchPara.size)
-                            laypage({
-                                cont: 'pagination',
-                                curr: 1,
-                                pages: pages,
-                                groups: 5,
-                                jump: function(obj,first) {
-                                    if(!first){
-                                        searchPara.page = obj.curr
-                                        getData(searchPara)
-                                    }
-                                }
-                            });
-                        }
-                        isPageInit = true
                     }else if(status === 0){
                         layer.open({
                             type: 0,
