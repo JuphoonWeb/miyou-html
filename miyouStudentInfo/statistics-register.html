@@ -1,0 +1,257 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <title>活动管理</title>
+</head>
+<body>
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计管理 <span class="c-gray en">&gt;</span>  注册统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-time\')}' })" id="search-begin-time" class="input-text Wdate formControls" placeholder=" 开始时间" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-begin-time\')}'})" id="search-end-time" class="input-text Wdate formControls" placeholder=" 结束时间" style="width: 150px">
+
+        <span class="select-box" style="width: 100px">
+                <select class="select J_select" id="search-city">
+                    <option value="">全部</option>
+                </select>
+        </span>
+        <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
+    </div>
+    <canvas id="register-chart"></canvas>
+    <div class="mt-20">
+        <table class="table table-bordered table-border table-hover table-bg " id="activity-table">
+            <thead>
+            <tr class="text-c">
+                <th width="100">序号</th>
+                <th width="100">活动</th>
+                <th width="100">活动类型</th>
+                <th width="100">开始时间</th>
+                <th width="100">结束时间</th>
+                <th width="100">学校</th>
+                <th width="100">城市</th>
+                <th width="100">发起人</th>
+                <th width="100">发起人号码</th>
+                <th width="100">操作</th>
+            </tr>
+            </thead>
+            <tbody id="activity-tbody" class="text-c" >
+            </tbody>
+        </table>
+        <div class="pagination r" id="pagination"></div>
+        <div class="nodata" id="nodata">
+            <img src="static/images/nodata.svg" alt="">
+        </div>
+    </div>
+</div>
+    <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+    <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+    <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+    <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+    <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+    <script type="text/javascript" src="lib/Chart.min.js"></script>
+    <script type="text/javascript" src="static/js/index.js"></script>
+
+
+    <script type="text/javascript">
+        var isPageInit = false
+
+        var searchPara = {
+            page: 1,
+            size: 12,
+            beginTime: null,
+            endTime: null,
+            city: ''
+        }
+
+        $(function(){
+            searchPara.page = 1
+            getCity()
+//            getData(searchPara)
+            $('#search-begin-time').val(new Date().Format('yyyy-MM-dd'));
+            $('#search-end-time').val(new Date(new Date()*1+86400000).Format('yyyy-MM-dd'));
+            $('#search-btn').click();
+        })
+
+        $(document).on('change', '#search-begin-time', '#search-end-time', function(){
+            if($(this).val === ''){
+                $(this).val(null)
+            }
+        })
+
+        $('#search-btn').click(function(){
+            $('#pagination').hide()
+            isPageInit = false
+            searchPara.page = 1
+
+            searchPara.beginTime = new Date($('#search-begin-time').val()).getTime()
+            if(isNaN(searchPara.beginTime)){
+                searchPara.beginTime = null
+            }
+            searchPara.endTime = new Date($('#search-end-time').val()).getTime()
+            if(isNaN(searchPara.endTime)){
+                searchPara.endTime = null
+            }
+            searchPara.city = $('#search-city').children('option:selected').text()
+            if(searchPara.city == '全部'){
+                searchPara.city = ''
+            }
+            getData(searchPara)
+        })
+
+        function errorFunc(xhr, status){
+            layer.msg(status)
+        }
+
+
+        function getCity(){
+            ajax({
+                url: 'admin/getDistrict',
+                async: false,
+                data: {
+                    parentId: 20
+                },
+                successFunc: function(response){
+                    if(response.code === 1){
+                        fillSelect('#search-city', response.data)
+                    }else if(response.code === 0){
+                        layer.msg(response.error)
+                    }
+                },
+                errorFunc: errorFunc
+            })
+        }
+
+        //填充select标签
+        function  fillSelect(selectorStr,data){
+            $(selectorStr).children('option+option').remove()
+            var options = ''
+            for(var i = 0; i < data.length; i++){
+                var name = data[i].name || data[i].dictName
+                var value = data[i].id || data[i].innerValue
+                options += '<option value="'+value+'">'+name+'</option>'
+            }
+            $(selectorStr).append(options)
+        }
+        //data对象包含 page, size, phone, type, createTime, city, schoolName
+        function getData(data){
+            ajax({
+                url: 'admin/activity/getActivityList',
+                data: data,
+                successFunc: function(response){
+                    var status = response.code
+                    if(status === 1){
+                        $('#nodata').hide()
+                        var data = response.data
+                        var list = data.list
+                        var activityTypes = {}
+                        var labels = [];
+                        var lineData = [];
+                        var options = $('select#search-activity-type').children()
+                        for(var i = 1; i < options.length; i++){
+                            activityTypes[ options[i].value ] = options[i].text
+                        }
+                        var trs = ''
+                        for(var i = 0; i<list.length; i++){
+
+                            var sequence = (searchPara.page-1)*searchPara.size+i+1
+                            var beginTime = new Date(list[i].beginTime).Format('yyyy-MM-dd hh:mm')
+                            var endTime = new Date(list[i].endTime).Format('yyyy-MM-dd hh:mm')
+                            var initiatorName = list[i].initiatorName || ''
+                            var initiatorMobile = list[i].initiatorMobile || ''
+                            var activityType = activityTypes[ list[i].activityType ]
+
+                            labels.push(new Date(list[i].createTime).Format('yyyy-MM-dd'));
+                            lineData.push(list[i].activityId);
+
+                            trs += '<tr>'+
+                                '<td>'+sequence+'</td>'+
+                                '<td>'+list[i].activityName+'</td>'+
+                                '<td>'+activityType+'</td>'+
+                                '<td>'+beginTime+'</td>'+
+                                '<td>'+endTime+'</td>'+
+                                '<td>'+list[i].school+'</td>'+
+                                '<td>'+list[i].location+'</td>'+
+                                '<td>'+initiatorName+'</td>'+
+                                '<td>'+initiatorMobile+'</td>'+
+                                '<td>'+
+                                '<button  onclick="deleteActivity('+i+')" class="btn btn-danger-outline radius" >'+
+                                '<span class="Hui-iconfont">&#xe609;</span>删除</button>'+
+                                '</td>'+
+                                '</tr>'
+                        }
+                        $('#activity-tbody').html(trs)
+                        showChart(labels,lineData);
+                        $('#data-num').text(data.total)
+                        if(data.total==0){
+                            $('#nodata').show();
+                        }
+                        if(!isPageInit && data.total > searchPara.size){
+                            $('#pagination').show()
+                            var pages = Math.ceil(data.total/searchPara.size)
+                            laypage({
+                                cont: 'pagination',
+                                curr: 1,
+                                pages: pages,
+                                groups: 5,
+                                jump: function(obj,first) {
+                                    if(!first){
+                                        searchPara.page = obj.curr
+                                        getData(searchPara)
+                                    }
+                                }
+                            });
+                        }
+                        isPageInit = true
+                    }else if(status === 0){
+                        layer.open({
+                            type: 0,
+                            closeBtn: 0,
+                            icon:7,
+                            title: '获取数据失败',
+                            content: response.error
+                        })
+
+                    }
+                },
+                errorFunc: errorFunc
+            })
+        }
+
+        function showChart(labels,data){
+            var ctx = $('#register-chart')[0].getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels : labels,
+                    datasets: [
+                        {
+                            label: '注册人数',
+                            backgroundColor : "rgba(151,187,205,0.5)",
+                            borderColor : "rgba(151,187,205,1)",
+                            data : data
+                        }
+                    ]
+                }
+            })
+        }
+    </script>
+</body>
+</html>

@@ -164,7 +164,7 @@
             timer = null,
             seconds = 60;
         toast('正在发送');
-        _ajax('post','/api/h5/sendCode',{'phone':phone},function(data){
+        _ajax('post','/api/h5/sendCode',{'phone':phone,'type':'1'},function(data){
             toast('发送成功',1000);
             setTimeout(function(){
                 $('#code').focus();
@@ -191,7 +191,8 @@
         _ajax('post','/api/h5/validateCode',{
             'phone':phone,
             'code':code,
-            'token':token
+            'token':token,
+            'type':'1'
         },function(data){
             toast('正在跳转',5000);
             var u = navigator.userAgent;

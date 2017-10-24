@@ -23,10 +23,11 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 应用内容管理 <span class="c-gray en">&gt;</span>  邀请管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
     <div class="cl pd-5 bg-1 bk-gray mt-20">
-        <!--<form action="" class="form-inline" style="margin-top: 10px" class="search-box">-->
-            <!--<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据手机号查询">-->
-            <!--<button id="search-btn" title="根据手机号查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>-->
-        <!--</form>-->
+        <form action="" class="form-inline" style="margin-top: 10px" class="search-box">
+            <input id="member-phone" type="text" style="width:150px" class="input-text radius" placeholder="受邀人手机号">
+            <input id="inviter-phone" type="text" style="width:150px" class="input-text radius" placeholder="邀请者手机号">
+            <button id="search-btn" title="根据手机号查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        </form>
         <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
     </div>
     <div class="mt-20">
@@ -61,8 +62,9 @@
     var isPageInit = false
     var currPage = 1
     var size = 12
-    var url = 'admin/getInvitation'
-    var searchPhone = ''
+    var url = 'admin/getInvitationList'
+    var memberPhone = ''
+    var inviterPhone = ''
 
     var successFunc = function(response){
         layer.closeAll()
@@ -102,7 +104,8 @@
                                 data: {
                                     page: currPage,
                                     size: size,
-                                    phone:searchPhone
+                                    inviter:inviterPhone,
+                                    member:memberPhone
                                 },
                                 successFunc: successFunc,
                                 errorFunc: errorFunc
@@ -180,7 +183,8 @@
             data:{
                 'page':currPage,
                 'size':12,
-                'phone':searchPhone
+                'inviter':inviterPhone,
+                'member':memberPhone
             },
             successFunc: successFunc,
             errorFunc: errorFunc
@@ -191,7 +195,8 @@
         event.preventDefault()
         $('#pagination').hide()
         isPageInit = false
-        searchPhone = $('#search-phone').val()
+        inviterPhone = $('#inviter-phone').val()
+        memberPhone = $('#member-phone').val()
         init()
     })
 </script>
