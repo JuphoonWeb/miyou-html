@@ -23,6 +23,7 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计管理 <span class="c-gray en">&gt;</span>  注册统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
     <h3 id="register-total" style="text-align: center"></h3>
+    <h5 id="city-count" style="text-align: center"></h5>
     <div class="cl pd-5 bg-1 bk-gray mt-20">
         <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-time\')}' })" id="search-begin-time" class="input-text Wdate formControls" placeholder=" 开始时间" style="width: 150px">
         <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-begin-time\')}'})" id="search-end-time" class="input-text Wdate formControls" placeholder=" 结束时间" style="width: 150px">
@@ -162,6 +163,9 @@
                         var labels = [];
                         var lineData = [];
                         var options = $('select#search-activity-type').children()
+                        if(data.cityCount){
+                            $('#city-count').text(searchPara.city+'注册人数：'+data.cityCount);
+                        }
                         for(var i = 1; i < options.length; i++){
                             activityTypes[ options[i].value ] = options[i].text
                         }
@@ -170,13 +174,13 @@
                             for(var i = 0; i<list.length; i++){
                                 labels.push(list[i].registDate);
                                 lineData.push(list[i].registCount);
-                                trs += '<tr>'+
+                                trs = '<tr>'+
                                     '<td>'+list[i].registDate+'</td>'+
                                     '<td>'+list[i].registCount+'</td>'+
                                     '<td>'+
-                                    '<button  onclick="layer_show(\'当日注册详情\',\'statistics-daily-register.html?infoDate='+list[i].registDate+'&city='+searchPara.city+'\',\'\',\'600\');" class="btn btn-primary-outline radius" >查看</button>'+
+                                    '<button  onclick="layer_show(\'当日注册详情\',\'statistics-daily-register.html#'+list[i].registDate+'&'+searchPara.city+'\',\'\',\'600\');" class="btn btn-primary-outline radius" >查看</button>'+
                                     '</td>'+
-                                    '</tr>'
+                                    '</tr>'+trs
                             }
                         }else{
                             $('#nodata').show();
