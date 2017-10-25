@@ -57,7 +57,7 @@
 				<th width="100">开始时间</th>
 				<th width="100">结束时间</th>
 				<th width="100">学校</th>
-				<th width="100">城市</th>
+				<th width="100">地点</th>
 				<th width="100">发起人</th>
 				<th width="100">发起人号码</th>
 				<th width="100">操作</th>
@@ -138,7 +138,7 @@
 			searchPara.city = ''
 		}
 		searchPara.schoolName = $('#search-university').children('option:selected').text()
-		if(searchPara.schoolName == '学校' || '请先选择城市'){
+		if(searchPara.schoolName == '学校' || searchPara.schoolName == '请先选择城市'){
 			searchPara.schoolName = ''
 		}
 
