@@ -30,7 +30,7 @@
     <div class="cl pd-5 bg-1 bk-gray mt-20">
        
         <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" style="width: 150px">
-        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}'})" id="search-end-date" class="input-text Wdate formControls"style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}',maxDate:'%y-%M-%d'})" id="search-end-date" class="input-text Wdate formControls"style="width: 150px">
 
         <span class="select-box" style="width: 100px">
                 <select class="select J_select" id="search-city">
@@ -192,7 +192,7 @@
                             yAxes:[ {
                                 ticks: {
                                      beginAtZero:true,
-                                     stepSize: 1,
+                                     // stepSize: 1,
                                 }
                             }]  
                             
