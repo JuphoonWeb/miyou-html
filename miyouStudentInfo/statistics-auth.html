@@ -34,18 +34,29 @@
 
         <span class="select-box" style="width: 100px">
                 <select class="select J_select" id="search-city">
-                    <option value="">城市</option>
+                    <option value="">全部</option>
                 </select>
         </span>
 
         <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
-        <span class="r num">审核拒绝：<strong id="auth-reject-count">0</strong> </span>
-        <span class="r num">审核通过：<strong id="auth-pass-count">0</strong> </span>
-        <span class="r num">审核中：<strong id="authing-count">0</strong> </span>
-        <span class="r num">总数：<strong id="auth-all-count">0</strong> </span>
+        <div class="r clearfixed">
+            <strong>总计-</strong>
+            <span class="num">总数：<strong id="auth-all-count">0</strong> </span>
+            <span class="num">审核中：<strong id="authing-count">0</strong> </span>
+            <span class="num">审核通过：<strong id="auth-pass-count">0</strong> </span>
+            <span class="num">审核拒绝：<strong id="auth-reject-count">0</strong> </span>
+        </div>
+            
     </div>
     <div class="panel panel-default" style="margin-top:30px">
-        <div class="panel-header" id="">认证统计</div>
+        <div class="panel-header" id=""><p>认证统计: <span id="city-title">全部</span></p>
+            <div id="city-num" style="font-weight: lighter; display: none;">
+                <span class="num">总数：<strong id="city-auth-all-count">0</strong> </span>
+                <span class="num">审核中：<strong id="city-authing-count">0</strong> </span>
+                <span class="num">审核通过：<strong id="city-auth-pass-count">0</strong> </span>
+                <span class="num">审核拒绝：<strong id="city-auth-reject-count">0</strong> </span>
+            </div>
+        </div>
         <div class="panel-body row cl">
             <canvas width="400" height="130" id="auth-chart"></canvas>
         </div>
@@ -70,19 +81,23 @@
         startDate: '',
         endDate: '',
         city: ''
-    }
+    };
+    var oldChart = null
 
     $(function(){
         setDuration(1)
         getCity()
+        getNumData()
         getChartData(searchPara)
     })
 
     $('#search-btn').click(function(){
         searchPara.startDate = $('#search-start-date').val()
-        searchPara.endDate = $('#search-end-date').val()
+        var endDate = new Date($('#search-end-date').val())
+        endDate.setDate(endDate.getDate()+1)        
+        searchPara.endDate = endDate.Format('yyyy-MM-dd')
         searchPara.city = $('#search-city').children('option:selected').text()
-        if(searchPara.city == '城市'){
+        if(searchPara.city == '全部'){
             searchPara.city = ''
         }
         getChartData(searchPara)
@@ -103,11 +118,15 @@
             $('#search-start-date').val(startDate)
             $('#search-end-date').val(endDate) 
             searchPara.startDate = startDate
-            searchPara.endDate = endDate
+            
+            //因为时分秒为 00:00:00，要查到最完整的数据，结束日期必须往后推一天
+            nowTime.setDate(nowTime.getDate()+1)        
+            searchPara.endDate = nowTime.Format('yyyy-MM-dd')
         }
     }
 
     function getChartData(data){
+        console.log('getChartData')
         ajax({
             url: 'admin/auth/getAuthStatistics',
             data: data,
@@ -115,12 +134,9 @@
             successFunc: function(response){
                 if(response.code == 1){
                     var data = response.data
-                    renderChart(data.auth)
-                    if(data.authCityTotal){
-                        setNumber(data.authCityTotal)
-                    }else{
-                        getNumData()
-                    }
+                    oldChart = renderChart(data.auth, oldChart)
+                    setNumData(data)
+                        
                 }else if(response.code == 0){
                     layer.msg(response.error)
                 }
@@ -129,7 +145,9 @@
         })
     }
 
-    function renderChart(data){
+    function renderChart(data, oldChart){
+        var cityTitle = searchPara.city || '全部'
+        $('#city-title').text(cityTitle)
         var labels = []
         var authPassData = []
         var authingData = []
@@ -139,41 +157,50 @@
             authingData.push(data[i].authingCount)
         }
         var ctx = $('#auth-chart').get(0).getContext('2d')
-        var myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: '认证通过',
-                            data: authPassData,
-                            backgroundColor: 'rgba(66, 152, 66, 0.2)',
-                            borderColor: 'rgba(66, 152, 66, 1)',
-                            lineTension : 0,
-                            borderWidth: 1,
-                        },
-                        {
-                            label: '认证中',
-                            data: authingData,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            lineTension : 0,
-                            borderWidth: 1,
+        if(oldChart){
+            oldChart.data.labels = labels
+            oldChart.data.datasets[0].data = authPassData
+            oldChart.data.datasets[1].data = authingData
+            oldChart.update()
+            return oldChart
+        }else{
+            var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: '认证通过',
+                                data: authPassData,
+                                backgroundColor: 'rgba(66, 152, 66, 0.2)',
+                                borderColor: 'rgba(66, 152, 66, 1)',
+                                lineTension : 0,
+                                borderWidth: 1,
+                            },
+                            {
+                                label: '认证中',
+                                data: authingData,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                lineTension : 0,
+                                borderWidth: 1,
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            yAxes:[ {
+                                ticks: {
+                                     beginAtZero:true,
+                                     stepSize: 1,
+                                }
+                            }]  
+                            
                         }
-                    ]
-                },
-                options: {
-                    scales: {
-                        yAxes: {
-                             beginAtZero:true,
-                             stacked: true,
-                             stepSize: 1
-                        }
-                        
                     }
-                }
-            });
-
+                })
+            return myChart
+        }
     }
 
     function getNumData(){
@@ -181,19 +208,30 @@
             url: 'admin/auth/getAuthCount',
             successFunc: function(response){
                 if(response.code == 1){
-                    setNumber(response.data)
-                    
+                    setNumData(response.data)
                 }
             },
             errorFunc: errorFunc
         })
     }
 
-    function setNumber(data){
-        $('#auth-all-count').text(data.authAllCount)
-        $('#authing-count').text(data.authIngCount)
-        $('#auth-pass-count').text(data.authPassCount)
-        $('#auth-reject-count').text(data.authRejectCount)
+    function setNumData(data){
+        if(data.authCityTotal){
+            $('#city-num').show()
+
+            var cityTotal = data.authCityTotal
+            $('#city-auth-all-count').text(cityTotal.authAllCount)
+            $('#city-authing-count').text(cityTotal.authIngCount)
+            $('#city-auth-pass-count').text(cityTotal.authPassCount)
+            $('#city-auth-reject-count').text(cityTotal.authRejectCount)
+        }else{
+            $('#city-num').hide()
+
+            $('#auth-all-count').text(data.authAllCount)
+            $('#authing-count').text(data.authIngCount)
+            $('#auth-pass-count').text(data.authPassCount)
+            $('#auth-reject-count').text(data.authRejectCount)
+        }
     }
 
     function errorFunc(xhr, status){
