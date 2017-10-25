@@ -18,7 +18,7 @@
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
 <style>
     span.num+span.num{
-        margin-right: 15px;
+        margin-left: 15px;
     }
 </style>
 <title>认证统计</title>
@@ -26,8 +26,10 @@
 <body>
 
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计 <span class="c-gray en">&gt;</span>  认证统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    
 <div class="page-container" >
-    <div class="cl pd-5 bg-1 bk-gray mt-20">
+
+    <div class="cl pd-5 bg-1 bk-gray">
        
         <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" style="width: 150px">
         <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}',maxDate:'%y-%M-%d'})" id="search-end-date" class="input-text Wdate formControls"style="width: 150px">
@@ -39,20 +41,27 @@
         </span>
 
         <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
-        <div class="r clearfixed">
+        <div class="r">
             <strong>总计-</strong>
-            <span class="num">总数：<strong id="auth-all-count">0</strong> </span>
-            <span class="num">审核中：<strong id="authing-count">0</strong> </span>
-            <span class="num">审核通过：<strong id="auth-pass-count">0</strong> </span>
-            <span class="num">审核拒绝：<strong id="auth-reject-count">0</strong> </span>
+            <span class="num">认证总数：<strong id="auth-all-count">0</strong></span>
+            <span class="num">新增认证：<strong id="authing-count">0</strong></span>
+            <span class="num">审核通过：<strong id="auth-pass-count">0</strong></span>
+            <span class="num">审核拒绝：<strong id="auth-reject-count">0</strong></span>
+        </div>
+        <div class="r">
+            <strong>认证通过总计-</strong>
+            <span class="num">湛江：<strong id="zhangjiang-pass-num" >0</strong> </span>
+            <span class="num">韶关：<strong id="shaoguan-pass-num" >0</strong> </span>
+            <span class="num">珠海：<strong id="zhuhai-pass-num" >0</strong> </span>
+            <span class="num">深圳：<strong id="shenzhen-pass-num" >0</strong> </span>
         </div>
             
     </div>
-    <div class="panel panel-default" style="margin-top:30px">
+    <div class="panel panel-default mt-10">
         <div class="panel-header" id=""><p>认证统计: <span id="city-title">全部</span></p>
             <div id="city-num" style="font-weight: lighter; display: none;">
-                <span class="num">总数：<strong id="city-auth-all-count">0</strong> </span>
-                <span class="num">审核中：<strong id="city-authing-count">0</strong> </span>
+                <span class="num">认证总数：<strong id="city-auth-all-count">0</strong> </span>
+                <span class="num">新增认证：<strong id="city-authing-count">0</strong> </span>
                 <span class="num">审核通过：<strong id="city-auth-pass-count">0</strong> </span>
                 <span class="num">审核拒绝：<strong id="city-auth-reject-count">0</strong> </span>
             </div>
@@ -61,7 +70,20 @@
             <canvas width="400" height="130" id="auth-chart"></canvas>
         </div>
     </div>
-    <div class="pagination r" id="pagination"></div>
+    <table class="table table-bordered table-border table-hover table-bg table-sort mt-10" id="city-auth-table">
+        <thead>
+            <tr class="text-c">
+                <th width="100">日期</th>
+                <th width="100">审核通过数</th>
+                <th width="100">新增审核数</th>
+            </tr>
+        </thead>
+        <tbody id="city-auth-tbody" class="text-c">
+        </tbody>
+    </table>
+    <div class="pagination" id="pagination">
+        
+    </div>
     <div class="nodata" id="nodata">
         <img src="static/images/nodata.svg" alt="">
     </div>
@@ -72,6 +94,7 @@
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
 <script type="text/javascript" src="static/js/index.js"></script> 
@@ -83,6 +106,7 @@
         city: ''
     };
     var oldChart = null
+    var oldTable = null
 
     $(function(){
         setDuration(1)
@@ -136,6 +160,7 @@
                     var data = response.data
                     oldChart = renderChart(data.auth, oldChart)
                     setNumData(data)
+                    oldTable = renderTablle(data.auth, oldTable)
                         
                 }else if(response.code == 0){
                     layer.msg(response.error)
@@ -203,15 +228,85 @@
         }
     }
 
+    function renderTablle(data, oldTable){
+        var tableData = []
+        data.forEach(function(item, index){
+            var childArr = []
+            childArr.push(item.authDate)
+            childArr.push(item.authPassCount)
+            childArr.push(item.authingCount)
+            tableData.push(childArr)
+        })
+        // $('#auth-tbody').html(trs)
+
+        if(oldTable){
+            oldTable.fnClearTable()
+            oldTable.fnAddData(tableData)
+            return oldTable 
+
+        }else{
+             var table = $('.table-sort').dataTable({
+                            "aaData": tableData,
+                            "lengthMenu":false,//显示数量选择 
+                            "bFilter": false,//过滤功能
+                            "bPaginate": false,//翻页信息
+                            "bInfo": false,//数量信息
+                            "aaSorting": [[ 1, "desc" ]],//默认第几个排序
+                            "bStateSave": true,//状态保存
+                            "aoColumnDefs": [
+                              //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                              {"orderable":false,"aTargets":[1, 2]}// 制定列不参与排序
+                            ]
+                        });
+             return table
+        }     
+
+    }
+   
     function getNumData(){
         ajax({
             url: 'admin/auth/getAuthCount',
             successFunc: function(response){
                 if(response.code == 1){
                     setNumData(response.data)
+                }else if(response.code == 0){
+                    layer.msg(response.error)
                 }
             },
             errorFunc: errorFunc
+        })
+
+        ajax({
+            url: 'admin/auth/getAuthCityStatistics',
+            successFunc: function(response){
+                if(response.code == 1){
+                    response.data.forEach(function(item){
+                        switch(item.phoneCity){
+                            case '湛江': {
+                                $('#zhangjiang-pass-num').text(item.authPassCount)
+                                break
+                            }
+                            case '韶关': {
+                                $('#shaoguan-pass-num').text(item.authPassCount)   
+                                break
+                            }
+                            case '深圳': {
+                                $('#shenzhen-pass-num').text(item.authPassCount)   
+                                break
+                            }
+                            case '珠海': {
+                                $('#zhuhai-pass-num').text(item.authPassCount)   
+                                break
+                            }
+                            default : {
+                                break
+                            }
+
+                        }
+                    })
+                }
+            }
+
         })
     }
 

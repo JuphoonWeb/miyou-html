@@ -116,13 +116,14 @@
 					var sex = (list[i].sex === 1)? '男': '女' 
 					var phone = list[i].phone
 					var clazzId = list[i].clazzId
+					var clazz = list[i].clazz || ''
 					var studentId = list[i].id
 					var miyouGroup = list[i].miyouGroup ? 
 						'<span class="label label-success radius">已开通</span><button class="btn btn-success-outline radius" title="查看密友圈" onclick="getMiyouMember('+i+')" ><span class="Hui-iconfont">&#xe695;</span>查看</button>' : 
 						'<span class="label label-warning radius" >未开通</span><button class="btn btn-secondary-outline radius" title="开通密友圈" onclick="openMiyouCircle('+i+')" ><span class="Hui-iconfont">&#xe611;</span>开通</button>'
 					var clazzGroup = list[i].clazzGroup ? '<span class="label label-success radius" >已加入</span>' : '<button class="btn btn-secondary-outline radius" onclick="addToClazzGroup('+i+')" title="添加至班级群" ><span class="Hui-iconfont" >&#xe607;</span>添加</button>'
 					var sequence = (currPage-1)*size+i+1 
-					trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+list[i].clazz+'</td><td>'+clazzGroup+'</td><td>'+miyouGroup+'</td></tr>'
+					trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+clazz+'</td><td>'+clazzGroup+'</td><td>'+miyouGroup+'</td></tr>'
 				}
 				// 判断数据是否取得成功
 				$('#student-tbody').append(trs)
