@@ -28,8 +28,27 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计 <span class="c-gray en">&gt;</span>  认证统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
     
 <div class="page-container" >
+    
+    <div class="text-c" >
+        <h3>
+            <span>总计-</span>
+            <span class="num">认证总数：<span id="auth-all-count">0</span></span>
+            <span class="num">新增认证：<span id="authing-count">0</span></span>
+            <span class="num">审核通过：<span id="auth-pass-count">0</span></span>
+            <span class="num">审核拒绝：<span id="auth-reject-count">0</span></span>
+        </h3>
+    </div>
+    <div id="city-num" class="text-c mt-10" style="display: none;">
+        <h5>
+            <span id="city-title">全部</span>
+            <span class="num">认证总数：<span id="city-auth-all-count">0</span> </span>
+            <span class="num">新增认证：<span id="city-authing-count">0</span> </span>
+            <span class="num">审核通过：<span id="city-auth-pass-count">0</span> </span>
+            <span class="num">审核拒绝：<span id="city-auth-reject-count">0</span> </span>
+        </h5>
+    </div>
 
-    <div class="cl pd-5 bg-1 bk-gray">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
        
         <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" style="width: 150px">
         <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}',maxDate:'%y-%M-%d'})" id="search-end-date" class="input-text Wdate formControls"style="width: 150px">
@@ -41,14 +60,7 @@
         </span>
 
         <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
-        <div class="r">
-            <strong>总计-</strong>
-            <span class="num">认证总数：<strong id="auth-all-count">0</strong></span>
-            <span class="num">新增认证：<strong id="authing-count">0</strong></span>
-            <span class="num">审核通过：<strong id="auth-pass-count">0</strong></span>
-            <span class="num">审核拒绝：<strong id="auth-reject-count">0</strong></span>
-        </div>
-        <div></div>
+        
         <div class="r">
             <strong>认证通过总计-</strong>
             <span class="num">湛江：<strong id="zhangjiang-pass-num" >0</strong> </span>
@@ -58,30 +70,21 @@
         </div>
             
     </div>
-    <div class="panel panel-default mt-10">
-        <div class="panel-header" id=""><p>认证统计: <span id="city-title">全部</span></p>
-            <div id="city-num" style="font-weight: lighter; display: none;">
-                <span class="num">认证总数：<strong id="city-auth-all-count">0</strong> </span>
-                <span class="num">新增认证：<strong id="city-authing-count">0</strong> </span>
-                <span class="num">审核通过：<strong id="city-auth-pass-count">0</strong> </span>
-                <span class="num">审核拒绝：<strong id="city-auth-reject-count">0</strong> </span>
-            </div>
-        </div>
-        <div class="panel-body row cl">
-            <canvas width="400" height="130" id="auth-chart"></canvas>
-        </div>
+
+    <canvas  height="80" id="auth-chart"></canvas>
+    <div class="mt-20">
+        <table class="table table-bordered table-border table-hover table-bg table-sort mt-10" id="city-auth-table">
+            <thead>
+                <tr class="text-c">
+                    <th width="100">日期</th>
+                    <th width="100">审核通过数</th>
+                    <th width="100">新增审核数</th>
+                </tr>
+            </thead>
+            <tbody id="city-auth-tbody" class="text-c">
+            </tbody>
+        </table>
     </div>
-    <table class="table table-bordered table-border table-hover table-bg table-sort mt-10" id="city-auth-table">
-        <thead>
-            <tr class="text-c">
-                <th width="100">日期</th>
-                <th width="100">审核通过数</th>
-                <th width="100">新增审核数</th>
-            </tr>
-        </thead>
-        <tbody id="city-auth-tbody" class="text-c">
-        </tbody>
-    </table>
     <div class="pagination" id="pagination">
         
     </div>
@@ -261,7 +264,6 @@
                         });
              return table
         }     
-
     }
    
     function getNumData(){
@@ -305,8 +307,11 @@
 
                         }
                     })
+                }else if(response.code == 0){
+                    layer.msg(response.error)
                 }
-            }
+            },
+            errorFunc: errorFunc
 
         })
     }
@@ -336,7 +341,6 @@
     function getCity(){
         ajax({
             url: 'admin/getDistrict',
-            async: false,
             data: {
                 parentId: 20,
             },

@@ -16,12 +16,17 @@
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
     <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <style>
+        span.num+span.num{
+            margin-left: 15px;
+        }
+    </style>
     <title>注册统计</title>
 </head>
 <body>
 
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计管理 <span class="c-gray en">&gt;</span>  注册统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
-<div class="page-container" id="student-list">
+<div class="page-container" >
     <h3 id="register-total" style="text-align: center"></h3>
     <h5 id="city-count" style="text-align: center"></h5>
     <div class="cl pd-5 bg-1 bk-gray mt-20">
@@ -34,6 +39,13 @@
                 </select>
         </span>
         <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        <div class="r">
+            <strong>注册总计-</strong>
+            <span class="num">湛江：<strong id="zhangjiang-num" >0</strong> </span>
+            <span class="num">韶关：<strong id="shaoguan-num" >0</strong> </span>
+            <span class="num">珠海：<strong id="zhuhai-num" >0</strong> </span>
+            <span class="num">深圳：<strong id="shenzhen-num" >0</strong> </span>
+        </div>
     </div>
     <canvas id="register-chart" height="80"></canvas>
     <div class="mt-20">
@@ -101,14 +113,19 @@
         })
 
         function errorFunc(xhr, status){
-            layer.msg(status)
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                icon:7, 
+                title: '出现错误',
+                content: status
+            })
         }
 
 
         function getCity(){
             ajax({
                 url: 'admin/getDistrict',
-                async: false,
                 data: {
                     parentId: 20
                 },
@@ -125,11 +142,46 @@
         function getTotal(){
             ajax({
                 url: 'admin/auth/getAllUser',
-                async: false,
                 successFunc: function(response){
                     if(response.code === 1){
                         $('#register-total').text('注册总人数：'+response.data)
                     }else if(response.code === 0){
+                        layer.msg(response.error)
+                    }
+                },
+                errorFunc: errorFunc
+            })
+
+            ajax({
+                url: 'admin/auth/getUserCityStatistics',
+                successFunc: function(response){
+                    if(response.code == 1){
+                         response.data.forEach(function(item){
+                            var countUser = item.countUser
+                            switch(item.city){
+                                case '湛江': {
+                                    $('#zhangjiang-num').text(countUser)
+                                    break
+                                }
+                                case '韶关': {
+                                    $('#shaoguan-num').text(countUser)   
+                                    break
+                                }
+                                case '深圳': {
+                                    $('#shenzhen-num').text(countUser)   
+                                    break
+                                }
+                                case '珠海': {
+                                    console.log(item)
+                                    $('#zhuhai-num').text(countUser)   
+                                    break
+                                }
+                                default : {
+                                    break
+                                }
+                            }
+                        })
+                    }else if(response.code == 0){
                         layer.msg(response.error)
                     }
                 },
