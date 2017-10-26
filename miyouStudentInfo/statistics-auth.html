@@ -40,7 +40,7 @@
     </div>
     <div id="city-num" class="text-c mt-10" style="display: none;">
         <h5>
-            <span id="city-title">全部</span>
+            <span><span id="city-title">全部</span>-</span> 
             <span class="num">认证总数：<span id="city-auth-all-count">0</span> </span>
             <span class="num">新增认证：<span id="city-authing-count">0</span> </span>
             <span class="num">审核通过：<span id="city-auth-pass-count">0</span> </span>
@@ -185,7 +185,6 @@
             authPassData.push(data[i].authPassCount)
             authingData.push(data[i].authingCount)
         }
-        var ctx = $('#auth-chart').get(0).getContext('2d')
         if(oldChart){
             oldChart.data.labels = labels
             oldChart.data.datasets[0].data = authPassData
@@ -193,6 +192,7 @@
             oldChart.update()
             return oldChart
         }else{
+            var ctx = $('#auth-chart').get(0).getContext('2d')
             var myChart = new Chart(ctx, {
                     type: 'line',
                     data: {
