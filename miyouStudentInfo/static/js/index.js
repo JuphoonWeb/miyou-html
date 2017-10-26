@@ -9,7 +9,7 @@ function ajax(dataObj){
 	// var url = 'http://192.168.0.46:8086/miyou/'
     // var url = 'http://192.168.12.1:8086/miyou/'
     // var url = 'http://192.168.15.161:8086/miyou/'
-    var url = 'http://218.204.254.209:28811/miyou/'
+    var url = 'http://218.204.254.209:28812/miyou/'
 
 
     url += dataObj.url
@@ -128,6 +128,12 @@ function relogin(){
 			top.open('login.html', '_self')
 		}
 	})
+}
+
+function showNodata(){
+	$('#nodata').show()
+	$('tbody').children().remove()
+	$('#data-num').text(0)
 }
 
 
