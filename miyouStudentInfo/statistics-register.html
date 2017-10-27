@@ -16,17 +16,22 @@
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
     <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <style>
+        span.num+span.num{
+            margin-left: 15px;
+        }
+    </style>
     <title>注册统计</title>
 </head>
 <body>
 
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计管理 <span class="c-gray en">&gt;</span>  注册统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
-<div class="page-container" id="student-list">
+<div class="page-container" >
     <h3 id="register-total" style="text-align: center"></h3>
     <h5 id="city-count" style="text-align: center"></h5>
     <div class="cl pd-5 bg-1 bk-gray mt-20">
-        <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-time\')}' })" id="search-begin-time" class="input-text Wdate formControls" placeholder=" 开始时间" style="width: 150px">
-        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-begin-time\')}'})" id="search-end-time" class="input-text Wdate formControls" placeholder=" 结束时间" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" placeholder=" 开始时间" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}'})" id="search-end-date" class="input-text Wdate formControls" placeholder=" 结束时间" style="width: 150px">
 
         <span class="select-box" style="width: 100px">
                 <select class="select J_select" id="search-city">
@@ -34,6 +39,13 @@
                 </select>
         </span>
         <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        <div class="r">
+            <strong>注册总计-</strong>
+            <span class="num">湛江：<strong id="zhangjiang-num" >0</strong> </span>
+            <span class="num">韶关：<strong id="shaoguan-num" >0</strong> </span>
+            <span class="num">珠海：<strong id="zhuhai-num" >0</strong> </span>
+            <span class="num">深圳：<strong id="shenzhen-num" >0</strong> </span>
+        </div>
     </div>
     <canvas id="register-chart" height="80"></canvas>
     <div class="mt-20">
@@ -72,27 +84,31 @@
             endDate: null,
             city: ''
         }
+        var oldChart = null
 
         $(function(){
             getCity()
             getTotal();
-            $('#search-end-time').val(new Date().Format('yyyy-MM-dd'));
-            $('#search-begin-time').val(new Date(new Date()*1-86400000*30).Format('yyyy-MM-dd'));
+            $('#search-end-date').val(new Date().Format('yyyy-MM-dd'));
+            $('#search-start-date').val(new Date(new Date()*1-86400000*30).Format('yyyy-MM-dd'));
             $('#search-btn').click();
         })
 
-        $(document).on('change', '#search-begin-time', '#search-end-time', function(){
+        $(document).on('change', '#search-start-date', '#search-end-date', function(){
             if($(this).val === ''){
                 $(this).val(null)
             }
         })
 
         $('#search-btn').click(function(){
-            $('#pagination').hide()
-            isPageInit = false
+            searchPara.startDate = $('#search-start-date').val()
 
-            searchPara.startDate = $('#search-begin-time').val()
-            searchPara.endDate = new Date(new Date()*1+86400000).Format('yyyy-MM-dd')
+            //因为时分秒为 00:00:00，要查到最完整的数据，结束日期必须往后推一天
+            var endDate = new Date($('#search-end-date').val())
+            endDate.setDate(endDate.getDate()+1)
+            searchPara.endDate = endDate.Format('yyyy-MM-dd')
+            console.log('结束时间： '+ searchPara.endDate)
+
             searchPara.city = $('#search-city').children('option:selected').text()
             if(searchPara.city == '全部'){
                 searchPara.city = ''
@@ -101,14 +117,19 @@
         })
 
         function errorFunc(xhr, status){
-            layer.msg(status)
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                icon:7, 
+                title: '出现错误',
+                content: status
+            })
         }
 
 
         function getCity(){
             ajax({
                 url: 'admin/getDistrict',
-                async: false,
                 data: {
                     parentId: 20
                 },
@@ -125,11 +146,45 @@
         function getTotal(){
             ajax({
                 url: 'admin/auth/getAllUser',
-                async: false,
                 successFunc: function(response){
                     if(response.code === 1){
                         $('#register-total').text('注册总人数：'+response.data)
                     }else if(response.code === 0){
+                        layer.msg(response.error)
+                    }
+                },
+                errorFunc: errorFunc
+            })
+
+            ajax({
+                url: 'admin/auth/getUserCityStatistics',
+                successFunc: function(response){
+                    if(response.code == 1){
+                         response.data.forEach(function(item){
+                            var countUser = item.countUser
+                            switch(item.city){
+                                case '湛江': {
+                                    $('#zhangjiang-num').text(countUser)
+                                    break
+                                }
+                                case '韶关': {
+                                    $('#shaoguan-num').text(countUser)   
+                                    break
+                                }
+                                case '深圳': {
+                                    $('#shenzhen-num').text(countUser)   
+                                    break
+                                }
+                                case '珠海': {
+                                    $('#zhuhai-num').text(countUser)   
+                                    break
+                                }
+                                default : {
+                                    break
+                                }
+                            }
+                        })
+                    }else if(response.code == 0){
                         layer.msg(response.error)
                     }
                 },
@@ -186,7 +241,7 @@
                             $('#nodata').show();
                         }
                         $('#activity-tbody').html(trs)
-                        showChart(labels,lineData);
+                        oldChart = showChart(labels, lineData, oldChart);
                     }else if(status === 0){
                         layer.open({
                             type: 0,
@@ -198,26 +253,33 @@
 
                     }
                 },
-                errorFunc: errorFunc
-            })
+                errorFunc: errorFunc            })
         }
 
-        function showChart(labels,data){
-            var ctx = $('#register-chart')[0].getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels : labels,
-                    datasets: [
-                        {
-                            label: '注册人数',
-                            backgroundColor : "rgba(151,187,205,0.5)",
-                            borderColor : "rgba(151,187,205,1)",
-                            data : data
-                        }
-                    ]
-                }
-            })
+        function showChart(labels,data, oldChart){
+            if(oldChart){
+                oldChart.data.labels = labels
+                oldChart.data.datasets[0].data = data
+                oldChart.update()
+                return oldChart
+            }else{
+                var ctx = $('#register-chart')[0].getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels : labels,
+                        datasets: [
+                            {
+                                label: '注册人数',
+                                backgroundColor : "rgba(151,187,205,0.5)",
+                                borderColor : "rgba(151,187,205,1)",
+                                data : data
+                            }
+                        ]
+                    }
+                })
+                return chart
+            }
         }
     </script>
 </body>
