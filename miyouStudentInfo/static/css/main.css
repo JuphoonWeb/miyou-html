@@ -24,3 +24,15 @@ tr:hover .ellipsis-td{
 	overflow: visible;
 	text-overflow: clip;
 }
+.ellipsis-td img{
+	width:20px;
+	height:20px;
+}
+ tr:hover .ellipsis-td img{
+	width: auto;
+	height: auto;
+} 
+.download-iframe{
+	display: none
+}
+

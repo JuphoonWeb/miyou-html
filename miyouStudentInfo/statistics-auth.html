@@ -33,7 +33,7 @@
         <h3>
             <span>总计-</span>
             <span class="num">认证总数：<span id="auth-all-count">0</span></span>
-            <span class="num">新增认证：<span id="authing-count">0</span></span>
+            <span class="num">认证中：<span id="authing-count">0</span></span>
             <span class="num">审核通过：<span id="auth-pass-count">0</span></span>
             <span class="num">审核拒绝：<span id="auth-reject-count">0</span></span>
         </h3>
@@ -42,7 +42,7 @@
         <h5>
             <span><span id="city-title">全部</span>-</span> 
             <span class="num">认证总数：<span id="city-auth-all-count">0</span> </span>
-            <span class="num">新增认证：<span id="city-authing-count">0</span> </span>
+            <span class="num">认证中：<span id="city-authing-count">0</span> </span>
             <span class="num">审核通过：<span id="city-auth-pass-count">0</span> </span>
             <span class="num">审核拒绝：<span id="city-auth-reject-count">0</span> </span>
         </h5>
@@ -259,7 +259,7 @@
                             "bStateSave": true,//状态保存
                             "aoColumnDefs": [
                               //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
-                              {"orderable":false,"aTargets":[1, 2]}// 制定列不参与排序
+                              {"orderable":false,"aTargets":[1, 2]}// 指定列不参与排序
                             ]
                         });
              return table

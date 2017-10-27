@@ -108,13 +108,10 @@
 	}
 
 	$(function(){
-		
-
 		if(!editAccountInfo){
 			$('#psw-init-container').show()
 			$('#psw-confirm-container').show()
 		}
-		
 
 		ajax({
 			url: 'admin/role/getRoleList',
@@ -156,11 +153,7 @@
 			},
 			errorFunc: errorFunc
 		})
-
-		
 	})
-
-	
 
 	$('#submit').click(function(event){
 		event.preventDefault()
@@ -260,8 +253,6 @@
 				})
 			}
 		}
-
-
 	})
 </script> 
 </body>

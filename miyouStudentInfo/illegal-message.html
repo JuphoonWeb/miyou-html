@@ -1,0 +1,298 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="lib/lightbox2/2.8.1/css/lightbox.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>非法消息管理</title>
+</head>
+<body>
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 应用内容管理 <span class="c-gray en">&gt;</span>非法消息管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+
+		<input id="search-phone" type="text" style="width:150px" class="input-text radius" placeholder="发送号码 "> 
+        
+        发送时间段：
+        <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" placeholder=" 开始时间" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}',maxDate:'%y-%M-%d'})" id="search-end-date" class="input-text Wdate formControls" placeholder=" 结束时间" style="width: 150px">
+
+		<span class="select-box" style="width: 150px">
+                <select class="select J_select" id="search-msg-type">
+                    <option value="-1">消息类型</option>
+                    <option value="Video">Video</option>
+                    <option value="Audio">Audio</option>
+                    <option value="Image">Image</option>
+                    <option value="Text">Text</option>
+                </select>
+        </span>
+
+        <span class="select-box" style="width: 150px">
+                <select class="select J_select" id="search-illegal-type">
+                    <option value="-1">非法类型</option>
+                    <option value="1">Obscene</option>
+                    <option value="2">Violence</option>
+                    <option value="3">Political</option>
+                    <option value="4">Defraud</option>
+                    <option value="5">Undetermined</option>
+                    <option value="6">Illegal</option>
+                    <option value="0">Others</option>
+                </select>
+        </span>
+		
+		<button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+	</div>
+	<div class="mt-20">
+	<table class="table table-bordered table-border table-hover table-bg " id="illegal-msg-table">
+		<thead>
+			<tr class="text-c">
+				<th width="100">序号</th>
+				<th width="100">发送号码</th>
+				<th width="100">会话ID</th>
+				<th width="100">发送时间</th>
+				<th width="100">文件类型</th>
+				<th width="100">非法类型</th>
+				<th width="100">非法内容</th>
+			</tr>
+		</thead>
+		<tbody id="illegal-msg-tbody" class="text-c" >
+		</tbody>
+	</table>
+	<div class="pagination r" id="pagination"></div>
+	<div class="nodata" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="lib/lightbox2/2.8.1/js/lightbox.min.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script> 
+
+
+<script type="text/javascript">
+	var isPageInit = false
+	
+	var searchPara = {
+			page: 1,
+		    size: 14,
+			startDate: null,
+		    endDate: (new Date()).getTime(),
+			phone: '',
+		    msgType: '',
+			illegalType: ''
+	}
+
+
+	$(function(){
+		var startDate = new Date()
+		startDate.setMonth(startDate.getMonth()-1)
+		searchPara.startDate = startDate.getTime()
+		
+		$('#search-start-date').val(startDate.Format('yyyy-MM-dd'))
+		$('#search-end-date').val(new Date(searchPara.endDate).Format('yyyy-MM-dd'))
+
+		getData(searchPara)
+	})
+
+	$(document).on('change', '#search-start-date', '#search-end-date', function(){
+		if($(this).val === ''){
+			$(this).val(null)
+		}
+	})
+
+	$('#search-btn').click(function(e){
+		e.preventDefault()
+		var startDate = $('#search-start-date').val()
+		var endDate = $('#search-end-date').val()
+		if(startDate == ''){
+			layer.msg('请选择开始时间')
+			return
+		}else if(endDate == ''){
+			layer.msg('请选择结束时间')
+			return
+		}
+		
+		$('#pagination').hide()
+		isPageInit = false
+		searchPara.page = 1
+
+		searchPara.startDate = new Date(startDate).getTime()
+		//因为只精确到日，所以时分秒都为0，为了查找尽可能多的数据，日期往后推一天
+		endDate = new Date(endDate)
+		endDate.setDate(endDate.getDate()+1)
+		searchPara.endDate = endDate.getTime()
+		
+		searchPara.phone = $('#search-phone').val().trim()
+
+		var msgType = $('#search-msg-type').val()
+		searchPara.msgType = msgType == -1 ? null : msgType
+
+		illegalType = $('#search-illegal-type').val()
+		searchPara.illegalType = illegalType == -1 ? null : illegalType
+	
+		getData(searchPara)
+	})
+
+	function errorFunc(xhr, status){
+		layer.msg(status)
+	}
+
+	function getData(data){
+
+		ajax({
+			url: 'admin/illealMsg/getIllealMsgs',
+			data: data,
+			successFunc: function(response){
+				var status = response.code
+				if(status === 1){
+					if(response.data.total > 0){
+						renderTable(response.data)
+					}else{
+						showNodata()
+					}
+				}else if(status === 0){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '获取数据失败',
+						content: response.error
+					})
+
+				}
+			},
+			errorFunc: errorFunc
+		})
+	}
+
+	function renderTable(data){
+		$('#nodata').hide()
+		var phoneReg = reg = /^(\[phone:)(\+?\d+)@(.+?)(.com)/
+
+		var list = data.list
+		var trs = ''
+		for(var i = 0; i<list.length; i++){
+			var sequence = (searchPara.page-1)*searchPara.size+i+1
+			var sendPhone = phoneReg.exec(list[i].senderAccount)[2]
+			var msgTime = new Date(list[i].msgTime).Format('yyyy-MM-dd hh:mm')
+			var msgtype = '其他'
+			
+			var illegalType = 'Others'
+			switch(list[i].illegalType){
+				case 0: {
+					illegalType = 'Others'
+					break
+				}
+				case 1: {
+					illegalType = 'Obscene'
+					break
+				}
+				case 2: {
+					illegalType = 'Violence'
+					break
+				}
+				case 3: {
+					illegalType = 'Political'
+					break
+				}
+				case 4: {
+					illegalType = 'Defraud'
+					break
+				}
+				case 5: {
+					illegalType = 'Undetermined'
+					break
+				}
+				case 5: {
+					illegalType = 'Illegal'
+					break
+				}
+				default: {
+					illegalType = 'Others'
+				}
+			}
+
+			var msgType = list[i].msgType
+			if(/Text/.test(msgType)){
+				msgType = 'Text'
+			}else if(/Audio/.test(msgType)){
+				msgType = 'Audio'
+			}else if(/Video/.test(msgType)){
+				msgType = 'Video'
+			}else if(/Image/.test(msgType)){
+				msgType = 'Image'
+			}
+
+			var msgContent = ''
+			if(msgType == 'Text' ){
+				msgContent = JSON.parse(list[i].illegalRef)['text']
+			}
+			else if(msgType == 'Image'){
+				msgContent = '<div title="点击图片预览" >'+
+								'<a  href="http://'+list[i].illegalRef+'" data-lightbox="gallery" data-title="">'+
+									'<img src="http://'+list[i].illegalRef+'" alt=""/>'+
+								'</a>'+ 
+							 '</div>'
+			}
+			else{
+				var fileName = msgContent.split('/').reverse()[0]
+                 msgContent = '<a href="http://'+list[i].illegalRef+'" download="fileName" class="btn btn-primary-outline radius" >'+
+								  '<span class="Hui-iconfont">&#xe640;</span>下载文件'+
+							  '</a>'
+			}
+
+			trs += '<tr>'+
+						'<td>'+sequence+'</td>'+
+						'<td>'+sendPhone+'</td>'+
+						'<td>'+list[i].boxId+'</td>'+
+						'<td>'+msgTime+'</td>'+
+						'<td>'+msgType+'</td>'+
+						'<td>'+illegalType+'</td>'+
+						'<td class = "ellipsis-td">'+msgContent+'</td>'+
+					'</tr>'
+		}
+		$('#illegal-msg-tbody').html(trs)
+		$('#data-num').text(data.total)
+		if(!isPageInit && data.total > searchPara.size){
+			$('#pagination').show()
+			var pages = Math.ceil(data.total/searchPara.size)
+			laypage({
+			    cont: 'pagination',
+			    curr: 1, 
+			    pages: pages,
+			    groups: 5,
+			    jump: function(obj,first) {
+			    	if(!first){
+			    		searchPara.page = obj.curr
+				    	getData(searchPara)
+					}
+			    }
+		  });
+		
+		}
+		isPageInit = true
+	}
+	
+</script> 
+</body>
+</html>
