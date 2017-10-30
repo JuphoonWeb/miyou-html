@@ -52,6 +52,11 @@ function ajax(dataObj){
 			data.size = data.size || 12
 		}
 
+		var menuUrl = window.location.href.replace('#','').split('/').reverse()[0].split('?')[0]
+		var reg = /(.+?html)/
+		menuUrl = reg.exec(menuUrl)[1] 
+		
+
 	$.ajax({
 		
 		url: url,
@@ -62,7 +67,7 @@ function ajax(dataObj){
 	    contentType: contentType,
 		headers: {
 			token: sessionStorage.getItem('uuid'),
-			'Menu-Url': window.location.href.replace('#','').split('/').reverse()[0].split('?')[0] 
+			'Menu-Url': menuUrl 
 
 		},
 		dataType : 'json',
@@ -114,7 +119,6 @@ var authLevelStatus = ["一级未审核","一级审核拒绝","一级审核通�
 
 
 function relogin(){
-
 	sessionStorage.removeItem('uuid')
 	sessionStorage.removeItem('login')
 	sessionStorage.removeItem('username')
