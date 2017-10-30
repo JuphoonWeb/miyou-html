@@ -157,6 +157,7 @@
 	function getActivityTypes(){
 		ajax({
 			url: 'api/activity/getActivityType',
+			async: false,
 			successFunc: function(response){
 				if(response.code === 1){
 					fillSelect('#search-activity-type', response.data)

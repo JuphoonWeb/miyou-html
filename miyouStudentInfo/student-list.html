@@ -411,32 +411,46 @@
 				layer.closeAll()
 				if(response.code === 1){
 					var data = response.data
+					var repeateNames = '无'
 					if(data.repeateCount > 0){
-						var ellipses = '...'
 						if(data.repeateCount <= 3){
-							ellipses = ''
+							repeateNames = data.repeateNames
+						}else{
+							repeateNames = data.repeateNames.slice(0, 3)+'...'
 						}
-						layer.open({
-							type: 1,
-							closeBtn: 0,
-							area: ['370px','250px'],
-							title: '文件上传情况',
-							content: '<div class="upload-report"><p>共'+data.total+'条数据</p>'+
-							'<p>上传成功：'+data.successCount+'条数据</p>'+
-							'<P>重复：'+data.repeateCount+'条数据</p>'+
-							'<p>重复数据：['+data.repeateNames+ellipses+']</p></div>',
-							btn: '确定',
-							yes: function(index) {
-								if(data.successCount > 0){
-									init()
-								}
-								layer.close(index)
-							}
-
-							
-						})
 					}
+					var failNames = '无'
+					if(data.failCount > 0){
+						if(data.failCount <= 3){
+							failNames = data.failNames
+						}else{
+							failNames = data.failNames.slice(0, 3)+'...'
+						}	
+					}						
+					layer.open({
+						type: 1,
+						closeBtn: 0,
+						area: ['370px','330px'],
+						title: '文件上传情况',
+						content: 
+						'<div class="upload-report">'+
+							'<p>共'+data.total+'条数据</p>'+
+							'<p>上传成功：'+data.successCount+'条数据</p>'+
+							'<P>上传失败：'+data.failCount+'条数据</p>'+
+							'<p>失败数据：['+failNames+']</p>'+
+							'<P>重复：'+data.repeateCount+'条数据</p>'+
+							'<p>重复数据：['+repeateNames+']</p>'+
+						'</div>',
+						btn: '确定',
+						yes: function(index) {
+							if(data.successCount > 0){
+								init()
+							}
+							layer.close(index)
+						}
 
+						
+					})
 				}else if(response.code === 0) {
 					layer.open({
 						type: 0,
