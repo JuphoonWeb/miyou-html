@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="lib/lightbox2/2.8.1/css/lightbox.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>活动详情</title>
+</head>
+<body>
+
+<div class="page-container">
+	<table class="table table-bordered table-border table-hover table-bg " id="activity-detail-table">
+	</table>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="lib/lightbox2/2.8.1/js/lightbox.min.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script>
+ 
+<script type="text/javascript">
+	var activityTypes = {}
+
+	$(function(){
+		var activityInfo = JSON.parse(sessionStorage.getItem('activityInfo'))
+		getActivityTypes()
+		renderTable(activityInfo)
+	})
+
+	function renderTable(data){
+		
+		var initiatorName = data.initiatorName || ''
+		var initiatorMobile = data.initiatorMobile || ''
+		var isIllegal = data.isIllegal ? 
+							'<span class="label label-warning radius">是</span> ':
+							'<span class="label label-success radius">否</span>'
+		var activityLogo = '<div title="点击图片预览" >'+
+								'<a  href="'+data.activityLogo+'" data-lightbox="gallery" data-title="">'+
+									'<img src="'+data.activityLogo+'" alt=""/>'+
+								'</a>'+ 
+							 '</div>'
+		
+		var trs = 
+				'<tr>'+
+				 	'<th colspan="2" >活动名称</th><td colspan="2">'+data.activityName+'</td> '+
+				 '</tr>'+	
+				  
+				  '<tr>'+
+					 '<th>活动类型</th><td>'+activityTypes[data.activityType]+'</td> '+
+					 '<th>活动描述</th><td>'+data.activityDesc+'</td> '+
+				  '</tr> '+
+				  '<tr>'+
+					 '<th>发起人</th><td>'+initiatorName+'</td> '+
+					 '<th>发起人号码</th><td>'+initiatorMobile+'</td> '+
+				  '</tr> '+
+				  '<tr>'+
+					 '<th>开始时间</th><td>'+timeFormat(data.beginTime)+'</td> '+
+					 '<th>结束时间</th><td>'+timeFormat(data.endTime)+'</td> '+
+				  '</tr> '+
+				  '<tr>'+
+					 '<th>报名开始时间</th><td>'+timeFormat(data.registerBeginTime)+'</td> '+
+					 '<th>报名结束时间</th><td>'+timeFormat(data.registerEndTime)+'</td> '+
+				  '</tr> '+
+				  '<tr>'+
+					 '<th>地点</th><td>'+data.location+'</td> '+
+					 '<th>学校</th><td>'+data.school+'</td> '+
+				  '</tr> '+
+				  '<tr>'+
+					 '<th>是否包含非法图片</th><td>'+isIllegal+'</td> '+
+					 '<th>活动图片</th><td class="ellipsis-td" >'+activityLogo+'</td> '+
+				  '</tr> '+
+				  '<tr>'+
+					 '<th>创建时间</th><td>'+timeFormat(data.createTime)+'</td> '+
+					 '<th>修改时间</th><td>'+timeFormat(data.changeTime)+'</td> '+
+				  '</tr> '
+		$('#activity-detail-table').html(trs)
+	}
+
+	function getActivityTypes(){
+		ajax({
+			url: 'api/activity/getActivityType',
+			async: false,
+			successFunc: function(response){
+				if(response.code === 1){
+					response.data.forEach(function(item){
+						activityTypes[item.dictId] = item.dictName
+					})
+				}else if(response.code === 0){
+					layer.msg(response.error)
+				}
+			},
+			errorFunc: function(xhr, status){
+				layer.msg(status)
+			}
+		})
+	}
+
+	//将13位时间戳转换为'yyyy-MM-dd hh:mm:ss'形式
+	function timeFormat(time){
+		return new Date(time).Format('yyyy-MM-dd hh:mm:ss')
+	}
+	
+	
+</script> 
+</body>
+</html>

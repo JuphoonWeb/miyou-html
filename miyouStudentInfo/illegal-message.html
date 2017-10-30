@@ -244,19 +244,20 @@
 			}
 
 			var msgContent = ''
+			var illegalRef = list[i].illegalRef
 			if(msgType == 'Text' ){
-				msgContent = JSON.parse(list[i].illegalRef)['text']
+				msgContent = JSON.parse(illegalRef)['text']
 			}
 			else if(msgType == 'Image'){
 				msgContent = '<div title="点击图片预览" >'+
-								'<a  href="http://'+list[i].illegalRef+'" data-lightbox="gallery" data-title="">'+
-									'<img src="http://'+list[i].illegalRef+'" alt=""/>'+
+								'<a  href="http://'+illegalRef+'" data-lightbox="gallery" data-title="">'+
+									'<img src="http://'+illegalRef+'" alt=""/>'+
 								'</a>'+ 
 							 '</div>'
 			}
 			else{
 				var fileName = msgContent.split('/').reverse()[0]
-                 msgContent = '<a href="http://'+list[i].illegalRef+'" download="fileName" class="btn btn-primary-outline radius" >'+
+                 msgContent = '<a href="http://'+illegalRef+'" download="fileName" class="btn btn-primary-outline radius" >'+
 								  '<span class="Hui-iconfont">&#xe640;</span>下载文件'+
 							  '</a>'
 			}
@@ -292,6 +293,10 @@
 		}
 		isPageInit = true
 	}
+
+	$('#search-btn').mouseover(function(){
+		console.log('farq')
+	})
 	
 </script> 
 </body>

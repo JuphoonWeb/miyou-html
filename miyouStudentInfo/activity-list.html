@@ -51,16 +51,18 @@
 	<table class="table table-bordered table-border table-hover table-bg " id="activity-table">
 		<thead>
 			<tr class="text-c">
-				<th width="100">序号</th>
-				<th width="100">活动</th>
-				<th width="100">活动类型</th>
-				<th width="100">开始时间</th>
-				<th width="100">结束时间</th>
-				<th width="100">学校</th>
-				<th width="100">地点</th>
-				<th width="100">发起人</th>
-				<th width="100">发起人号码</th>
-				<th width="100">操作</th>
+				<th width="50">序号</th>
+				<th width="50">活动</th>
+				<th width="100">活动内容</th>
+				<th width="50">活动类型</th>
+				<th width="80">开始时间</th>
+				<th width="80">结束时间</th>
+				<th width="50">学校</th>
+				<th width="80">地点</th>
+				<th width="50">发起人</th>
+				<th width="50">发起人号码</th>
+				<th width="50">是否包含非法图片</th>
+				<th width="50">操作</th>
 			</tr>
 		</thead>
 		<tbody id="activity-tbody" class="text-c" >
@@ -169,7 +171,6 @@
 	function getCity(){
 		ajax({
 			url: 'admin/getDistrict',
-			async: false,
 			data: {
 				parentId: 20,
 			},
@@ -250,7 +251,7 @@
 		var options = $('select#search-activity-type').children()
 		for(var i = 1; i < options.length; i++){
 			activityTypes[ options[i].value ] = options[i].text
-		}
+		}	
 		activityList = list
 		var trs = ''
 		for(var i = 0; i<list.length; i++){
@@ -261,10 +262,14 @@
 			var initiatorName = list[i].initiatorName || ''
 			var initiatorMobile = list[i].initiatorMobile || ''
 			var activityType = activityTypes[ list[i].activityType ]
-			
+			var isIllegal = list[i].isIllegal ? 
+							'<span class="label label-warning radius">是</span> ':
+							'<span class="label label-success radius">否</span>'
+
 			trs += '<tr>'+
 						'<td>'+sequence+'</td>'+
 						'<td>'+list[i].activityName+'</td>'+
+						'<td class="ellipsis-td" >'+list[i].activityDesc+'</td>'+
 						'<td>'+activityType+'</td>'+
 						'<td>'+beginTime+'</td>'+
 						'<td>'+endTime+'</td>'+
@@ -272,9 +277,14 @@
 						'<td>'+list[i].location+'</td>'+
 						'<td>'+initiatorName+'</td>'+
 						'<td>'+initiatorMobile+'</td>'+
+						'<td>'+isIllegal+'</td>'+
 						'<td>'+
-							'<button  onclick="deleteActivity('+i+')" class="btn btn-danger-outline radius" >'+
-							'<span class="Hui-iconfont">&#xe609;</span>删除</button>'+
+							'<button class="btn btn-secondary-outline radius" onclick="getActivityDetail('+i+')">'+
+					       		'<span class="Hui-iconfont">&#xe695;</span>查看'+
+				       		'</button>'+
+							'<button  onclick="deleteActivity('+i+')" class="btn btn-danger-outline radius" style="margin-left:15px"  >'+
+								'<span class="Hui-iconfont">&#xe609;</span>删除'+
+							'</button>'+
 						'</td>'+
 					'</tr>'
 		}
@@ -300,6 +310,15 @@
 		isPageInit = true
 	}
 	
+	//查看
+	function getActivityDetail(index){
+		var activityInfo = activityList[index]
+		sessionStorage.setItem('activityInfo', JSON.stringify(activityInfo))
+		var title = '活动详情：' + activityInfo.activityName
+		layer_show(title,'activity-detail.html','','500');
+
+	}
+
 	//删除
 	function deleteActivity(index){
 		var deleteActivityInfo = activityList[index]
