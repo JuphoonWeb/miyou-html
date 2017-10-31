@@ -52,6 +52,13 @@ function ajax(dataObj){
 			data.size = data.size || 12
 		}
 
+		var menuUrl = window.location.href.replace('#','').split('/').reverse()[0].split('?')[0]
+		
+		if(menuUrl){
+			var reg = /(.+?html)/
+			menuUrl = reg.exec(menuUrl)[1] 
+		}
+
 	$.ajax({
 		
 		url: url,
@@ -62,7 +69,7 @@ function ajax(dataObj){
 	    contentType: contentType,
 		headers: {
 			token: sessionStorage.getItem('uuid'),
-			'Menu-Url': window.location.href.replace('#','').split('/').reverse()[0].split('?')[0] 
+			'Menu-Url': menuUrl 
 
 		},
 		dataType : 'json',
@@ -114,7 +121,6 @@ var authLevelStatus = ["一级未审核","一级审核拒绝","一级审核通�
 
 
 function relogin(){
-
 	sessionStorage.removeItem('uuid')
 	sessionStorage.removeItem('login')
 	sessionStorage.removeItem('username')
@@ -136,4 +142,9 @@ function showNodata(){
 	$('#data-num').text(0)
 }
 
+//将13位时间戳转换为'yyyy-MM-dd hh:mm:ss'形式
+function timeFormat(time){
+	time = (time && time.toString().length == 10 )? time*1000 : time //若是10位，则转换为13位
+	return new Date(time).Format('yyyy-MM-dd hh:mm:ss')
+}
 

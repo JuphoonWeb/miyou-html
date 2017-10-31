@@ -124,14 +124,13 @@
 		for(var i = 0; i<list.length; i++){
 
 			var sequence = (searchPara.page-1)*searchPara.size+i+1
-			var createTime = new Date(list[i].createTime).Format('yyyy-MM-dd hh:mm')
 				
 			
 			trs += '<tr>'+
 						'<td>'+sequence+'</td>'+
 						'<td class="ellipsis-td" >'+list[i].noteTitle+'</td>'+
 						'<td class="ellipsis-td" >'+list[i].noteContent+'</td>'+
-						'<td>'+createTime+'</td>'+
+						'<td>'+timeFormat(list[i].createTime)+'</td>'+
 						'<td>'+list[i].initiatorName+'</td>'+
 						'<td>'+list[i].initiatorMobile+'</td>'+
 						'<td>'+list[i].noteGroupName+'</td>'+

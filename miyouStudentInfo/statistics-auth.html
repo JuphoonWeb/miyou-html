@@ -33,7 +33,7 @@
         <h3>
             <span>总计-</span>
             <span class="num">认证总数：<span id="auth-all-count">0</span></span>
-            <span class="num">新增认证：<span id="authing-count">0</span></span>
+            <span class="num">认证中：<span id="authing-count">0</span></span>
             <span class="num">审核通过：<span id="auth-pass-count">0</span></span>
             <span class="num">审核拒绝：<span id="auth-reject-count">0</span></span>
         </h3>
@@ -42,7 +42,7 @@
         <h5>
             <span><span id="city-title">全部</span>-</span> 
             <span class="num">认证总数：<span id="city-auth-all-count">0</span> </span>
-            <span class="num">新增认证：<span id="city-authing-count">0</span> </span>
+            <span class="num">认证中：<span id="city-authing-count">0</span> </span>
             <span class="num">审核通过：<span id="city-auth-pass-count">0</span> </span>
             <span class="num">审核拒绝：<span id="city-auth-reject-count">0</span> </span>
         </h5>
@@ -73,15 +73,15 @@
 
     <canvas  height="80" id="auth-chart"></canvas>
     <div class="mt-20">
-        <table class="table table-bordered table-border table-hover table-bg table-sort mt-10" id="city-auth-table">
+        <table class="table table-bordered table-border table-hover table-bg table-sort mt-10" id="auth-table">
             <thead>
                 <tr class="text-c">
                     <th width="100">日期</th>
                     <th width="100">审核通过数</th>
-                    <th width="100">新增审核数</th>
+                    <th width="100">认证中</th>
                 </tr>
             </thead>
-            <tbody id="city-auth-tbody" class="text-c">
+            <tbody id="auth-tbody" class="text-c">
             </tbody>
         </table>
     </div>
@@ -110,7 +110,6 @@
         city: ''
     };
     var oldChart = null
-    var oldTable = null
 
     $(function(){
         setDuration(1)
@@ -164,7 +163,7 @@
                     var data = response.data
                     oldChart = renderChart(data.auth, oldChart)
                     setNumData(data)
-                    oldTable = renderTablle(data.auth, oldTable)
+                    renderTablle(data.auth)
                         
                 }else if(response.code == 0){
                     layer.msg(response.error)
@@ -203,7 +202,7 @@
                                 data: authPassData,
                                 backgroundColor: 'rgba(66, 152, 66, 0.2)',
                                 borderColor: 'rgba(66, 152, 66, 1)',
-                                lineTension : 0,
+                                // lineTension : 0,
                                 borderWidth: 1,
                             },
                             {
@@ -211,7 +210,7 @@
                                 data: authingData,
                                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                                 borderColor: 'rgba(54, 162, 235, 1)',
-                                lineTension : 0,
+                                // lineTension : 0,
                                 borderWidth: 1,
                             }
                         ]
@@ -232,38 +231,18 @@
         }
     }
 
-    function renderTablle(data, oldTable){
-        var tableData = []
-        data.forEach(function(item, index){
-            var childArr = []
-            childArr.push(item.authDate)
-            childArr.push(item.authPassCount)
-            childArr.push(item.authingCount)
-            tableData.push(childArr)
+    function renderTablle(data){
+        data = data.reverse()
+        var trs = ''
+        data.forEach(function(item){
+            trs +='<tr>'+
+                    '<td>'+item.authDate+'</td>'+
+                    '<td>'+item.authPassCount+'</td>'+
+                    '<td>'+item.authingCount+'</td>'+
+                  '</tr>'
         })
-        // $('#auth-tbody').html(trs)
+        $('#auth-tbody').html(trs)
 
-        if(oldTable){
-            oldTable.fnClearTable()
-            oldTable.fnAddData(tableData)
-            return oldTable 
-
-        }else{
-             var table = $('.table-sort').dataTable({
-                            "aaData": tableData,
-                            "lengthMenu":false,//显示数量选择 
-                            "bFilter": false,//过滤功能
-                            "bPaginate": false,//翻页信息
-                            "bInfo": false,//数量信息
-                            "aaSorting": [[ 1, "desc" ]],//默认第几个排序
-                            "bStateSave": true,//状态保存
-                            "aoColumnDefs": [
-                              //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
-                              {"orderable":false,"aTargets":[1, 2]}// 制定列不参与排序
-                            ]
-                        });
-             return table
-        }     
     }
    
     function getNumData(){

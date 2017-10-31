@@ -85,7 +85,17 @@
 						var sequence = (currPage-1)*size+i+1
 						var name = list[i].miyouName || ''
 						var Protype = list[i].prod ? 'prod.FrendGroupQJ.0' : 'prod.FrendTriGroupQJ.0'
-						trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+name+'</td><td>'+list[i].memberPhone+'</td><td><button class="btn btn-secondary-outline radius" onclick="getMiyouMember('+i+')"><span class="Hui-iconfont">&#xe695;</span>查看</button></td><td>'+Protype+'</td></tr>'
+						trs += '<tr class="text-c">'+
+							       '<td>'+sequence+'</td>'+
+							       '<td>'+name+'</td>'+
+							       '<td>'+list[i].memberPhone+'</td>'+
+							       '<td>'+
+							       		'<button class="btn btn-secondary-outline radius" onclick="getMiyouMember('+i+')">'+
+								       		'<span class="Hui-iconfont">&#xe695;</span>查看'+
+							       		'</button>'+
+						       		'</td>'+
+						       		'<td>'+Protype+'</td>'+
+					       		'</tr>'
 					}
 					// 判断数据是否取得成功
 					$('#miyou-tbody').append(trs)
@@ -178,7 +188,7 @@
 		sessionStorage.setItem('miyouCircleId',id)
 		var title = name ? '密友圈成员 （群主：'+name+'）': '密友圈成员 （群主：匿名）'
 		// console.log(title)
-		layer_show(title,'miyou-circle-member.html','','700');
+		layer_show(title,'miyou-circle-member.html','','700')
 	}
 
 	init()
