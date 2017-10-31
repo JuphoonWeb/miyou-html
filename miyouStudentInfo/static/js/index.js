@@ -53,8 +53,8 @@ function ajax(dataObj){
 		}
 
 		var menuUrl = window.location.href.replace('#','').split('/').reverse()[0].split('?')[0]
-		var reg = /(.+?html)/
-		menuUrl = reg.exec(menuUrl)[1] 
+		// var reg = /(.+?html)/
+		// menuUrl = reg.exec(menuUrl)[1] 
 		
 
 	$.ajax({
