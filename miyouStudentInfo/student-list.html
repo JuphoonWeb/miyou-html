@@ -491,7 +491,9 @@
 
 	//从url取出url指向的文件名
 	function getFileName(url){
-		return url.split('/').reverse()[0]
+		if(url){
+			return url.split('/').reverse()[0]
+		}
 	}
 
 	init()
