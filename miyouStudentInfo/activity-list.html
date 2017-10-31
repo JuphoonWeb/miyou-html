@@ -258,6 +258,7 @@
 		for(var i = 0; i<list.length; i++){
 			var sequence = (searchPara.page-1)*searchPara.size+i+1
 			var initiatorName = list[i].initiatorName || ''
+			var activityDesc = list[i].activityDesc || ''
 			var initiatorMobile = list[i].initiatorMobile || ''
 			var activityType = activityTypes[ list[i].activityType ]
 			var isIllegal = list[i].isIllegal ? 
@@ -267,7 +268,7 @@
 			trs += '<tr>'+
 						'<td>'+sequence+'</td>'+
 						'<td>'+list[i].activityName+'</td>'+
-						'<td class="ellipsis-td" >'+list[i].activityDesc+'</td>'+
+						'<td class="ellipsis-td" >'+activityDesc+'</td>'+
 						'<td>'+activityType+'</td>'+
 						'<td>'+timeFormat(list[i].beginTime)+'</td>'+
 						'<td>'+timeFormat(list[i].endTime)+'</td>'+
