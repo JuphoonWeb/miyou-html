@@ -257,9 +257,6 @@
 		var trs = ''
 		for(var i = 0; i<list.length; i++){
 			var sequence = (searchPara.page-1)*searchPara.size+i+1
-			var createTime = new Date(list[i].createTime).Format('yyyy-MM-dd hh:mm')
-			var beginTime = new Date(list[i].beginTime).Format('yyyy-MM-dd hh:mm')
-			var endTime = new Date(list[i].endTime).Format('yyyy-MM-dd hh:mm')
 			var initiatorName = list[i].initiatorName || ''
 			var initiatorMobile = list[i].initiatorMobile || ''
 			var activityType = activityTypes[ list[i].activityType ]
@@ -272,8 +269,8 @@
 						'<td>'+list[i].activityName+'</td>'+
 						'<td class="ellipsis-td" >'+list[i].activityDesc+'</td>'+
 						'<td>'+activityType+'</td>'+
-						'<td>'+beginTime+'</td>'+
-						'<td>'+endTime+'</td>'+
+						'<td>'+timeFormat(list[i].beginTime)+'</td>'+
+						'<td>'+timeFormat(list[i].endTime)+'</td>'+
 						'<td>'+list[i].school+'</td>'+
 						'<td>'+list[i].location+'</td>'+
 						'<td>'+initiatorName+'</td>'+
@@ -315,7 +312,7 @@
 	function getActivityDetail(index){
 		var activityInfo = activityList[index]
 		sessionStorage.setItem('activityInfo', JSON.stringify(activityInfo))
-		var title = '活动详情：' + activityInfo.activityName
+		var title = '【' + activityInfo.activityName + '】活动详情'  
 		layer_show(title,'activity-detail.html','','500');
 
 	}

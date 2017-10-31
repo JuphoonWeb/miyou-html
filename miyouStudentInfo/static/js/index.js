@@ -142,4 +142,9 @@ function showNodata(){
 	$('#data-num').text(0)
 }
 
+//将13位时间戳转换为'yyyy-MM-dd hh:mm:ss'形式
+function timeFormat(time){
+	time = time.toString().length == 10 ? time*1000 : time //若是10位，则转换为13位
+	return new Date(time).Format('yyyy-MM-dd hh:mm:ss')
+}
 

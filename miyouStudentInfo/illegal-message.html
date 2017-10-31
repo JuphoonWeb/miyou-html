@@ -194,7 +194,6 @@
 		for(var i = 0; i<list.length; i++){
 			var sequence = (searchPara.page-1)*searchPara.size+i+1
 			var sendPhone = phoneReg.exec(list[i].senderAccount)[2]
-			var msgTime = new Date(list[i].msgTime).Format('yyyy-MM-dd hh:mm')
 			var msgtype = '其他'
 			
 			var illegalType = 'Others'
@@ -266,7 +265,7 @@
 						'<td>'+sequence+'</td>'+
 						'<td>'+sendPhone+'</td>'+
 						'<td>'+list[i].boxId+'</td>'+
-						'<td>'+msgTime+'</td>'+
+						'<td>'+timeFormat(list[i].msgTime)+'</td>'+
 						'<td>'+msgType+'</td>'+
 						'<td>'+illegalType+'</td>'+
 						'<td class = "ellipsis-td">'+msgContent+'</td>'+

@@ -120,17 +120,14 @@
 		voteList = list
 		var trs = ''
 		for(var i = 0; i<list.length; i++){
-
 			var sequence = (currPage-1)*size+i+1
-			var endTime = new Date(list[i].endTime).Format('yyyy-MM-dd hh:mm')
-		
 			trs += '<tr>'+
 						'<td>'+sequence+'</td>'+
 						'<td>'+list[i].voteName+'</td>'+
 						'<td>'+
 							list[i].voteCount+
 						'</td>'+
-						'<td>'+endTime+'</td>'+
+						'<td>'+timeFormat(list[i].endTime)+'</td>'+
 						'<td>'+list[i].initiatorName+'</td>'+
 						'<td>'+list[i].initiatorMobile+'</td>'+
 						'<td>'+list[i].voteGroupName+'</td>'+
