@@ -26,6 +26,11 @@
         <form action="" class="form-inline" style="margin-top: 10px" class="search-box">
             <input id="member-phone" type="text" style="width:150px" class="input-text radius" placeholder="受邀人手机号">
             <input id="inviter-phone" type="text" style="width:150px" class="input-text radius" placeholder="邀请者手机号">
+            <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'invite-end-time\')}' })" id="invite-begin-time" class="input-text Wdate formControls" placeholder=" 预邀请开始时间" style="width: 150px">
+            <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'invite-begin-time\')}'})" id="invite-end-time" class="input-text Wdate formControls" placeholder=" 预邀请结束时间" style="width: 150px">
+            <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'join-end-time\')}' })" id="join-begin-time" class="input-text Wdate formControls" placeholder=" 注册成功开始时间" style="width: 150px">
+            <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'join-begin-time\')}'})" id="join-end-time" class="input-text Wdate formControls" placeholder=" 注册成功结束时间" style="width: 150px">
+
             <button id="search-btn" title="根据手机号查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
         </form>
         <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
@@ -38,7 +43,8 @@
                 <th>受邀人手机号</th>
                 <th>邀请者手机号</th>
                 <th>邀请状态</th>
-                <th>时间</th>
+                <th>预邀请时间</th>
+                <th>注册成功时间</th>
             </tr>
             </thead>
             <tbody id="feedback-tbody" class="text-c">
@@ -53,6 +59,7 @@
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
 <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
 <script type="text/javascript" src="static/js/index.js"></script>
@@ -65,6 +72,10 @@
     var url = 'admin/getInvitationList'
     var memberPhone = ''
     var inviterPhone = ''
+    var inviteBeginTime = null;
+    var inviteEndTime = null;
+    var joinBeginTime = null;
+    var joinEndTime = null;
 
     var successFunc = function(response){
         layer.closeAll()
@@ -72,19 +83,27 @@
             var list = response.data.list
             $('#nodata').hide()
             var trs = '';
-            for(var i = 0; i < list.length; i++){
-                var status = '',
-                    code = list[i].status;
-                if(code == 0||code == null){
-                    status = '已受邀';
+            if(list.length){
+                for(var i = 0; i < list.length; i++){
+                    var status = '',
+                        code = list[i].status;
+                    if(code == 0||code == null){
+                        status = '已邀请';
+                    }
+                    else if(code == 1){
+                        status = '已注册';
+                    }
+                    var joinTime = '';
+                    if(list[i].formalTime){
+                        joinTime = new Date(list[i].formalTime).Format("yyyy-MM-dd hh:mm:ss");
+                    }else{
+                        joinTime = '未注册';
+                    }
+                    trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].memberPhone+'</td><td>'+list[i].inviterPhone+'</td><td>'+status+'</td><td>'+new Date(list[i].dateTime).Format("yyyy-MM-dd hh:mm:ss")+'</td><td>'+joinTime+'</td></tr>'
                 }
-                else if(code == 1){
-                    status = '已注册';
-                }
-                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].memberPhone+'</td><td>'+list[i].inviterPhone+'</td><td>'+status+'</td><td>'+new Date(list[i].dateTime).Format("yyyy-MM-dd hh:mm:ss")+'</td></tr>'
+            }else{
+                $('#nodata').show()
             }
-
-            // 判断数据是否取得成功
             $('#feedback-tbody').html(trs)
             $('#data-num').text(response.data.total)
             if(!isPageInit && response.data.total > size){
@@ -105,7 +124,11 @@
                                     page: currPage,
                                     size: size,
                                     inviter:inviterPhone,
-                                    member:memberPhone
+                                    member:memberPhone,
+                                    inviteBeginTime:inviteBeginTime,
+                                    inviteEndTime:inviteEndTime,
+                                    joinBeginTime:joinBeginTime,
+                                    joinEndTime:joinEndTime
                                 },
                                 successFunc: successFunc,
                                 errorFunc: errorFunc
@@ -184,7 +207,11 @@
                 'page':currPage,
                 'size':12,
                 'inviter':inviterPhone,
-                'member':memberPhone
+                'member':memberPhone,
+                'inviteBeginTime':inviteBeginTime,
+                'inviteEndTime':inviteEndTime,
+                'joinBeginTime':joinBeginTime,
+                'joinEndTime':joinEndTime
             },
             successFunc: successFunc,
             errorFunc: errorFunc
@@ -197,6 +224,10 @@
         isPageInit = false
         inviterPhone = $('#inviter-phone').val()
         memberPhone = $('#member-phone').val()
+        inviteBeginTime = Date.parse(new Date($('#invite-begin-time').val()))||null
+        inviteEndTime = Date.parse(new Date($('#invite-end-time').val()))||null
+        joinBeginTime = Date.parse(new Date($('#join-begin-time').val()))||null
+        joinEndTime = Date.parse(new Date($('#join-end-time').val()))||null
         init()
     })
 </script>

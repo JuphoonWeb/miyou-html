@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
     <link rel="stylesheet" type="text/css" href="static/css/main.css" />
-    <title>每日注册统计</title>
+    <title>当日注册统计</title>
 </head>
 <body>
 <div class="page-container" id="student-list">
@@ -68,7 +68,7 @@
             var trs = '';
             if(list.length){
                 for(var i = 0; i < list.length; i++){
-                    trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].relationId+'</td><td>'+list[i].city+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td></tr>'
+                    trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].relationId+'</td><td>'+(list[i].city||'')+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td></tr>'
                 }
             }else{
                 $('#nodata').show()
