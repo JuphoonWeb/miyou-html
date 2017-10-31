@@ -53,7 +53,7 @@
 			<tr class="text-c">
 				<th width="50">序号</th>
 				<th width="50">活动</th>
-				<th width="100">活动描述</th>
+				<!-- <th width="80">活动描述</th> -->
 				<th width="50">活动类型</th>
 				<th width="80">开始时间</th>
 				<th width="80">结束时间</th>
@@ -62,7 +62,7 @@
 				<th width="50">发起人</th>
 				<th width="50">发起人号码</th>
 				<th width="50">是否包含非法图片</th>
-				<th width="50">操作</th>
+				<th width="150">操作</th>
 			</tr>
 		</thead>
 		<tbody id="activity-tbody" class="text-c" >
@@ -268,7 +268,7 @@
 			trs += '<tr>'+
 						'<td>'+sequence+'</td>'+
 						'<td>'+list[i].activityName+'</td>'+
-						'<td class="ellipsis-td" >'+activityDesc+'</td>'+
+						// '<td class="ellipsis-td" >'+activityDesc+'</td>'+
 						'<td>'+activityType+'</td>'+
 						'<td>'+timeFormat(list[i].beginTime)+'</td>'+
 						'<td>'+timeFormat(list[i].endTime)+'</td>'+

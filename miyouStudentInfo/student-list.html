@@ -19,7 +19,7 @@
 <title>学生列表</title>
 <style>
 	.upload-report{
-		padding: 20px 0 0 50px;
+		padding: 20px;
 	}
 	tr span+button{
 		margin-left: 10px
@@ -40,16 +40,16 @@
 					<input type="file" name="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="input-file" id="file" :value="file">
 			</span>
 			<span>
-				<button title="上传已选Excel" class="btn btn-success radius" type="submit" id="file-upload-btn" >&nbsp;&nbsp;上传&nbsp;&nbsp;</button>
-				<a href="static/download/用户信息表 - 模板.xlsx" class="btn btn-secondary radius">Excel模板下载</a>
-				<a href="javascript:;" onclick="studentAdd('添加学生信息','student-add.html','','650')" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe600;</i>单个添加</a>
+				<button title="上传已选Excel" class="btn btn-success radius" type="submit" id="file-upload-btn" ><i class="Hui-iconfont">&#xe642;</i>上传</button>
+				<a href="static/download/用户信息表 - 模板.xlsx" download="用户信息表 - 模板.xlsx" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe640;</i>Excel模板下载</a>
+				<a href="javascript:;" onclick="studentAdd('添加学生信息','student-add.html','','650')" class="btn btn-secondary-outline radius"  style="width:98px"><i class="Hui-iconfont">&#xe607;</i>单个添加</a>
 			</span>
 			
 		</form>
 
 		<form action="" class="form-inline" style="margin-top: 10px" class="search-box">
-				<input id="search-phone" type="text" style="width:300px" class="input-text radius" placeholder="根据手机号查询学生(支持模糊查询)">
-				<input id="search-university" type="text" style="width:300px" class="input-text radius" placeholder="根据大学查询学生">
+				<input id="search-phone" type="text" style="width:305px" class="input-text radius" placeholder="根据手机号查询学生(支持模糊查询)">
+				<input id="search-university" type="text" style="width:305px" class="input-text radius" placeholder="根据大学查询学生">
 				<button id="search-btn" title="根据输入条件查询学生" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
 		</form>
 
@@ -121,7 +121,7 @@
 					var miyouGroup = list[i].miyouGroup ? 
 						'<span class="label label-success radius">已开通</span><button class="btn btn-success-outline radius" title="查看密友圈" onclick="getMiyouMember('+i+')" ><span class="Hui-iconfont">&#xe695;</span>查看</button>' : 
 						'<span class="label label-warning radius" >未开通</span><button class="btn btn-secondary-outline radius" title="开通密友圈" onclick="openMiyouCircle('+i+')" ><span class="Hui-iconfont">&#xe611;</span>开通</button>'
-					var clazzGroup = list[i].clazzGroup ? '<span class="label label-success radius" >已加入</span>' : '<button class="btn btn-secondary-outline radius" onclick="addToClazzGroup('+i+')" title="添加至班级群" ><span class="Hui-iconfont" >&#xe607;</span>添加</button>'
+					var clazzGroup = list[i].clazzGroup ? '<span class="label label-success radius" >已加入</span>' : '<button class="btn btn-secondary-outline radius" onclick="addToClazzGroup('+i+')" title="添加至班级群" ><span class="Hui-iconfont" >&#xe62b;</span>添加</button>'
 					var sequence = (currPage-1)*size+i+1 
 					trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].name+'</td><td>'+sex+'</td><td>'+phone+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+clazz+'</td><td>'+clazzGroup+'</td><td>'+miyouGroup+'</td></tr>'
 				}
@@ -197,9 +197,6 @@
 			successFunc: successFunc,
 			errorFunc: errorFunc
 		}
-
-
-
 
 	function init(){
 		currPage = 1
@@ -411,35 +408,41 @@
 				layer.closeAll()
 				if(response.code === 1){
 					var data = response.data
-					var repeateNames = '无'
-					if(data.repeateCount > 0){
-						if(data.repeateCount <= 3){
-							repeateNames = data.repeateNames
-						}else{
-							repeateNames = data.repeateNames.slice(0, 3)+'...'
-						}
-					}
-					var failNames = '无'
-					if(data.failCount > 0){
-						if(data.failCount <= 3){
-							failNames = data.failNames
-						}else{
-							failNames = data.failNames.slice(0, 3)+'...'
-						}	
-					}						
 					layer.open({
 						type: 1,
 						closeBtn: 0,
-						area: ['370px','330px'],
+						area: ['330px','320px'],
 						title: '文件上传情况',
 						content: 
 						'<div class="upload-report">'+
-							'<p>共'+data.total+'条数据</p>'+
-							'<p>上传成功：'+data.successCount+'条数据</p>'+
-							'<P>上传失败：'+data.failCount+'条数据</p>'+
-							'<p>失败数据：['+failNames+']</p>'+
-							'<P>重复：'+data.repeateCount+'条数据</p>'+
-							'<p>重复数据：['+repeateNames+']</p>'+
+							'<table class="table table-bordered table-border table-hover">'+
+								'<tr>'+
+									'<th width="100" >数据总数</th><td>'+data.total+'</td>'+
+								'</tr>'+
+								'<tr>'+
+									'<th width="100" >上传成功</th><td>'+data.successCount+
+										'<a id="download-success-file" href="'+data.successUrl+'" download="'+getFileName(data.successUrl)+'" class="r btn btn-secondary radius" style="margin-right:10px">'+
+												'<i class="Hui-iconfont">&#xe641;</i>导出'+
+										'</a> '+
+									'</td>'+
+								'</tr>'+
+								'<tr>'+
+									'<th width="100" >上传失败</th>'+
+									'<td>'+data.failCount+
+										'<a id="download-fail-file" href="'+data.failUrl+'" download="'+getFileName(data.failUrl)+'"  class="r btn btn-secondary radius" style="margin-right:10px">'+
+											'<i class="Hui-iconfont">&#xe641;</i>导出'+
+										'</a> '+
+									'</td>'+
+								'</tr>'+
+								'<tr>'+
+									'<th width="100" >重复数据</th>'+
+									'<td>'+data.repeateCount+
+										'<a id="download-repeate-file" href="'+data.repeateUrl+'"  download="'+getFileName(data.repeateUrl)+'"  class="r btn btn-secondary radius" style="margin-right:10px">'+
+											'<i class="Hui-iconfont">&#xe641;</i>导出'+
+										'</a> '+
+									'</td>'+
+								'</tr>'+
+							'</table>'+
 						'</div>',
 						btn: '确定',
 						yes: function(index) {
@@ -448,9 +451,17 @@
 							}
 							layer.close(index)
 						}
-
-						
 					})
+
+					if(data.successCount == 0){
+						$('#download-success-file').hide()
+					}
+					if(data.failCount == 0){
+						$('#download-fail-file').hide()
+					}
+					if(data.repeateCount == 0){
+						$('#download-repeate-file').hide()
+					}
 				}else if(response.code === 0) {
 					layer.open({
 						type: 0,
@@ -477,7 +488,12 @@
 
 		
 	})
-	
+
+	//从url取出url指向的文件名
+	function getFileName(url){
+		return url.split('/').reverse()[0]
+	}
+
 	init()
 </script> 
 </body>
