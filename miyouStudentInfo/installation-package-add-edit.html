@@ -55,10 +55,10 @@
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>是否强制升级：</label>
 				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
 					<div class="radio-box">
-						<input type="radio" class="radio" name="mandatoryUpdate" id="mandatory-update-yes" value="1" checked ><label for="mandatory-update-yes">是</label>
+						<input type="radio" class="radio " name="mandatoryUpdate" id="mandatory-update-1" value="1"><label for="mandatory-update-yes">是</label>
 					</div>
 					<div class="radio-box">
-						<input type="radio" class="radio" name="mandatoryUpdate" id="mandatory-update-no" value="0" ><label for="mandatory-update-no">否</label>
+						<input type="radio" class="radio" name="mandatoryUpdate" id="mandatory-update-2" value="0" ><label for="mandatory-update-no">否</label>
 					</div>
 				</div>
 			</div>
@@ -102,19 +102,21 @@
 	}
 
 	$(function(){
-		$('.skin-minimal .radio').iCheck({
-			// radioClass: 'iradio-green',
-			increaseArea: '20%',
-		})
+		
 		if(editInfo){
 			$('#app-name').val(editInfo.appName)
 			$('#version-name').val(editInfo.versionName)
 			$('#version-code').val(editInfo.versionCode)
 			$('#update-instructions').val(editInfo.updateInstructions)
-			$('.radio[value='+editInfo.mandatoryUpdate+']').attr('checked', true)
+			$('.radio').eq(1-editInfo.mandatoryUpdate).attr('checked', true)
 			$('#file-name').val(editInfo.downloadUrl)
 			$('#file-red-start').hide()
 		}
+
+		$('.skin-minimal .radio').iCheck({
+			// radioClass: 'iradio-green',
+			increaseArea: '20%',
+		})
 	})
 
 	$('#submit').click(function(event){

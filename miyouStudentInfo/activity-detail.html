@@ -22,7 +22,7 @@
 <body>
 
 <div class="page-container">
-	<table class="table table-bordered table-border table-hover table-bg " id="activity-detail-table">
+	<table class="table table-bordered table-border table-hover table-bg text-c " id="activity-detail-table">
 	</table>
 </div>
 
@@ -50,11 +50,16 @@
 		var isIllegal = data.isIllegal ? 
 							'<span class="label label-warning radius">是</span> ':
 							'<span class="label label-success radius">否</span>'
-		var activityLogo = '<div title="点击图片预览" >'+
+		
+		var activityLogo = data.activityLogo ? '<span title="点击图片预览" >'+
 								'<a  href="'+data.activityLogo+'" data-lightbox="gallery" data-title="">'+
 									'<img src="'+data.activityLogo+'" alt=""/>'+
 								'</a>'+ 
-							 '</div>'
+							 '</span>'+
+							 '<button  onclick="deleteActivityLogo()" class="btn btn-danger-outline radius" style="margin-left:30px"  >'+
+								'<span class="Hui-iconfont">&#xe609;</span>删除'+
+							 '</button>':
+							 '暂无'
 		
 		var trs = 
 				'<tr>'+
@@ -83,7 +88,10 @@
 				  '</tr> '+
 				  '<tr>'+
 					 '<th>是否包含非法图片</th><td>'+isIllegal+'</td> '+
-					 '<th>活动图片</th><td class="ellipsis-td" >'+activityLogo+'</td> '+
+					 '<th>活动图片</th>'+
+					 '<td class="ellipsis-td" >'+activityLogo+
+						 
+					 '</td> '+
 				  '</tr> '+
 				  '<tr>'+
 					 '<th>创建时间</th><td>'+timeFormat(data.createTime)+'</td> '+
@@ -111,6 +119,48 @@
 		})
 	}
 
+	function deleteActivityLogo(){
+		layer.confirm('确定删除活动图片吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url: 'admin/activity/deleteLogoImage',
+					type: 'post',
+					data: {
+						 activityId: JSON.parse(sessionStorage.getItem('activityInfo')).activityId
+					},
+					successFunc: function(response){
+						var status = response.code
+						if(status === 1){
+							layer.msg('已删除')
+							setTimeout(function(){
+								window.parent.location.reload(true)
+							},800)
+						}else if(status === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '删除失败',
+								content: response.error
+							})
+						}
+					},
+					errorFunc: function(xhr, status){
+						layer.open({
+							type: 0,
+							closeBtn: 0,
+							icon:7, 
+							title: '出现错误',
+							content: status
+						})
+					}
+				})
+			}
+		});
+	}
 	
 	
 	
