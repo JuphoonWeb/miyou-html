@@ -61,6 +61,8 @@
 
         <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
         
+        <a id="export-btn" href="http://218.204.254.209:28812/miyou/api/excel/authStudentExport?city=" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe641;</i>Excel导出</a>
+
         <div class="r">
             <strong>认证通过总计-</strong>
             <span class="num">湛江：<strong id="zhangjiang-pass-num" >0</strong> </span>
@@ -79,6 +81,7 @@
                     <th width="100">日期</th>
                     <th width="100">审核通过数</th>
                     <th width="100">认证中</th>
+                    <th width="100">操作</th>
                 </tr>
             </thead>
             <tbody id="auth-tbody" class="text-c">
@@ -110,6 +113,7 @@
         city: ''
     };
     var oldChart = null
+    var downloadUrl = 'http://218.204.254.209:28812/miyou/api/excel/authStudentExport'
 
     $(function(){
         setDuration(1)
@@ -128,6 +132,13 @@
             searchPara.city = ''
         }
         getChartData(searchPara)
+        var city = $('#search-city').children('option:selected').text()
+        city = (city == '全部') ? '':city
+        $('#export-btn').attr('href', downloadUrl+'?city=' + city)
+    })
+
+    $('#search-city').change(function(){
+        
     })
     
      // durationType值定义： 1: 最近一个月 2：最近半年 3：自定义  
@@ -163,7 +174,7 @@
                     var data = response.data
                     oldChart = renderChart(data.auth, oldChart)
                     setNumData(data)
-                    renderTablle(data.auth)
+                    renderTable(data.auth)
                         
                 }else if(response.code == 0){
                     layer.msg(response.error)
@@ -231,18 +242,23 @@
         }
     }
 
-    function renderTablle(data){
+    function renderTable(data){
         data = data.reverse()
         var trs = ''
+        
         data.forEach(function(item){
+            var authDate = item.authDate
+            var authPassCount = item.authPassCount
+            var authingCount = item.authingCount
+            var exportStatus = (authPassCount == 0 && authingCount ==0)?'disabled':''     
             trs +='<tr>'+
-                    '<td>'+item.authDate+'</td>'+
-                    '<td>'+item.authPassCount+'</td>'+
-                    '<td>'+item.authingCount+'</td>'+
+                    '<td>'+authDate+'</td>'+
+                    '<td>'+authPassCount+'</td>'+
+                    '<td>'+authingCount+'</td>'+
+                    '<td> <a href="'+downloadUrl+'?authDate='+authDate+'&city='+searchPara.city+'" class="btn btn-secondary-outline radius '+exportStatus+' "><i class="Hui-iconfont">&#xe641;</i>导出</a></td>'+
                   '</tr>'
         })
         $('#auth-tbody').html(trs)
-
     }
    
     function getNumData(){
@@ -345,6 +361,8 @@
         }
         $(selectorStr).append(options)
     } 
+
+
 </script> 
 </body>
 </html>
