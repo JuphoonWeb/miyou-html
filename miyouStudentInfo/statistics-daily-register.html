@@ -20,7 +20,7 @@
 </head>
 <body>
 <div class="page-container" id="student-list">
-    <div class="cl pd-5 bg-1 bk-gray mt-20">
+    <div class="cl pd-5 bg-1 bk-gray mt-20" id="statistics_line">
         <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
     </div>
     <div class="mt-20">
@@ -70,6 +70,7 @@
                 for(var i = 0; i < list.length; i++){
                     trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].relationId+'</td><td>'+(list[i].city||'')+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td></tr>'
                 }
+                $('#statistics_line').prepend('<button id="export" title="导出" class="btn btn-primary-outline radius" style="width:100px">导出excel</button>');
             }else{
                 $('#nodata').show()
             }
@@ -181,6 +182,9 @@
             errorFunc: errorFunc
         })
     }
+    $(document).on('click','#export',function(){
+        location.href = 'http://192.168.0.46:8086/miyou/api/excel/getRegisterAddDaily?city='+city+'&infoDate='+infoDate;
+    })
     init();
 </script>
 </body>

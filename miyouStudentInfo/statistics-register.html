@@ -39,6 +39,8 @@
                 </select>
         </span>
         <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        <button id="export" title="导出" class="btn btn-primary-outline radius" style="width:100px">导出excel</button>
+
         <div class="r">
             <strong>注册总计-</strong>
             <span class="num">湛江：<strong id="zhangjiang-num" >0</strong> </span>
@@ -220,6 +222,8 @@
                         var options = $('select#search-activity-type').children()
                         if(data.cityCount){
                             $('#city-count').text(searchPara.city+'注册人数：'+data.cityCount);
+                        }else{
+                            $('#city-count').text('');
                         }
                         for(var i = 1; i < options.length; i++){
                             activityTypes[ options[i].value ] = options[i].text
@@ -281,6 +285,10 @@
                 return chart
             }
         }
+
+        $(document).on('click','#export',function(){
+            location.href = 'http://192.168.0.46:8086/miyou/api/excel/getRegisterAddDaily?city='+searchPara.city;
+        })
     </script>
 </body>
 </html>
