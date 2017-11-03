@@ -26,6 +26,8 @@
 
 		<input id="search-relation" type="text" style="width:300px" class="input-text radius" placeholder="根据用户名查询账号">
 		<button id="search-btn" title="根据用户名查询账号" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+		<button onclick="addToBlackList
+()" class="btn btn-danger-outline radius" style="margin-left:15px;">封禁账号</button>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
@@ -39,7 +41,7 @@
 				<th width="100">封禁时长</th>
 				<th width="50">是否已解封</th>
 				<th width="150">封禁原因</th>
-				<th width="100">操作</th>
+				<th width="150">操作</th>
 			</tr>
 		</thead>
 		<tbody id="account-tbody" class="text-c" >	
@@ -109,20 +111,20 @@
 				if(second == 0){
 					return '已解封'
 				}
-				if(second == daySec ){
-					return '一天'
+				if(second >= daySec && second < 2*daySec ){
+					return '1天'
 				}
-				if(second == 30*daySec){
+				if(second > 27*daySec && second < 32*daySec){
 					return '30天'
 				}
 				if(second == 90*daySec){
 					return '90天'
 				}
 
-				if(second < 200*daySec){
+				if(second > 90*daySec && second < 200*daySec){
 					return '半年'
 				}
-				if(second > 200*daySec){
+				if(second > 200*daySec && second < 366*daySec){
 					return '一年'
 				}
 				return '永久'
@@ -132,6 +134,7 @@
 			for(var i = 0; i<list.length; i++){
 				var sequence = (searchPara.page-1)*searchPara.size+i+1
 				var durationSec = (list[i].durationSec - list[i].changeTime)/1000
+				console.log(timeFormat(list[i].changeTime)+'-'+timeFormat(list[i].durationSec))
 				var isOutofBlackList = durationSec == 0 ? 
 					'<span class="label label-success radius">是</span> ':
 					'<span class="label label-warning radius">否</span> '
@@ -144,8 +147,9 @@
 							'<td>'+isOutofBlackList+'</td>'+
 							'<td>'+list[i].reason+'</td>'+
 							'<td>'+
-								'<button onclick="delFromBlackList('+i+')" class="btn btn-secondary-outline radius">解除封禁'+
+								'<button onclick="delFromBlackList('+i+')" class="btn btn-secondary-outline radius">解禁'+
 								'</button>'+
+								'<button onclick="addToBlackList('+i+')" class="btn btn-danger-outline radius" style="margin-left:15px;">封禁</button>'+
 							'</td>'+
 						'</tr>'
 			}
@@ -199,7 +203,7 @@
 					data: {
 						relation: accountInfo.relation,
 						reason: accountInfo.reason,
-						type: 1
+						type: 0
 					},
 					successFunc: function(response){
 						var status = response.code
@@ -230,6 +234,75 @@
 				})
 			}
 		});
+	}
+
+	function addToBlackList(index){
+		var accountInfo = null
+		if(index!=null){
+			accountInfo = blackList[index]
+		}
+		var relation = accountInfo && accountInfo.relation || ''
+		var reason = accountInfo && accountInfo.reason || ''
+		var isDisabled = accountInfo!=null ? 'disabled': '' 
+		layer.open({
+				type: 1,
+				closeBtn: 0,
+				area: ['400px','250px'],
+				title: '封禁账号',
+				content:'<div>'+
+							'<input id="relation" class="input-text '+isDisabled+' " type="text" style="width:330px;margin:10px 30px" value="'+relation+'" placeholder="请输入封禁账号"> '+
+							'<input id="reason" class="input-text" type="text" style="width:330px;margin:10px 30px" value="'+reason+'" placeholder="请输入封禁原因"> '+
+						'</div>'+
+						'<div class="select-box" style="width:330px;margin:10px 30px">'+ 
+							'<select class="select" id="duration-select">'+
+								'<option value="">请选择封禁时长</option>'+
+								'<option value="1">1天</option>'+
+								'<option value="2">30天</option>'+
+								'<option value="3">90天</option>'+
+								'<option value="4">半年</option>'+
+								'<option value="5">一年</option>'+
+								'<option value="-1">永久</option>'+
+							 '</select>'+
+						 '</div>',
+				btn: ['确定','取消'],
+				yes: function() {
+					if($('#relation').val() == ''){
+						layer.msg('请输入封禁账号')
+					}else if(!$('#reason').val()){
+						layer.msg('请输入封禁原因')
+					}else if(!$('#duration-select').val()){
+						layer.msg('请选择封禁时长')
+					}else{
+						ajax({
+							url: 'admin/ban/addToBlackList',
+							type: 'post',
+							z_type: 0,
+							data: {
+								relation: $('#relation').val(),
+								reason: $('#reason').val(),
+								type: $('#duration-select').val()
+							},
+							successFunc: function(response){
+								var status = response.code
+										if(status === 1){
+											layer.msg('已封禁')
+											setTimeout(function(){
+												window.location.reload()
+											},800)
+										}else if(status === 0){
+											layer.msg(response.error)
+										}
+									},
+							errorFunc: function(xhr, status){
+								layer.msg(status)
+							}
+						})
+					}				
+				},
+				btn2: function(){
+					layer.closeAll()
+				}
+			})
 	}
 
 	$(function(){
