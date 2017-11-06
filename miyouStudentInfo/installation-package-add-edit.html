@@ -32,6 +32,17 @@
 					<input type="text" class="input-text" value="" placeholder="请输入应用名" id="app-name" name="appName" >
 				</div>
 			</div>
+			<div class="row cl ">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>应用类型：</label>
+				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+					<div class="radio-box">
+						<input type="radio" class="radio app-type" name="app-type" id="app-type-1" value="1"><label for="app-type-1">Android</label>
+					</div>
+					<div class="radio-box">
+						<input type="radio" class="radio app-type" name="app-type" id="app-type-2" value="2" ><label for="app-type-2">iOS</label>
+					</div>
+				</div>
+			</div>
 			<div class="row cl" >
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>VersionName：</label>
 				<div class="formControls col-xs-8 col-sm-9">
@@ -51,20 +62,20 @@
 					<textarea id="update-instructions" name="updateInstructions"  maxlength="140" class="textarea"  placeholder="请输入更新说明" style="height:65px"></textarea>
 				</div>
 			</div>
-			<div class="row cl ">
+			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>是否强制升级：</label>
 				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
 					<div class="radio-box">
-						<input type="radio" class="radio " name="mandatoryUpdate" id="mandatory-update-1" value="1"><label for="mandatory-update-yes">是</label>
+						<input type="radio" class="radio mandatoryUpdate" name="mandatoryUpdate" id="mandatory-update-1" value="1"><label for="mandatory-update-yes">是</label>
 					</div>
 					<div class="radio-box">
-						<input type="radio" class="radio" name="mandatoryUpdate" id="mandatory-update-2" value="0" ><label for="mandatory-update-no">否</label>
+						<input type="radio" class="radio mandatoryUpdate" name="mandatoryUpdate" id="mandatory-update-2" value="0" ><label for="mandatory-update-no">否</label>
 					</div>
 				</div>
 			</div>
 
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red" id="file-red-start" >*</span>安装包文件：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red" id="file-red-start" ></span>安装包文件：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<span class="btn-upload form-group" style="width:100%">
 					  <input class="input-text upload-url radius" type="text" id="file-name" readonly  style="width:82%" ><a href="javascript:void();" class="btn btn-primary radius" style="width:18%" ><i class="Hui-iconfont">&#xe646;</i> 浏览文件</a>
@@ -106,11 +117,15 @@
 		if(editInfo){
 			$('#app-name').val(editInfo.appName)
 			$('#version-name').val(editInfo.versionName)
+			$('.radio.app-type#app-type-'+editInfo.appType).attr('checked', true)
 			$('#version-code').val(editInfo.versionCode)
 			$('#update-instructions').val(editInfo.updateInstructions)
-			$('.radio').eq(1-editInfo.mandatoryUpdate).attr('checked', true)
+			$('.radio.mandatoryUpdate').eq(1-editInfo.mandatoryUpdate).attr('checked', true)
 			$('#file-name').val(editInfo.downloadUrl)
 			$('#file-red-start').hide()
+		}else{
+			$('.radio.app-type').eq(0).attr('checked', true)
+			$('.radio.mandatoryUpdate').eq(0).attr('checked', true)
 		}
 
 		$('.skin-minimal .radio').iCheck({
@@ -123,14 +138,13 @@
 		event.preventDefault()
 		var apkInfo = {
 		    appName: $('#app-name').val(),
+		    appType: $('.radio.app-type:checked').val(),
 		    versionName: $('#version-name').val(),
 		    versionCode: $('#version-code').val(),
 		    updateInstructions: $('#update-instructions').val(),
-		   	mandatoryUpdate: $('.radio:checked').val(),
+		   	mandatoryUpdate: $('.radio.mandatoryUpdate:checked').val(),
 		   	file: $('#install-package').get(0).files[0]
 		}   	
-	   	console.log('是否强制升级: '+apkInfo.mandatoryUpdate)
-	   	console.log('安装包： '+ apkInfo.file)
 
 		if(apkInfo.appName === ''){
 			layer.msg('请输入应用名')
@@ -141,14 +155,18 @@
 		}else if(!/^\d+(\.\d+)*$/.test(apkInfo.versionCode)){
 			if(/\.$/.test(apkInfo.versionCode)){
 				layer.msg('VersionCode小数点不能放在最后')
+			}else if(/[\.]+/.test(apkInfo.versionCode)){
+				layer.msg('VersionCode不能包含连续小数点')
 			}else{
 				layer.msg('VersionCode只能包含数字和小数点')
 			}
+			$('#version-code').focus()
 		}else if(apkInfo.updateInstructions === ''){
 			layer.msg('请输入更新说明')
-		}else if(apkInfo.file == undefined && !editInfo){
-			layer.msg('请选择安装包文件')
 		}
+		// else if(apkInfo.file == undefined && !editInfo){
+		// 	layer.msg('请选择安装包文件')
+		// }
 		else{
 			var destination = '添加'
 			var url = 'admin/package/postInstallPackage'

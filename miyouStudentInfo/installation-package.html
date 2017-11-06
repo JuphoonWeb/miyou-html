@@ -32,10 +32,11 @@
 			<tr class="text-c">
 				<th width="50">序号</th>
 				<th width="100">应用名</th>
+				<th width="50">应用类型</th>
 				<th width="100">VersionName</th>
 				<th width="50">VersionCode</th>
-				<th width="100">更新时间</th>
-				<th width="150">下载地址</th>
+				<th width="80">更新时间</th>
+				<th width="100">下载地址</th>
 				<th width="50">是否强制升级</th>		
 				<th width="150">操作</th>
 			</tr>
@@ -62,6 +63,8 @@
 	var searchPara = {
 		page: 1,
 		size: 14,
+		appName: '',
+		appType: null
 	}
 	var apkList = []
 
@@ -104,17 +107,22 @@
 		var trs = ''
 		for(var i = 0; i<list.length; i++){
 			var sequence = (searchPara.page-1)*searchPara.size+i+1
+			var appType = list[i].appType == 1 ? 
+						'<span class="label label-primary radius">Android</span>': 
+						'<span class="label label-secondary radius">iOS</span>'
 			var changeTime = new Date(list[i].changeTime).Format('yyyy-MM-dd hh:mm')
+			var downloadFileUrl = list[i].downloadFileUrl || ''
 			var mandatoryUpdate = list[i].mandatoryUpdate ? 
 					'<span class="label label-success radius">是</span>':
 					'<span class="label label-secondary radius">否</span>'
 		    trs += '<tr>'+
 		    			'<td>'+sequence+'</td>'+
 		    			'<td>'+list[i].appName+'</td>'+
+		    			'<td>'+appType+'</td>'+
 		    			'<td>'+list[i].versionName+'</td>'+
 		    			'<td>'+list[i].versionCode+'</td>'+
 		    			'<td>'+changeTime+'</td>'+
-		    			'<td class="ellipsis-td" >'+list[i].downloadUrl+'</td>'+
+		    			'<td class="ellipsis-td" >'+downloadFileUrl+'</td>'+
 		    			'<td>'+mandatoryUpdate+'</td>'+
 		    			'<td>'+
 							'<button onclick="editInstallPackage('+i+')" class="btn btn-secondary-outline radius"><span class="Hui-iconfont">&#xe60c;</span>修改'+
