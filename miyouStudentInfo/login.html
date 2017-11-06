@@ -329,47 +329,10 @@
 
 
 <script>
-	var isRememberPassword = false
-	var username = ''
-
-	var successFunc = function(response,status) {
-		 			if(response.code === 1){
-		 				console.log('登录成功')
-		 				console.log('loginData',response)
-		 				var data = response.data
-		 				sessionStorage.setItem('uuid',data.uuid)
-		 				sessionStorage.setItem('userData',JSON.stringify(data))
-		 				window.open('index.html','_self')
-
-		 			}else if(response.code === 0){
-		 				layer.msg(response.error)
-		 				
-		 				$('#password').val('')
-		 				if(response.error === '密码错误'){
-		 					$('#password').focus()
-		 				}else{
-		 					$('#username').focus()
-		 				}
-		 				
-		 			}
-		 		}
-
-    var errorFunc = function(xhr,status){
-		 			layer.closeAll()
-	 				layer.msg(status)
-		 		}
-
-
-
-	$('#remember-password').click(function(){
-		var isRememberPassword = $('#remember-password')[0].checked
-		console.log(isRememberPassword)
-	})
-
 
  	$('#login-btn').click(function(event){
  		event.preventDefault()
- 		username = $('#username').val()
+	 	var	username = $('#username').val()
  		var password = $('#password').val()
  		if(username === ''){
  			layer.msg('请输入用户名')
@@ -382,13 +345,36 @@
  			ajax({
  				url: 'login',
  				method: 'post',
- 				timeout: 7*1000,
+ 				timeout: 10*1000,
  				data: {
 	 				username: username,
 	 				password: password,
 	 			},
- 				successFunc: successFunc,
- 				errorFunc: errorFunc
+ 				successFunc: function(response,status) {
+		 			if(response.code === 1){
+		 				var data = response.data
+		 				sessionStorage.setItem('uuid',data.uuid)
+		 				sessionStorage.setItem('userData',JSON.stringify(data))
+		 				window.open('index.html','_self')
+
+		 			}else if(response.code === 0){
+		 				layer.closeAll()
+		 				
+		 				var errorMsg = response.error
+		 				layer.msg(errorMsg)
+		 				$('#password').val('')
+		 				if(errorMsg === '密码错误'){
+		 					$('#password').focus()
+		 				}else{
+		 					$('#username').focus()
+		 				}
+		 				
+		 			}
+		 		},
+ 				errorFunc: function(xhr, status){
+ 					layer.closeAll()
+	 				layer.msg(status)
+ 				}
  			})
 
  		}
