@@ -67,7 +67,8 @@
 	var searchPara = {
 		page: 1,
 		size: 13,
-		relation: ''
+		relation: '',
+		isDeblocked: null
 	}
 	var blackList = []
 
@@ -75,7 +76,7 @@
 	function getData(searchPara){
 
 		ajax({
-			url: 'admin/ban/getBlackList',
+			url: 'admin/blackList/getBlackList',
 			data: searchPara,
 			successFunc: function(response){
 				var status = response.code
@@ -114,17 +115,17 @@
 				if(second >= daySec && second < 2*daySec ){
 					return '1天'
 				}
-				if(second > 27*daySec && second < 32*daySec){
+				if(second > 29*daySec && second < 31*daySec){
 					return '30天'
 				}
-				if(second == 90*daySec){
+				if(second > 89*daySec && second < 91*daySec){
 					return '90天'
 				}
 
-				if(second > 90*daySec && second < 200*daySec){
+				if(second > 100*daySec && second < 200*daySec){
 					return '半年'
 				}
-				if(second > 200*daySec && second < 366*daySec){
+				if(second > 200*daySec && second < 367*daySec){
 					return '一年'
 				}
 				return '永久'
@@ -133,19 +134,19 @@
 			var trs = ''
 			for(var i = 0; i<list.length; i++){
 				var sequence = (searchPara.page-1)*searchPara.size+i+1
-				var durationSec = (list[i].durationSec - list[i].changeTime)/1000
-				console.log(timeFormat(list[i].changeTime)+'-'+timeFormat(list[i].durationSec))
-				var isOutofBlackList = durationSec == 0 ? 
+				var deblockTime = (list[i].deblockTime - list[i].changeTime)/1000
+				console.log(timeFormat(list[i].changeTime)+'-'+timeFormat(list[i].deblockTime))
+				var isOutofBlackList = deblockTime == 0 ? 
 					'<span class="label label-success radius">是</span> ':
 					'<span class="label label-warning radius">否</span> '
-				var unbanable = durationSec == 0 ? 'disabled': ''
-				var banable = durationSec == 0 ? '': 'disabled'
+				var unbanable = deblockTime == 0 ? 'disabled': ''
+				var banable = deblockTime == 0 ? '': 'disabled'
 				trs +=  '<tr>'+
 							'<td>'+sequence+'</td>'+
 							'<td>'+list[i].relation+'</td>'+
 							'<td>'+timeFormat(list[i].createTime)+'</td>'+
 							'<td>'+timeFormat(list[i].changeTime)+'</td>'+
-							'<td>'+secondToString(durationSec)+'</td>'+
+							'<td>'+secondToString(deblockTime)+'</td>'+
 							'<td>'+isOutofBlackList+'</td>'+
 							'<td>'+list[i].reason+'</td>'+
 							'<td>'+
@@ -199,7 +200,7 @@
 			closeBtn: 0,
 			yes: function(){
 				ajax({
-					url: 'admin/ban/banAccount',
+					url: 'admin/blackList/addToBlackList',
 					type: 'post',
 					z_type: 0,
 					data: {
@@ -246,6 +247,7 @@
 		var relation = accountInfo && accountInfo.relation || ''
 		var reason = accountInfo && accountInfo.reason || ''
 		var isDisabled = accountInfo!=null ? 'disabled': '' 
+		
 		layer.open({
 				type: 1,
 				closeBtn: 0,
@@ -275,14 +277,48 @@
 					}else if(!$('#duration-select').val()){
 						layer.msg('请选择封禁时长')
 					}else{
+						var targetTime = new Date()
+						var durationType = $('#duration-select').val()
+						console.log(durationType)
+						switch(durationType){
+								case '1': {
+									targetTime.setDate(targetTime.getDate() + 1)
+									break
+								}
+								case '2': {
+									targetTime.setDate(targetTime.getDate() + 30)
+									break
+								}
+								case '3': {
+									targetTime.setDate(targetTime.getDate() + 90)
+									break
+								}
+								case '4': {
+									targetTime.setMonth(targetTime.getMonth() + 6)
+									break
+								}
+								case '5': {
+									targetTime.setYear(targetTime.getFullYear() + 1)
+									break
+								}
+								default: {
+									targetTime = new Date('2085-11-25 20:06:18')
+									break
+								}
+						}				
+						
+						durationType = (durationType > 0) ? 1: durationType
+						
+						console.log(targetTime.Format('yyyy-MM-dd hh:mm:ss'))
 						ajax({
-							url: 'admin/ban/banAccount',
+							url: 'admin/blackList/addToBlackList',
 							type: 'post',
 							z_type: 0,
 							data: {
 								relation: $('#relation').val(),
 								reason: $('#reason').val(),
-								type: $('#duration-select').val()
+								type: durationType,
+								targetTime: targetTime.getTime()
 							},
 							successFunc: function(response){
 								var status = response.code

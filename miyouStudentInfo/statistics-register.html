@@ -278,8 +278,19 @@
                                 backgroundColor : "rgba(151,187,205,0.5)",
                                 borderColor : "rgba(151,187,205,1)",
                                 data : data
+                            },
+                            {
+                                label: '人数',
+                                backgroundColor : "rgba(151,187,205,0.6)",
+                                borderColor : "rgba(101,187,105,1)",
+                                data : [123,224,375,426,123,224,267,428,349,666,123,224,224,375,426,901]
                             }
                         ]
+                    },
+                    options: {
+                        tooltips: {
+                            mode: 'index'
+                        }
                     }
                 })
                 return chart

@@ -1,0 +1,168 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>福利详情</title>
+    <link rel="stylesheet" type="text/css" href="./static/reset.css">
+</head>
+<style type="text/css">
+    .z_body{
+        background: url('./images/detail_bg.png') no-repeat top left;
+        background-size: 100%;
+        position: relative;
+    }
+    .pic{
+        display: block;
+        margin:20px auto;
+    }
+    .desc{
+        width: 320px;
+        margin: 0 auto;
+        font-size: 18px;
+        color: #000;
+        text-align: center;
+        line-height: 1.3;
+    }
+    .desc i,.role-content i{
+        font-style: normal;
+        color: rgb(255,87,113);
+    }
+    .receive{
+        width: 285px;
+        margin:30px auto 0;
+        height: 50px;
+        line-height: 50px;
+        border-radius: 30px;
+        text-align: center;
+        font-size: 20px;
+        color: #fff;
+        background: #ddd;
+    }
+    .receive.enable{
+        cursor: pointer;
+        background: url('./images/receive_btn.png') no-repeat center;
+    }
+    .validity{
+        width: 200px;
+        margin: 0 auto;
+        color: rgb(255,87,113);
+        padding: 10px 0;
+    }
+    .role-title,.role-content{
+        font-size: 14px;
+        color: #000;
+        padding: 11px;
+    }
+    .role-title{
+        border-bottom: 0.5px solid rgb(128,128,128);
+        margin-top: 50px;
+    }
+    .role-content{
+        line-height: 1.5;
+    }
+    .text{
+        font-size: 12px;
+        margin-top:15px;
+        text-align: center;
+        line-height:1.5;
+    }
+    .bottom{
+        position: absolute;
+        bottom: 30px;
+        width: 100%;
+    }
+</style>
+
+<body class="z_body">
+<div class="J_receive_box" style="display: none">
+    <img src="./images/pic.png" class="pic">
+    <p class="desc J_desc"></p>
+    <div class="receive J_receive">立即领取</div>
+    <p class="validity">
+        <img class="icon" src="./images/icon_3.png">
+        活动有效期:还剩<span class="J_remain"></span>天
+    </p>
+    <p class="role-title">业务规则</p>
+    <p class="role-content J_role"><p>
+</div>
+<div class="J_activation_box" style="display: none;padding-top:100px;">
+
+</div>
+<script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="./static/common.js"></script>
+<script type="text/javascript">
+    var id = GetQueryString('id'),
+        phone = GetQueryString('phone');
+    _ajax('get','/api/h5/getWelfare/'+id+'/'+phone,{},function(data){
+        if(data.data.welfareProId == 'MFLLQJ'){
+            if(data.data.isReceive==0){
+                var str = '<img src="./images/notice.png" class="pic">' +
+                    '<p class="desc J_desc">您已完成用户注册</p>' +
+                    '<div class="text J_feedback_text">由于本号码可办理的业务受限或系统繁忙等原因,<br>免流福利未激活成功</div>' +
+                    '<div class="bottom">' +
+                    '<p class="text">点击下方按钮反馈此问题，我们将尽快处理</p>' +
+                    '<div class="receive J_feedback enable">立即反馈</div>' +
+                    '</div>';
+                $('.J_activation_box').html(str).show();
+            }else{
+                var str = '<img src="./images/success.png" class="pic">' +
+                    '<p class="desc J_desc">您已完成用户注册</p>' +
+                    '<div class="text">流量优惠福利已激活,<br>使用青椒校园APP产生的流量免费</div>';
+                $('.J_activation_box').html(str).show();
+            }
+        }else{
+            var remainDays = getTimeDifference(new Date(),data.data.endTime);
+            $('.J_desc').html(data.data.welfareDesc);
+            $('.J_remain').text(remainDays);
+            $('.J_role').html(data.data.welfareRole);
+            if(data.data.isReceive==0){
+                $('.J_receive').addClass('enable').attr({
+                    'data-proid':data.data.welfareProId,
+                    'data-proname':data.data.welfareProName
+                });
+            }else{
+                $('.J_receive').text('已领取');
+                $('.validity').hide();
+            }
+            $('.J_receive_box').show();
+        }
+    });
+    $(document).on('click','.J_receive.enable',function(){
+        toast('正在领取，请稍后');
+        $('.J_receive').removeClass('enable');
+        _ajax('post','/api/organize/eaopPro',{
+            'phone':phone,
+            'id':id,
+            'welfareProId':$('.J_receive').attr('data-proid'),
+            'welfareProName':$('.J_receive').attr('data-proname')
+        },function(data){
+            if(data.data.rettype=="0"){
+                $('.J_receive').text('已领取');
+                toast('福利已领取</br>请留意稍后短信通知',2000);
+                $('.validity').hide();
+            }else{
+                $('.J_receive').addClass('enable');
+                toast(data.data.retmsg,2000);
+            }
+        },function(data){
+            toast(data.error,2000);
+            $('.J_receive').addClass('enable');
+        })
+    }).on('click','.J_feedback',function(){
+        toast('意见反馈提交中');
+        _ajax('post','/api/upload/sdkLog',{
+            'userName':phone,
+            'reason':$('.J_feedback_text').text()
+        },function(data){
+            if(data.code==1){
+                toast('意见反馈提交成功',2000,function(){
+                    history.back();
+                });
+            }else{
+                toast('意见反馈</br>提交失败，请重试',2000);
+            }
+        })
+    })
+</script>
+</body>
+</html>
