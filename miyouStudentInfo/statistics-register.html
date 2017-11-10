@@ -238,6 +238,7 @@
                                     '<td>'+list[i].registCount+'</td>'+
                                     '<td>'+
                                     '<button  onclick="layer_show(\'当日注册详情\',\'statistics-daily-register.html#'+list[i].registDate+'&'+searchPara.city+'\',\'\',\'600\');" class="btn btn-primary-outline radius" >查看</button>'+
+                                    '<a href="http://218.204.254.209:28812/miyou/api/excel/getRegisterAddDaily?city='+searchPara.city+'&infoDate='+list[i].registDate+'" class="btn btn-primary-outline radius ml-10">导出excel</a>' +
                                     '</td>'+
                                     '</tr>'+trs
                             }
@@ -257,7 +258,8 @@
 
                     }
                 },
-                errorFunc: errorFunc            })
+                errorFunc: errorFunc
+            })
         }
 
         function showChart(labels,data, oldChart){
@@ -278,12 +280,6 @@
                                 backgroundColor : "rgba(151,187,205,0.5)",
                                 borderColor : "rgba(151,187,205,1)",
                                 data : data
-                            },
-                            {
-                                label: '人数',
-                                backgroundColor : "rgba(151,187,205,0.6)",
-                                borderColor : "rgba(101,187,105,1)",
-                                data : [123,224,375,426,123,224,267,428,349,666,123,224,224,375,426,901]
                             }
                         ]
                     },
