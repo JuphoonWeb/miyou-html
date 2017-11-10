@@ -70,7 +70,6 @@
                 for(var i = 0; i < list.length; i++){
                     trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].relationId+'</td><td>'+(list[i].city||'')+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td></tr>'
                 }
-                $('#statistics_line').prepend('<button id="export" title="导出" class="btn btn-primary-outline radius" style="width:100px">导出excel</button>');
             }else{
                 $('#nodata').show()
             }
@@ -182,9 +181,6 @@
             errorFunc: errorFunc
         })
     }
-    $(document).on('click','#export',function(){
-        location.href = 'http://218.204.254.209:28812/miyou/api/excel/getRegisterAddDaily?city='+city+'&infoDate='+infoDate;
-    })
     init();
 </script>
 </body>

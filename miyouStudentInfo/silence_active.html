@@ -1,0 +1,214 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <style>
+        span.num+span.num{
+            margin-left: 15px;
+        }
+    </style>
+    <title>活跃沉默用户</title>
+</head>
+<body>
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计管理 <span class="c-gray en">&gt;</span>  活跃沉默用户 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" >
+    <h3 id="register-total" style="text-align: center"></h3>
+    <h5 id="city-count" style="text-align: center"></h5>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" placeholder=" 开始时间" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}'})" id="search-end-date" class="input-text Wdate formControls" placeholder=" 结束时间" style="width: 150px">
+
+        <span class="select-box" style="width: 100px">
+                <select class="select J_select" id="search-type">
+                    <option value="0">活跃</option>
+                    <option value="1">沉默</option>
+                </select>
+        </span>
+        <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+
+        <!--<div class="r">-->
+            <!--<strong>注册总计-</strong>-->
+            <!--<span class="num">湛江：<strong id="zhangjiang-num" >0</strong> </span>-->
+            <!--<span class="num">韶关：<strong id="shaoguan-num" >0</strong> </span>-->
+            <!--<span class="num">珠海：<strong id="zhuhai-num" >0</strong> </span>-->
+            <!--<span class="num">深圳：<strong id="shenzhen-num" >0</strong> </span>-->
+        <!--</div>-->
+    </div>
+    <!--<canvas id="register-chart" height="80"></canvas>-->
+    <!--<div class="mt-20">-->
+        <!--<table class="table table-bordered table-border table-hover table-bg " id="activity-table">-->
+            <!--<thead>-->
+            <!--<tr class="text-c">-->
+                <!--<th width="100">日期</th>-->
+                <!--<th width="100">新增用户数</th>-->
+                <!--<th width="100">详情</th>-->
+            <!--</tr>-->
+            <!--</thead>-->
+            <!--<tbody id="activity-tbody" class="text-c" >-->
+            <!--</tbody>-->
+        <!--</table>-->
+        <!--<div class="pagination r" id="pagination"></div>-->
+        <!--<div class="nodata" id="nodata">-->
+            <!--<img src="static/images/nodata.svg" alt="">-->
+        <!--</div>-->
+    <!--</div>-->
+</div>
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="lib/Chart.min.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script>
+
+
+<script type="text/javascript">
+    var isPageInit = false
+
+    var searchPara = {
+        startDate: null,
+        endDate: null,
+        type: ''
+    }
+    var oldChart = null
+
+    $(function(){
+        $('#search-end-date').val(new Date().Format('yyyy-MM-dd'));
+        $('#search-start-date').val(new Date(new Date()*1-86400000*7).Format('yyyy-MM-dd'));
+        $('#search-btn').click();
+    })
+
+    $(document).on('change', '#search-start-date', '#search-end-date', function(){
+        if($(this).val === ''){
+            $(this).val(null)
+        }
+    })
+
+    $('#search-btn').click(function(){
+        searchPara.startDate = $('#search-start-date').val()
+
+        //因为时分秒为 00:00:00，要查到最完整的数据，结束日期必须往后推一天
+        var endDate = new Date($('#search-end-date').val())
+        endDate.setDate(endDate.getDate()+1)
+        searchPara.endDate = endDate.Format('yyyy-MM-dd')
+        console.log('结束时间： '+ searchPara.endDate)
+
+        searchPara.type = $('#search-type').children('option:selected').attr('value')
+        getData(searchPara)
+    })
+
+    function errorFunc(xhr, status){
+        layer.open({
+            type: 0,
+            closeBtn: 0,
+            icon:7,
+            title: '出现错误',
+            content: status
+        })
+    }
+
+    //data对象包含 page, size, phone, type, createTime, city, schoolName
+    function getData(data){
+        ajax({
+            url: 'admin/auth/getActivityRate',
+            data: data,
+            successFunc: function(response){
+                var status = response.code
+                if(status === 1){
+                    $('#nodata').hide()
+                    var list = response.data
+                    var activityTypes = {}
+                    var labels = [];
+                    var lineData = [];
+                    var options = $('select#search-activity-type').children()
+                    for(var i = 1; i < options.length; i++){
+                        activityTypes[ options[i].value ] = options[i].text
+                    }
+                    var trs = ''
+                    if(list){
+                        for(var i = 0; i<list.length; i++){
+                            labels.push(list[i].statisDate);
+
+                            trs = '<tr>'+
+                                '<td>'+list[i].registDate+'</td>'+
+                                '<td>'+list[i].registCount+'</td>'+
+                                '<td>'+
+                                '<button  onclick="layer_show(\'当日注册详情\',\'statistics-daily-register.html#'+list[i].registDate+'&'+searchPara.city+'\',\'\',\'600\');" class="btn btn-primary-outline radius" >查看</button>'+
+                                '</td>'+
+                                '</tr>'+trs
+                        }
+                    }else{
+                        $('#nodata').show();
+                    }
+                    $('#activity-tbody').html(trs)
+                    oldChart = showChart(labels, lineData, oldChart);
+                }else if(status === 0){
+                    layer.open({
+                        type: 0,
+                        closeBtn: 0,
+                        icon:7,
+                        title: '获取数据失败',
+                        content: response.error
+                    })
+
+                }
+            },
+            errorFunc: errorFunc
+        })
+    }
+
+    function showChart(labels,data, oldChart){
+        if(oldChart){
+            oldChart.data.labels = labels
+            oldChart.data.datasets[0].data = data
+            oldChart.update()
+            return oldChart
+        }else{
+            var ctx = $('#register-chart')[0].getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels : labels,
+                    datasets: [
+                        {
+                            label: '注册人数',
+                            backgroundColor : "rgba(151,187,205,0.5)",
+                            borderColor : "rgba(151,187,205,1)",
+                            data : data
+                        },
+                        {
+                            label: '人数',
+                            backgroundColor : "rgba(151,187,205,0.6)",
+                            borderColor : "rgba(101,187,105,1)",
+                            data : [123,224,375,426,123,224,267,428,349,666,123,224,224,375,426,901]
+                        }
+                    ]
+                },
+                options: {
+                    tooltips: {
+                        mode: 'index'
+                    }
+                }
+            })
+            return chart
+        }
+    }
+</script>
+</body>
+</html>
