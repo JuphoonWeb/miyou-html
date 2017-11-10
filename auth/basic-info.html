@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-	<title>基本信息</title>
+	<title>详细资料</title>
 	<link rel="stylesheet" href="css/dialog.css">
 	<style>
 		*{
@@ -298,7 +298,11 @@
 						data: data,
 						success: function(response){
 							if(response.code == 1){
-								window.open('submit-success.html', '_self')							
+								notice('资料提交成功！')
+								setTimeout(function(){
+									native.dismissWebView()
+								},1000)
+																
 							}else if(response.code == 0){
 								notice(response.error)
 							}else{
