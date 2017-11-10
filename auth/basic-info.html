@@ -195,7 +195,7 @@
 		$(document).ready(function(){
 
 			if(sessionStorage.getItem('userInfo')){
-				var userInfo = sessionStorage.getItem('userInfo')
+				var userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
 				$('#name').val(userInfo.memberName)
 				data.memberName = userInfo.memberName
 
@@ -279,10 +279,10 @@
 			var options = '<option value=""></option>'
 			for(var  i = 0; i<list.length; i++){
 				var val = list[i].id || list[i].orgId
-				var name = list[i].name 
+				var name = list[i].name || list[i].organizeName
 				options += '<option value="'+val+'" data-name="'+name+'" >'+name+'</option>'
 			}
-			$(queryStr).append(options)
+			$(queryStr).append(options).removeAttr('disabled')
 		}
 
 		function enableBtn(){
@@ -369,7 +369,7 @@
 					var cityId = selected.val()
 					getOrg({
 						type: sessionStorage.getItem('orgType'),
-						cityId: cityId
+						city: cityId
 					})
 				}else if(selectId === 'org'){
 					var selected = $(this).children('option:checked')

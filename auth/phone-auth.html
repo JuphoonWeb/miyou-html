@@ -102,7 +102,7 @@
 	<div class="container">
 		<div class="notice-info">
 			<p>为确保当前操作是由本人发起，
-		青椒校园已向你注册的手机发送短信，
+		已向你注册的手机发送短信，
 		请输入短信中的验证码完成手机验证</p>
 		</div>
 	</div>
@@ -167,7 +167,7 @@
 		$('#spinner').hide()
 		$('.code-cube').removeClass('hasValue')
 		ajax({
-			url: 'h5/sendCode',
+			url: 'h5/newSendCode',
 			type: 'post',
 			data: {
 				phone: sessionStorage.getItem('phone'),

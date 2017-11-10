@@ -24,20 +24,20 @@
 
 		}
 		#student-choice-panel{
-			background-image: url(img/imgStudent@2x-min.png); 
+			background-image: url(img/imgStudent.png); 
 		}
 		#stuff-choice-panel{
-			background-image: url(img/imgCompany@2x-min.png)
+			background-image: url(img/imgCompany.png)
 		}
 	</style>
 </head>
 <body>
 	<div class="container">
-		<div class="choice-panel" id="student-choice-panel">
-			<button class="choice-btn"  onclick="setUserRole(1)">我是学生</button>
+		<div class="choice-panel" id="student-choice-panel" onclick="setUserRole(1)">
+			<button class="choice-btn" >我是学生</button>
 		</div>
-		<div class="choice-panel" id="stuff-choice-panel">
-			<button class="choice-btn" onclick="setUserRole(2)">我是公司职员</button>
+		<div class="choice-panel" id="stuff-choice-panel" onclick="setUserRole(2)">
+			<button class="choice-btn">我是公司职员</button>
 		</div>		
 	</div>
 	<script src="js/vconsole.min.js"></script>

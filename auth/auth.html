@@ -116,30 +116,7 @@
 
 
 
-		function getInfo(){
-			ajax({
 
-				url: 'orgh5/getOrgInfo',
-				data: GetQueryString('phone'),
-				success: function(response){
-					if(response.code === 1){
-						var data = response.data
-						studentInfo = data
-						$('#memberName').text(data.memberName)
-						$('#auth-badge-img').show()
-						$('#org').text(data.org)
-						$('#school-badge').attr('src',data.image_url)
-					}else if(response.code === 0){
-						notice(response.error)
-					}else{
-						notice('网络错误')	
-					}
-				},
-				error: function(xhr, status) {
-					notice(status)
-				}
-			})
-		}
 		$(document).ready(function(){
 			var phone = GetQueryString('phone')
 			sessionStorage.setItem('phone',phone)
@@ -147,7 +124,9 @@
 			
 			ajax({
 				url: 'orgh5/getOrgInfo',
-				data: sessionStorage.getItem('phone'),
+				data:{
+					phone: sessionStorage.getItem('phone'),
+				},
 				async: false,
 				success: function(response) {
 
@@ -160,10 +139,9 @@
 
 							$('#memberName').text(data.memberName)
 							$('#auth-badge-img').show()
-							$('#org').text(data.organizes.organizeName)
-							$('#school-badge').attr('src',data.image_url)
-
-							sessionStorage.setItem('userInfo', data)
+							$('#org').text(data.organizes[0].organizeName)
+							$('#school-badge').attr('src',data.organizes[0].imageUrl)
+							sessionStorage.setItem('userInfo', JSON.stringify(data))
 						}else{
 							$('#un-auth').show()
 							$('#auth-info').hide()
@@ -216,9 +194,7 @@
 			})
 		})
 		$('#auth-btn, #change-btn').click(function(){
-			if(!isEmpty(studentInfo)){
-				sessionStorage.setItem('studentInfo', JSON.stringify(studentInfo))
-			}
+			
 			window.open('phone-auth.html','_self')
 		})
 	</script>
