@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" >
+	<title>详细资料</title>
+	<link rel="stylesheet" href="css/dialog.css">
+	<link rel="stylesheet" href="css/main.css">
+	<style>
+		.choice-panel{
+			width:330px;
+			height:225px;
+			margin: 23px auto 23px;
+			background: 0 0/contain no-repeat;
+			/* 防止margin重叠 */
+			overflow: hidden;   
+		}
+		.choice-btn{
+			width:130px;
+			height:40px;
+			border-radius: 25px;
+			margin: 175px auto;
+			opacity: 0.8;
+
+		}
+		#student-choice-panel{
+			background-image: url(img/imgStudent@2x-min.png); 
+		}
+		#stuff-choice-panel{
+			background-image: url(img/imgCompany@2x-min.png)
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="choice-panel" id="student-choice-panel">
+			<button class="choice-btn"  onclick="setUserRole(1)">我是学生</button>
+		</div>
+		<div class="choice-panel" id="stuff-choice-panel">
+			<button class="choice-btn" onclick="setUserRole(2)">我是公司职员</button>
+		</div>		
+	</div>
+	<script src="js/vconsole.min.js"></script>
+	<script>
+		// var vConsole = new VConsole()
+		console.log('hello vConsole')
+
+		function setUserRole(role){
+			sessionStorage.setItem('orgType', role)
+			window.open('basic-info.html','_self')
+		}
+
+	</script>
+</body>
+</html>

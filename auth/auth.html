@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<title>详细资料</title>
+	<link rel="stylesheet" href="css/dialog.css">
+	<link rel="stylesheet" href="css/main.css">
+	
+	<!-- 未认证 -->
+	<style>
+		#un-auth {
+			text-align: center;
+		}
+		#un-auth img.notice{
+			display: block;
+			margin:71px auto 6px;
+		}
+		#un-auth .msg{
+			display: inline-block;
+			width:90%;
+			height: 110px;
+			text-align: center;
+		}
+		#un-auth .msg .primary-msg{
+			font-size:20px;
+		}
+		#un-auth .msg .secondary-msg{
+			margin-top:14px;
+			color:rgb(136, 136, 136);
+		}
+		#un-auth #auth-btn{
+			width:43%;
+			height:50px;
+			margin: 0 auto;
+			border-radius: 30px;
+			font-size:18px;
+		}
+	</style>
+
+	<!-- 已认证 -->
+	<style>
+		.content-head{
+			width:100%;
+			height:320px;
+			margin-top: 110px;
+		}
+		img#school-badge{
+			display: block;
+			width:120px;
+			height:120px;
+			margin:0 auto;
+		}
+		.basic-info{
+			position: relative;
+			margin:30px auto 0;
+			text-align: center
+		}
+		.basic-info .memberName{
+			font-size:20px;
+		}
+		.basic-info #auth-badge-img{
+			display: none;
+			position: absolute;
+			top:5px;
+			width:53px;
+			height:19px
+		}
+		.basic-info .org{
+			margin-top: 10px;
+			font-size: 18px;
+		}
+		#change-btn{
+			width:130px;
+			height:50px;
+			margin:0 auto;
+			border-radius: 25px;
+		}
+	</style>
+
+	<style>
+		#un-auth, #auth-info{
+			display: none;
+		}
+	</style>
+
+</head>
+<body>
+	<div id="un-auth">
+		<img src="img/imgNotice.png" alt="" class="notice">
+		<div class="msg" id="msg">
+		</div>
+		<button id="auth-btn">立即完善</button>
+	</div>
+	<div id="auth-info">
+		<div class="content">
+			<div class="content-head">
+				<img src="" alt="" class="school-badge" id="school-badge">
+				<div class="basic-info">
+					<div class="memberName">
+						<span class="memberName" id="memberName"></span>
+						<span class="auth-badge"><img id="auth-badge-img" src="img/icRenzheng@3x.png" alt=""></span>
+					</div>
+					<div class="org" id="org"></div>
+				</div>
+			</div>
+		</div>
+		<button id="change-btn">修改资料</button>
+	</div>
+
+	<script src="js/zepto.min.js"></script>
+	<script src="js/ajax.js"></script>
+	<script src="js/dialog.min.js"></script>
+	<script src="js/index.js"></script>
+	<script>
+
+
+
+		function getInfo(){
+			ajax({
+
+				url: 'orgh5/getOrgInfo',
+				data: GetQueryString('phone'),
+				success: function(response){
+					if(response.code === 1){
+						var data = response.data
+						studentInfo = data
+						$('#memberName').text(data.memberName)
+						$('#auth-badge-img').show()
+						$('#org').text(data.org)
+						$('#school-badge').attr('src',data.image_url)
+					}else if(response.code === 0){
+						notice(response.error)
+					}else{
+						notice('网络错误')	
+					}
+				},
+				error: function(xhr, status) {
+					notice(status)
+				}
+			})
+		}
+		$(document).ready(function(){
+			var phone = GetQueryString('phone')
+			sessionStorage.setItem('phone',phone)
+			$('#un-auth').show()
+			
+			ajax({
+				url: 'orgh5/getOrgInfo',
+				data: sessionStorage.getItem('phone'),
+				async: false,
+				success: function(response) {
+
+					if(response.code === 1){
+						var data = response.data
+						sessionStorage.setItem('api_token', data.api_token)
+						if(data.type === 1){
+							$('#un-auth').hide()
+							$('#auth-info').show()
+
+							$('#memberName').text(data.memberName)
+							$('#auth-badge-img').show()
+							$('#org').text(data.organizes.organizeName)
+							$('#school-badge').attr('src',data.image_url)
+
+							sessionStorage.setItem('userInfo', data)
+						}else{
+							$('#un-auth').show()
+							$('#auth-info').hide()
+							
+							var msgHtml = '<p class="primary-msg">您的信息还未完善</p>'
+							if(data.isGzMobile){
+								msgHtml += '<p class="secondary-msg" id="secondary-msg">完善资料即可<br>添加10个免费通话联系人并领取8G流量</p>'
+
+							}else{
+								msgHtml += '<p class="secondary-msg">完善资料即可解锁“逛一逛”所有功能</p>'
+							}
+							$('#msg').append(msgHtml)
+							if(data.type === 1){
+								dialog({
+									text: '<p style="margin:0">你有认证信息正在审核<br>点击页面右上角查看进度</p>',
+									ok: function() {
+										native.dismissWebView()
+									}
+								})
+							}
+
+						}
+					}else if(response.code === 0){
+						// notice(response.error)
+						dialog({
+							text: response.error,
+							ok: function(){
+								native.dismissWebView()
+							}
+						})
+					}else{
+						// notice('网络错误')
+						dialog({
+							text: '网络错误',
+							ok: function(){
+								native.dismissWebView()	
+							}
+						})	
+					}
+				},
+				error: function(xhr, status){
+					// notice('网络错误')
+					dialog({
+						text: status,
+						ok: function(){
+							native.dismissWebView()	
+						}
+					})
+				}
+			})
+		})
+		$('#auth-btn, #change-btn').click(function(){
+			if(!isEmpty(studentInfo)){
+				sessionStorage.setItem('studentInfo', JSON.stringify(studentInfo))
+			}
+			window.open('phone-auth.html','_self')
+		})
+	</script>
+</body>
+</html>

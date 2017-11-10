@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<title>手机验证</title>
+	<link rel="stylesheet" href="css/dialog.css">
+	<style>
+		*{
+			padding:0;margin:0;
+			box-sizing: border-box;
+			font-family: 'Heiti SC';
+			font-size: 16px;
+			-webkit-tap-highlight-color: transparent;
+		}
+		
+		.notice-info{
+			padding:35px;
+		}
+		.auth-code{
+			position: relative;
+			text-align: center;
+			width: 230px;
+			height:70px;
+			margin: 0 auto;
+		}
+		.auth-code input{
+			position: absolute;
+			z-index: 1;
+			width:350px;
+			height: 45px;
+			left:-120px;
+			border:none;
+			background-color: transparent;			
+			color: transparent;
+		}
+		.auth-code input:focus{
+			outline: none;
+		}
+		.code-cube-container{
+			margin:0 auto;
+		}
+		.auth-code .code-cube{
+			display: inline-block;
+			width:45px;
+			height:45px;
+			line-height: 45px;
+			font-size:25px;
+			color: transparent;
+			border:1px solid rgb(185, 185, 185);
+			border-radius: 5px;
+			
+		}
+		.auth-code .code-cube+.code-cube{
+			margin-left: 10px;
+		}
+		@media (max-width: 320px){
+			.auth-code .code-cube+.code-cube{
+				margin-left: 8px;
+			}
+		}
+		.auth-code .code-cube.focus{
+			border-color:rgb(249, 173, 68);
+		}
+		.auth-code .code-cube.hasValue{
+			color:rgb(249, 173, 68);
+			border-color:rgb(249, 173, 68);
+		}
+		.error{
+			text-align: center;
+			color:rgb(209, 0, 0);
+			font-size:12px;
+			margin-top: 10px;
+			display: none;
+		}
+		.btn{
+			position: relative;
+			display: block;
+			width: 300px;
+			height: 50px;
+			margin: 20px auto;
+			border: none;
+			outline: none;
+			color:rgb(255, 255, 255);
+			background-color: rgb(242, 170, 25);
+			font-size: 20px;
+			border-radius:30px;
+			box-shadow: 0 2px 5px 0 rgba(231, 119, 22, 0.44);
+		}
+		#spinner{
+			position: absolute;
+			top:10px;left:90px;
+			width:30px;
+			height:30px;
+			color:white;
+			margin-right:5px;
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="notice-info">
+			<p>为确保当前操作是由本人发起，
+		青椒校园已向你注册的手机发送短信，
+		请输入短信中的验证码完成手机验证</p>
+		</div>
+	</div>
+	<div class="auth-code">
+		<input type="tel" pattern="[0-9]" id="code" maxlength="4">
+		<div class="code-cube-container">
+			<div class="code-cube" id="code-cube-1">*</div>
+			<div class="code-cube" id="code-cube-2">*</div>
+			<div class="code-cube" id="code-cube-3">*</div>
+			<div class="code-cube" id="code-cube-4">*</div>
+		</div>
+		<div class="error">验证码错误，请重新获取并输入</div>
+	</div>
+	<button class="btn send-btn" id="send-btn" ><img id="spinner"  src="img/auth-phone-loading.gif" alt="" /><p class="text-in-btn">发送验证码</p></button>
+
+</body>
+<script src="js/zepto.min.js"></script>
+<script src="js/ajax.js"></script>
+<script src="js/dialog.min.js"></script>
+<script src="js/index.js"></script>
+<script>
+	
+	$(document).ready(function(){
+		sendCode()
+	})
+
+	$(document).on('focus','input', function(){
+		$('#code-cube-1').addClass('focus')
+	})
+
+	$(document).on('input','input',function(){
+		$('.error').hide()
+		var code = $(this).val()
+
+		code = code.replace(/[^\d]/g,'')
+		$(this).val(code)
+		var codeLength = code.length
+
+		$('.code-cube').removeClass('hasValue').text('*')
+		for(var i = 1; i <= codeLength; i++){
+			$('#code-cube-'+i).addClass('hasValue').text(code[i-1])
+		}
+		if(codeLength > 4){
+			$(this).val(code.slice(0,4))
+			code = $(this).val()
+			codeLength = code.codeLength
+			validate(code)
+		}
+		if(codeLength == 4){
+			// $('input').blur()
+			validate(code)
+		}
+	})
+
+	$('#send-btn').on('click',function(){
+		sendCode()
+	})
+	
+	function sendCode(){
+		$('input').val('')
+		$('.error').hide()
+		$('#spinner').hide()
+		$('.code-cube').removeClass('hasValue')
+		ajax({
+			url: 'h5/sendCode',
+			type: 'post',
+			data: {
+				phone: sessionStorage.getItem('phone'),
+				type: '2'
+			},
+			success: function(response){
+				if(response.code != 1){
+					notice('出现错误')
+				}
+			},
+			error: function(xhr, status){
+				notice(status)
+			}
+		})
+	
+		$('#send-btn').css('background-color','rgba(231, 119, 22, 0.44)')
+					  .attr('disabled', true)
+		var second = 60
+		$('.text-in-btn')
+			.text(second+'s后可重发')
+			.addClass('countdown-text')
+		var intervalId = setInterval(function(){
+			second--
+			$('.countdown-text').text(second+'s后可重发')
+			if(second == 0 || $('.countdown-text').length == 0){
+				clearInterval(intervalId)
+				$('#send-btn').css('background-color', 'rgb(242, 170, 25)')
+					.removeAttr('disabled')
+				if(second == 0){
+					$('.text-in-btn').text('重新获取验证码')
+				}
+			}
+		},1000)
+	}
+
+	function validate(code){
+			$('#spinner').attr('src','img/auth-phone-loading.gif').show()
+			$('.text-in-btn').removeClass('countdown-text').text('验证中')
+			$('#send-btn').attr('disabled',true).css('background-color', 'rgb(242, 170, 25)')
+			ajax({
+				url: 'h5/validateCode',
+				type: 'post',
+				data: {
+					phone: sessionStorage.getItem('phone'),
+					code: code,
+					type: '2'
+				},
+				success: function(response){
+					if(response.code === 1){
+						$('input').attr('readonly',true)
+						$('#spinner').attr('src', 'img/auth-phone-ok.svg').css('width','20px').show()
+						$('.text-in-btn').text('验证成功')
+						$('#send-btn')
+							.removeAttr('disabled')
+							.off()
+							.on('click',function(){
+								window.open('role-choice.html','_self')
+							})	
+					}else{
+						$('.error').show()
+						$('input').blur() 
+						$('#spinner').hide()
+						$('.text-in-btn')
+							.text('重新获取验证码')
+						$('#send-btn').removeAttr('disabled')
+					}
+				},
+				error: function(xhr, status){
+					notice(status)
+				}
+			})
+	}
+
+</script>
+
+</html>

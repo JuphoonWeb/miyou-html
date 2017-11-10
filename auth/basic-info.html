@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<title>基本信息</title>
+	<link rel="stylesheet" href="css/dialog.css">
+	<style>
+		*{
+			padding:0;margin:0;
+			box-sizing: border-box;
+			font-family: 'Heiti SC';
+			font-size: 16px;
+			-webkit-tap-highlight-color: transparent;
+		}
+		body{
+			background-color: rgb(246, 246, 246)
+		}
+		.container{
+			height:100%;
+		}
+		.fieldset{
+			width:100%;
+			padding: 0 10px;
+			background-color: rgb(255, 255, 255);
+			border-top:1px solid rgb(230, 230, 230);
+			border-bottom: 1px solid rgb(230, 230, 230);
+		}
+		.title{
+			height:45px;
+			padding:20px 10px 0;
+			color:rgb(136, 136, 136);
+			font-size:14px;
+
+		}
+		.title .org-type{
+			font-size: 14px;
+		}
+		.form-group{
+			position: relative;
+			height:50px;
+			border-bottom:2px solid rgb(230, 230, 230);
+		}
+		.form-group-lg{
+			height:56px;
+		}
+		.form-group label{
+			display: inline-block;
+			height:50px;
+			line-height:50px;
+			width:30%;
+		}
+		.form-group input{
+			position:absolute;
+			top:5px;
+			padding-top:5px;
+			padding-bottom:5px;
+			height:40px;
+			line-height:40px;
+			width:70%;
+			border:none;
+			text-align: right;
+
+		}
+		.form-group input:focus{
+			outline: none;
+			background-color:rgb(255, 255, 255);
+		}
+		.form-group select{
+			position:absolute;
+			width:70%;
+			height:40px;
+			border:none;
+			color:rgba(255, 255, 255, 1);
+			opacity: 0;
+			z-index: 100;
+		}
+		.form-group select option{
+			color:rgb(0, 0, 0);
+		}
+		.form-group option:first-child{
+			color:rgba(255, 255, 255, 1);
+			display: none;
+		}
+		.arrow-box{
+			position: absolute;
+			width:16px;
+			height:16px;
+			top:17px;
+			right:0px;
+			z-index: 99;
+		}
+		.result{
+			position:absolute;
+			top:5px;right:15px;
+			width:80%;height:40px;
+			line-height:40px; 
+			text-align: right;
+			white-space: nowrap;
+			text-overflow: hidden;
+			overflow: hidden;
+			color:rgb(51, 51, 51); 
+			z-index:98;
+		}
+		.arrow{
+			width:16px;
+			height:16px;
+			background-image: url(img/arrow.svg);
+		}
+		.form-group:last-of-type{
+			border:none;
+		}
+		div.seperator{
+			width:375px;
+			height:10px;
+			background-color: rgb(246, 246, 246)
+		}
+		#complete-btn{
+			display: block;
+			width:120px;
+			height:50px;
+			margin:19px auto;
+			background-color:rgb(244, 200, 113);
+			outline: none;
+			border:none;
+			border-radius: 25px;
+			color:rgb(255, 255, 255);
+			font-size:18px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	
+	<div class="container" id="basic-info">
+		<form action="">
+			<div class="title">基本信息</div>
+			<div class="fieldset fieldset-1">
+				<div class="form-group form-group-lg">
+					<label for="name">真实姓名</label>
+					<input type="text" id="name" placeholder="请输入真实姓名" >
+				</div>
+				<div class="form-group form-group-lg">
+					<label for="sex">性别</label>	
+					<select name="sex" id="sex" >
+					</select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="sex-result"></div>
+				</div>	
+			</div>
+			<div class="title"> <span class="org-type">学校</span>信息</div>
+			<div class="fieldset fieldset-2">
+				<div class="form-group">
+					<label for="city">城市</label>
+					<select name="city" id="city"></select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="city-result"></div>
+				</div>
+				<div class="form-group">
+					<label for="org" class="org-type" >学校</label>
+					<select name="org" id="org"  ></select>
+					<div class="arrow-box">
+						<div class="arrow"></div>
+					</div>
+					<div class="result" id="org-result"></div>
+				</div>
+			</div>
+			<button class="btn-container" id="complete-btn">
+				完成
+			</button>
+		</form>
+	</div>
+	<script src="js/vconsole.min.js"></script>
+	<script src="js/zepto.min.js"></script>
+	<script src="js/ajax.js"></script>
+	<script src="js/dialog.min.js"></script>
+	<script src="js/index.js"></script>
+	<script>
+		// var vConsole = new VConsole()
+
+		var isFinished = false,
+			isInit = true,
+			data = {
+				phone: sessionStorage.getItem('phone'),
+				orgId: null,	
+			    memberName: $('#name').val().trim(),
+			    sex: $('#sex').children('option:checked').val(),
+			    orgType: sessionStorage.getItem('orgType'),
+			}
+
+		$(document).ready(function(){
+
+			if(sessionStorage.getItem('userInfo')){
+				var userInfo = sessionStorage.getItem('userInfo')
+				$('#name').val(userInfo.memberName)
+				data.memberName = userInfo.memberName
+
+				var sexStr = userInfo.sex ? '男': '女'
+				$('#sex-result').text(sexStr)	
+				data.sex = userInfo.sex
+
+			}
+
+			var orgType = data.orgType == 2? '公司': '学校'
+			$('.org-type').text(orgType)
+
+			disableBtn()
+			$('select#org').attr('disabled',true)
+			
+			var sexOption = '<option  value="-1"></option><option value="0" data-name="女">女</option><option value="1" data-name="男">男</option>'
+			$('select#sex').append(sexOption)
+
+			getCity()
+
+		})	
+		
+		function getCity(){
+			ajax({
+				url: 'orgh5/getCity',
+				type: 'get',
+				success: function(response) {
+					if(response.code === 1){
+						fillSelect('city',response.data)
+					}else if(response.code === 0){
+						notice(response.error)
+					}else{
+						notice('出现错误')
+					}
+				},
+				error: function(xhr, status){
+					notice(status)
+				}
+			})
+		}
+
+		function getOrg(data){
+			ajax({
+				url: 'orgh5/getOrganizes',
+				data: data,
+				success: function(response) {
+					if(response.code === 1){
+						fillSelect('org', response.data)						
+					}else if(response.code === 0){
+						notice(response.error)
+					}else{
+						notice('出现错误')
+					}
+				},
+				error: function(xhr, status){
+					notice(status)
+				}	
+			})
+		}
+
+		function fillSelect(selectId, list){
+			var queryStr = 'select#'+selectId
+			
+			if(selectId === 'org'){
+				$('#org-result, #school-result').text('')
+				if(!isInit){
+					studentInfo.org = ''
+					studentInfo.school = ''
+				}
+				$('select#school').attr('disabled', true)
+			}else if(selectId === 'school'){
+				$('#school-result').text('')
+				if(!isInit){
+					studentInfo.school = ''
+				}
+				data.school = ''
+
+			}	
+
+			$(queryStr).children().remove()
+			var options = '<option value=""></option>'
+			for(var  i = 0; i<list.length; i++){
+				var val = list[i].id || list[i].orgId
+				var name = list[i].name 
+				options += '<option value="'+val+'" data-name="'+name+'" >'+name+'</option>'
+			}
+			$(queryStr).append(options)
+		}
+
+		function enableBtn(){
+			$('#complete-btn')
+				.removeAttr('disabled')
+				.css('background-color','rgb(242, 170, 25)')
+				.off()
+				.on('click', function(e){
+					e.preventDefault()
+					ajax({
+						url: 'orgh5/auth',
+						type: 'post',
+						data: data,
+						success: function(response){
+							if(response.code == 1){
+								window.open('submit-success.html', '_self')							
+							}else if(response.code == 0){
+								notice(response.error)
+							}else{
+								notice('资料提交失败，请重试')
+							}
+						},
+						error: function(xhr, status){
+							notice('资料提交失败，请重试')
+						}
+					})
+				}) 
+		}
+
+		function disableBtn(){
+			$('#complete-btn').attr('disabled', true)
+						  .css('background-color','rgb(244, 200, 113)')	
+		}
+
+		function checkInfo(){
+				var  isPass = true
+				for(i in data){
+					if(i === 'sex'){
+						console.log(i)
+
+						if(data[i] == -1 || !data[i]){
+							console.log(i,'false')
+							isPass = false
+							break	
+						}
+					}else if(!data[i]){
+						console.log(i,'false')
+						isPass = false
+						break
+					}
+				}
+
+				if(isPass){
+					enableBtn()
+				}else{
+					disableBtn()
+				}
+		}
+
+		$(document).on('focus','input',function(){
+			disableBtn()
+		})
+
+		$(document).on('change', 'input, select', function(){
+			var tagName = $(this).prop('tagName')
+			if(tagName === 'INPUT'){
+				var inputId = $(this).attr('id')
+				if(inputId === 'name'){
+					var name = $(this).val().trim()
+					data.memberName = name
+				}
+			}else{
+				var text = $(this).children('option:checked').text()
+				var resultEl = $(this).siblings('.result')
+				resultEl.text(text)
+
+				var selectId = $(this).attr('id')
+				if(selectId === 'sex'){
+					var sexNum = $(this).children('option:checked').val()
+					data.sex = sexNum
+
+				}else if(selectId === 'city'){
+					var selected = $(this).children('option:checked')
+					var cityId = selected.val()
+					getOrg({
+						type: sessionStorage.getItem('orgType'),
+						cityId: cityId
+					})
+				}else if(selectId === 'org'){
+					var selected = $(this).children('option:checked')
+					data.orgId = selected.val()					
+				}			
+			}
+			console.log('data', data)
+			checkInfo()
+		})	
+
+		$(document).on('blur', 'input, select',function(){
+			checkInfo()
+		})
+
+	</script>
+</body>
+</html>

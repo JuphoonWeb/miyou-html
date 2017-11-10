@@ -1,0 +1,14 @@
+*{
+	padding:0;margin:0;
+	box-sizing: border-box;
+	font-family: 'Heiti SC';
+	outline: none;
+	font-size: 16px;
+}
+button{
+	display: block;
+	border:none;
+	color:rgb(255, 255, 255);
+	background-color: rgb(250, 174, 68);
+	box-shadow: 0 2px 5px 0 rgba(231, 119, 22, 0.44)
+}
