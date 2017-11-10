@@ -92,7 +92,8 @@
 					})
 
 				}
-			}
+			},
+			errorFunc: errorFunc
 			
 		})
 	}
@@ -146,8 +147,8 @@
 			    jump: function(obj,first) {
 			    	if(!first){
 			    		console.log(obj.curr)
-			    		currPage =obj.curr
-				    	getData(currPage, size, username)
+			    		searchPara.page =obj.curr
+				    	getData(searchPara)
 					}
 			    }
 		  });
@@ -217,15 +218,7 @@
 			}
 		});
 	}
-	
 
-
-	$('#search-btn').click(function(){
-		isPageInit = false
-		currPage = 1
-		$('#pagination').hide()
-		getData(currPage, size, $('#username').val())
-	})
 </script>  
 </body>
 </html>

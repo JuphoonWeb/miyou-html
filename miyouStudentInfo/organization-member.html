@@ -55,7 +55,7 @@
         <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
     </div>
     <div class="mt-20">
-        <table class="table table-bordered table-border table-hover table-bg " id="student-table">
+        <table class="table table-bordered table-border table-hover table-bg " id="org-member-table">
             <thead>
             <tr class="text-c">
                 <th width="100">序号</th>
@@ -65,7 +65,7 @@
                 <th width="250">组织名称</th>
             </tr>
             </thead>
-            <tbody id="student-tbody">
+            <tbody id="org-member-tbody" class="text-c">
             </tbody>
         </table>
         <div class="pagination r" id="pagination"></div>
@@ -82,260 +82,232 @@
     <script type="text/javascript" src="static/js/index.js"></script>
 
     <script type="text/javascript">
-        var isPageInit = false
-        var currPage = 1
-        var size = 10
-        var uuid = sessionStorage.getItem('uuid')
-        var searchPhone = ''
-        var url = 'admin/organize/getOrgMembers'
-        var studentList = []
+    var isPageInit = false;
+    var searchPara = {
+        page: 1,
+        size: 14,
+        phone: ''
+    }
 
-        //	添加
-        function studentAdd(title,url,w,h){
-            layer_show(title,url,w,h);
-        }
+    $(function(){
+        getData(searchPara)     
+    })
 
-        var successFunc = function(response){
-            $('#student-tbody').children().remove()
-            if(response.code === 1){
-                var data = response.data
-                var list = data.list
-                studentList = list
-                var trs = ''
-                if(data.total === 0){
-                    $('#nodata').show()
-                }else{
-                    $('#nodata').hide()
-                    for(var i=0; i<list.length; i++){
-                        var sex = (list[i].sex === 1)? '男': '女'
-                        var phone = list[i].phone
-                        var clazzId = list[i].clazzId
-                        var clazz = list[i].clazz || ''
-                        var studentId = list[i].id
-                        var miyouGroup = list[i].miyouGroup ?
-                            '<span class="label label-success radius">已开通</span><button class="btn btn-success-outline radius" title="查看密友圈" onclick="getMiyouMember('+i+')" ><span class="Hui-iconfont">&#xe695;</span>查看</button>' :
-                            '<span class="label label-warning radius" >未开通</span><button class="btn btn-secondary-outline radius" title="开通密友圈" onclick="openMiyouCircle('+i+')" ><span class="Hui-iconfont">&#xe611;</span>开通</button>'
-                        var clazzGroup = list[i].clazzGroup ? '<span class="label label-success radius" >已加入</span>' : '<button class="btn btn-secondary-outline radius" onclick="addToClazzGroup('+i+')" title="添加至班级群" ><span class="Hui-iconfont" >&#xe62b;</span>添加</button>'
-                        var sequence = (currPage-1)*size+i+1
-                        trs += '<tr class="text-c"><td>'+sequence+'</td><td>'+list[i].memberName+'</td><td>'+sex+'</td><td>'+phone+'</td><td>'+list[i].organizeName+'</td></tr>'
-                    }
-                    // 判断数据是否取得成功
-                    $('#student-tbody').append(trs)
+    function getData(searchPara){
 
-                }
-                $('#data-num').text(data.total)
-
-                if(!isPageInit){
-                    if(data.total > size){
-                        $('#pagination').show()
-                        var pages = Math.ceil(data.total/size)
-                        laypage({
-                            cont: 'pagination',
-                            curr: 1,
-                            pages: pages,
-                            groups: 5,
-                            jump: function(obj,first) {
-                                if(!first){
-                                    currPage = obj.curr
-                                    ajax({
-                                        url: url,
-                                        method: 'post',
-                                        data: {
-                                            page: currPage,
-                                            size: size,
-                                            phone: searchPhone
-                                        },
-                                        successFunc: successFunc,
-                                        errorFunc: errorFunc
-                                    })
-                                }
-                            }
-                        });
-                    }
-                }
-                isPageInit = true
-            }else if(response.code === 0){
-                layer.open({
-                    type: 0,
-                    closeBtn: 0,
-                    icon:7,
-                    title: '出现错误',
-                    content: response.error
-                })
-            }
-        }
-
-        var errorFunc = function(xhr, status){
-            if(!isPageInit){
-                layer.closeAll()
-                $('#nodata').show()
-            }else{
-                layer.open({
-                    type: 0,
-                    closeBtn: 0,
-                    icon:7,
-                    title: '获取数据失败',
-                    content: '请检查网络'
-                })
-            }
-        }
-
-        var dataObj = {
-            url: url,
-            method: 'post',
-            page: currPage,
-            size: size,
-            phone: searchPhone,
-            successFunc: successFunc,
-            errorFunc: errorFunc
-        }
-
-        function init(){
-            currPage = 1
-            ajax({
-                url: url,
-                method: 'get',
-                data: {
-                    page: currPage,
-                    size: size,
-                    phone: searchPhone
-                },
-                successFunc: successFunc,
-                errorFunc: errorFunc
-            })
-
-        }
-
-        $('#search-btn').click(function(event){
-            event.preventDefault()
-
-            $('#pagination').hide()
-            isPageInit = false
-            searchPhone = $('#search-phone').val()
-            init()
-
-        })
-
-        $('#file-upload-btn').click(function(event){
-            event.preventDefault()
-
-            var fileInput = $('#file')[0];
-            var fileNum = fileInput.files.length
-
-            if(fileNum === 0){
-                layer.open({
-                    type: 0,
-                    closeBtn: 0,
-                    title: '提示',
-                    content: '上传前请导入Excel文件'
-                })
-                return
-            }
-            form = new FormData()
-            form.append('file',fileInput.files[0])
-            console.log(form)
-            $(document).unbind('ajaxStart')
-            $(document).ajaxStart(function(){
-                layer.load(1)
-                layer.msg('上传中', {
-                    icon: 16,
-                    shade: 0.3
-                });
-            })
-
-            ajax({
-                url: 'admin/organize/uploadExcel',
-                method: 'post',
-                timeout: 10*60*1000,
-                data: form,
-                cache: false,
-                processData: false,
-                contentType: false,
-                successFunc: function(response,status,xhr) {
-                    layer.closeAll()
-                    if(response.code === 1){
-                        var data = response.data
-                        layer.open({
-                            type: 1,
-                            closeBtn: 0,
-                            area: ['330px','320px'],
-                            title: '文件上传情况',
-                            content:
-                            '<div class="upload-report">'+
-                            '<table class="table table-bordered table-border table-hover">'+
-                            '<tr>'+
-                            '<th width="100" >数据总数</th><td>'+data.total+'</td>'+
-                            '</tr>'+
-                            '<tr>'+
-                            '<th width="100" >上传成功</th><td>'+data.successCount+
-                            '<a id="download-success-file" href="'+data.successUrl+'" download="'+getFileName(data.successUrl)+'" class="r btn btn-secondary radius" style="margin-right:10px">'+
-                            '<i class="Hui-iconfont">&#xe641;</i>导出'+
-                            '</a> '+
-                            '</td>'+
-                            '</tr>'+
-                            '<tr>'+
-                            '<th width="100" >上传失败</th>'+
-                            '<td>'+data.failCount+
-                            '<a id="download-fail-file" href="'+data.failUrl+'" download="'+getFileName(data.failUrl)+'"  class="r btn btn-secondary radius" style="margin-right:10px">'+
-                            '<i class="Hui-iconfont">&#xe641;</i>导出'+
-                            '</a> '+
-                            '</td>'+
-                            '</tr>'+
-                            '</table>'+
-                            '</div>',
-                            btn: '确定',
-                            yes: function(index) {
-                                if(data.successCount > 0){
-                                    init()
-                                }
-                                layer.close(index)
-                            }
-                        })
-
-                        if(data.successCount == 0){
-                            $('#download-success-file').hide()
-                        }
-                        if(data.failCount == 0){
-                            $('#download-fail-file').hide()
-                        }
-                        if(data.repeateCount == 0){
-                            $('#download-repeate-file').hide()
-                        }
-                    }else if(response.code === 0) {
-                        layer.open({
-                            type: 0,
-                            closeBtn: 0,
-                            icon:7,
-                            title: '上传失败',
-                            content: response.error
-                        })
-
-                    }
-                },
-
-                errorFunc: function(xhr,status) {
-                    layer.closeAll()
+        ajax({
+            url: 'admin/organize/getOrgMembers',
+            data: searchPara,
+            successFunc: function(response){
+                var status = response.code
+                if(status === 1){
+                    renderTable(response.data)
+                }else if(status === 0){
                     layer.open({
                         type: 0,
                         closeBtn: 0,
-                        icon:7,
-                        title: '错误',
-                        content: '请检查网络',
+                        icon:7, 
+                        title: '获取数据失败',
+                        content: response.error
                     })
+
                 }
+            },
+            errorFunc: errorFunc
+            
+        })
+    }
+
+    function renderTable(data){
+        var list = data.list
+        if(list.length == 0){
+            $('#nodata').show()
+        }else{
+            $('#nodata').hide()
+        }
+        var trs = ''
+        for(var i = 0; i<list.length; i++){
+            var sequence = (searchPara.page-1)*searchPara.size+i+1
+            var sex = list[i].sex ? '男': '女'
+            trs += '<tr>'+
+                        '<td>'+sequence+'</td>'+
+                        '<td>'+list[i].memberName+'</td>'+
+                        '<td>'+sex+'</td>'+
+                        '<td>'+list[i].phone+'</td>'+
+                        '<td>'+list[i].organizeName+'</td>'+
+                    '</tr>' 
+        }
+        $('#org-member-tbody').html(trs)
+        $('#data-num').text(data.total)
+        if(!isPageInit && data.total > searchPara.size){
+            $('#pagination').show()
+            var pages = Math.ceil(data.total/searchPara.size)
+            laypage({
+                cont: 'pagination',
+                curr: 1, 
+                pages: pages,
+                groups: 5,
+                jump: function(obj,first) {
+                    if(!first){
+                        console.log(obj.curr)
+                        searchPara.page = obj.curr
+                        getData(searchPara)
+                    }
+                }
+          });
+        
+        }
+        isPageInit = true
+    }
+
+    //ajax error函数
+    function errorFunc(xhr, status){
+        layer.open({
+            type: 0,
+            closeBtn: 0,
+            icon:7, 
+            title: '出现错误',
+            content: status
+        })
+    }
+
+    $('#file-upload-btn').click(function(event){
+        event.preventDefault()
+
+        var fileInput = $('#file')[0];
+        var fileNum = fileInput.files.length 
+        
+        if(fileNum === 0){
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                title: '提示',
+                content: '上传前请导入Excel文件'
             })
-
-
+            return
+        }
+        form = new FormData()
+        form.append('file',fileInput.files[0])
+        console.log(form)
+        $(document).unbind('ajaxStart')
+        $(document).ajaxStart(function(){
+            layer.load(1)
+            layer.msg('上传中', {
+                  icon: 16,
+                  shade: 0.3
+            });
         })
 
-        //从url取出url指向的文件名
-        function getFileName(url){
-            if(url){
-                return url.split('/').reverse()[0]
-            }
-        }
+        ajax({
+            url: 'admin/organize/uploadExcel',
+            method: 'post',
+            timeout: 10*60*1000,
+            data: form,
+            cache: false,
+            processData: false,
+            contentType: false,
+            successFunc: function(response,status,xhr) {
+                layer.closeAll()
+                if(response.code === 1){
+                    var data = response.data
+                    layer.open({
+                        type: 1,
+                        closeBtn: 0,
+                        area: ['330px','270px'],
+                        title: '文件上传情况',
+                        content: 
+                        '<div class="upload-report">'+
+                            '<table class="table table-bordered table-border table-hover">'+
+                                '<tr>'+
+                                    '<th width="100" >数据总数</th><td>'+data.total+'</td>'+
+                                '</tr>'+
+                                '<tr>'+
+                                    '<th width="100" >上传成功</th><td>'+data.successCount+
+                                        '<a id="download-success-file" href="'+data.successUrl+'" download="'+getFileName(data.successUrl)+'" class="r btn btn-secondary radius" style="margin-right:10px">'+
+                                                '<i class="Hui-iconfont">&#xe641;</i>导出'+
+                                        '</a> '+
+                                    '</td>'+
+                                '</tr>'+
+                                '<tr>'+
+                                    '<th width="100" >上传失败</th>'+
+                                    '<td>'+data.failCount+
+                                        '<a id="download-fail-file" href="'+data.failUrl+'" download="'+getFileName(data.failUrl)+'"  class="r btn btn-secondary radius" style="margin-right:10px">'+
+                                            '<i class="Hui-iconfont">&#xe641;</i>导出'+
+                                        '</a> '+
+                                    '</td>'+
+                                '</tr>'+
+                                // '<tr>'+
+                                //     '<th width="100" >重复数据</th>'+
+                                //     '<td>'+data.repeateCount+
+                                //         '<a id="download-repeate-file" href="'+data.repeateUrl+'"  download="'+getFileName(data.repeateUrl)+'"  class="r btn btn-secondary radius" style="margin-right:10px">'+
+                                //             '<i class="Hui-iconfont">&#xe641;</i>导出'+
+                                //         '</a> '+
+                                //     '</td>'+
+                                // '</tr>'+
+                            '</table>'+
+                        '</div>',
+                        btn: '确定',
+                        yes: function(index) {
+                            if(data.successCount > 0){
+                                searchPara.page = 1
+                                searchPara.phone = ''
+                                getData(searchPara)
+                            }
+                            layer.closeAll()
+                        }
+                    })
 
-        init()
+                    if(data.successCount == 0){
+                        $('#download-success-file').hide()
+                    }
+                    if(data.failCount == 0){
+                        $('#download-fail-file').hide()
+                    }
+                    if(data.repeateCount == 0){
+                        $('#download-repeate-file').hide()
+                    }
+                }else if(response.code === 0) {
+                    layer.open({
+                        type: 0,
+                        closeBtn: 0,
+                        icon:7, 
+                        title: '上传失败',
+                        content: response.error
+                    })
+
+                }   
+            },
+
+            errorFunc: function(xhr,status) {
+                layer.closeAll()
+                layer.open({
+                    type: 0,
+                    closeBtn: 0,
+                    icon:7, 
+                    title: '错误',
+                    content: '请检查网络',
+                })
+            }
+        })
+    })
+    
+    //从url取出url指向的文件名
+    function getFileName(url){
+        if(url){
+            return url.split('/').reverse()[0]
+        }
+    }
+
+    $('#search-btn').click(function(e){
+        e.preventDefault()
+        
+        isPageInit = false
+        searchPara.page = 1
+        searchPara.phone = $('#search-phone').val()
+        $('#pagination').hide()
+        getData(searchPara)
+    })
+
     </script>
 </body>
 </html>

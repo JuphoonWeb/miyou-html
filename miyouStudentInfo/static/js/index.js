@@ -9,6 +9,8 @@ function ajax(dataObj){
 	// var url = 'http://192.168.0.46:8086/miyou/'
     // var url = 'http://192.168.12.1:8086/miyou/'
     // var url = 'http://192.168.15.161:8086/miyou/'
+    // var url = 'http://122.227.209.194:8086/miyou/'
+
     var url = 'http://218.204.254.209:28812/miyou/'
 
 
