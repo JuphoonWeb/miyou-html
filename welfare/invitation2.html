@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <title>下载安装</title>
+    <title>用户邀请</title>
     <link rel="stylesheet" type="text/css" href="./static/reset.css">
 </head>
 <style type="text/css">
@@ -10,9 +10,7 @@
         text-align: center;
     }
     .logo{
-        width: 75px;
-        height:75px;
-        margin: 32px 0 10px 0;
+        margin: 25px 0 10px 0;
     }
     h3{
         margin-bottom: 13px;
@@ -23,7 +21,7 @@
     p{
         font-size: 16px;
         line-height:30px;
-        color: #ffb600;
+        color: rgb(252,174,27);
     }
     input{
         -webkit-tap-highlight-color:rgba(0,0,0,0);
@@ -136,18 +134,31 @@
 
 <body class="z_body">
 <div class="container">
-    <img src="./images/logo_download.jpg" class="logo">
-    <p>免费流量肆意花<br>短号成员任意聊<br>亲情号码自由加</p>
+    <img src="./images/logo_download.png" class="logo">
+    <h3>青椒校园</h3>
+    <p>校园动态尽在手中<br>群组活动在线组织<br>认证学生放心社交</p>
     <div class="phone-line">
-        <input type="text" pattern="[0-9]*" placeholder="输入手机号" id="phone" class="phone">
+        <input type="text" pattern="[0-9]*" placeholder="请输入手机号" id="phone" class="phone">
     </div>
     <div class="code-line">
         <input type="text" pattern="[0-9]*" placeholder="输入验证码" id="code" class="code">
         <button class="send-code" id="sendCode" disabled>发送验证码</button>
     </div>
-    <button class="submit" id="submit" disabled>下载</button>
+
+    <button class="submit" id="submit" disabled>下载青椒校园</button>
     <p class="bottom-text"><span>广东移动用户</span>在本产品内产生的<br>所有流量费用全免</p>
     <img src="./images/bg_down.png" class="bottom-bg">
+
+    <div class="about">关于青椒校园</div>
+    <div class="about-text">
+        青椒校园，为青葱的校园实名社交寻找志同道合的同学，为火辣的青春热情沟通免去通信费用（针对使用本APP的广东移动认证用户）。<br>
+        <br>
+        青椒校园，为青葱的校园实名社交寻找志同道合的同学，为火辣的青春热情沟通免去通信费用（针对使用本APP的广东移动认证用户）。<br>
+        <br>
+        发通知，去哪儿玩，找演讲，身边的学校的各种通知活动不会错过，是的，实名认证的身边小伙伴就是放心。<br>
+        <br>
+        服务校园，比微信更专一。服务学生，比QQ资费更便宜。无聊了，就找小伙伴去聊一聊，去逛一逛，视频聊天发图片流量费用全免， 不用举着手机找wifi了，是的，广东移动专为校园用户提供专属服务，就是这么任性！
+    </div>
 </div>
 <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="./static/common.js"></script>
@@ -230,7 +241,7 @@
                 location.href = 'http://qjxy.kuandai10086.cn:28813//Public/app/GreenPepper-release-1.0.3.apk';
             }
             else if(isIOS){
-                location.href = 'https://www.pgyer.com/ypob';
+                location.href = 'https://www.pgyer.com/meetyouios';
             }
         })
     }).on('keyup','#phone,#code',function(){

@@ -93,7 +93,7 @@
             var trs = '';
             for(var i = 0; i < list.length; i++){
                 var level = list[i].authLevel||0,
-                    status = '<a href="javascript:;" onclick="layer_show(\'认证详情\',\'auth-detail.html#'+list[i].id+'\',\'\',\'500\');">'+authLevelStatus[level]+'</a>';
+                    status = '<a href="javascript:;" onclick="layer_show(\'认证详情\',\'2auth-detail.html#'+list[i].id+'\',\'\',\'500\');">'+authLevelStatus[level]+'</a>';
                 trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].name+'</td><td>'+list[i].number+'</td><td>'+list[i].phone+'</td><td>'+list[i].city+'</td><td>'+list[i].university+'</td><td>'+list[i].school+'</td><td>'+new Date(list[i].modifyTime).Format("yyyy-MM-dd hh:mm:ss")+'</td><td>'+status+'</td></tr>'
             }
 
