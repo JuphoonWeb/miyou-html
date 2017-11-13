@@ -209,9 +209,6 @@
         
         var chart = echarts.init($('#auth-chart').get(0))
         var option = {
-            title: {
-                text: '认证统计'
-            },
             tooltip: {
                 trigger: 'axis'
             },
@@ -226,11 +223,13 @@
             series: [{
                 name: '审核通过',
                 type: 'line',
+                smooth: true,
                 data: authPassData
             },
             {
                 name: '认证中',
                 type: 'line',
+                smooth: true,
                 data: authingData
             }]
         }
