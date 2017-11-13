@@ -89,75 +89,77 @@
                 })
             }
             if(data.code==1){
-                var res = data.data,
-                    stu = res.student,
-                    idCard = stu.identityUrl?'<img src="'+stu.identityUrl+'">':'',
-                    stuCard = stu.stuCardUrl?'<img src="'+stu.stuCardUrl+'">':'',
-                    status = '';
+                var res = data.data;
+                if(res){
+                    var stu = res.student,
+                        idCard = stu.identityUrl?'<img src="'+stu.identityUrl+'">':'',
+                        stuCard = stu.stuCardUrl?'<img src="'+stu.stuCardUrl+'">':'',
+                        status = '';
 
-                if(res.authLevel<=2){
-                    level = 1;
-                    accept = 2;
-                    refuse = 1;
-                }else{
-                    level = 2;
-                    accept = 5;
-                    refuse = 4;
-                }
-                if(res.authLevel==0||res.authLevel==3){
-                    status = '<input class="btn btn-success-outline radius" type="button" value="审核通过" onclick="update('+accept+')">' +
-                        '<input class="btn btn-danger-outline radius" type="button" value="审核拒绝"onclick="show_modal()">';
-                }
-                else if(res.authLevel==2||res.authLevel==5){
-                    status = authLevelStatus[res.authLevel];
-                }
-                else if(res.authLevel==1||res.authLevel==4){
-                    status = authLevelStatus[res.authLevel]+'<br>原因：'+res.authNote+'<br><br>'+
+                    if(res.authLevel<=2){
+                        level = 1;
+                        accept = 2;
+                        refuse = 1;
+                    }else{
+                        level = 2;
+                        accept = 5;
+                        refuse = 4;
+                    }
+                    if(res.authLevel==0||res.authLevel==3){
+                        status = '<input class="btn btn-success-outline radius" type="button" value="审核通过" onclick="update('+accept+')">' +
+                            '<input class="btn btn-danger-outline radius" type="button" value="审核拒绝"onclick="show_modal()">';
+                    }
+                    else if(res.authLevel==2||res.authLevel==5){
+                        status = authLevelStatus[res.authLevel];
+                    }
+                    else if(res.authLevel==1||res.authLevel==4){
+                        status = authLevelStatus[res.authLevel]+'<br>原因：'+res.authNote+'<br><br>'+
                             '<input class="btn btn-success-outline radius J_examine" type="button" value="审核通过" onclick="update('+accept+')" style="display: none">' +
                             '<input class="btn btn-primary radius J_re_examine" type="button" value="重新认证">' +
                             '<input class="btn btn-danger-outline radius J_examine" type="button" value="审核拒绝"onclick="show_modal()" style="display: none">';
+                    }
+                    number = stu.number;
+                    university = stu.university;
+                    id = res.id;
+                    var str =   '<div class="row cl">' +
+                        '<label class="col-sm-3">姓名：</label>' +
+                        '<div class="col-sm-9">'+stu.name+'</div>' +
+                        '</div>'+
+                        '<div class="row cl">' +
+                        '<label class="col-sm-3">学号：</label>' +
+                        '<div class="col-sm-9">'+stu.number+'</div>' +
+                        '</div>'+
+                        '<div class="row cl">' +
+                        '<label class="col-sm-3">手机号：</label>' +
+                        '<div class="col-sm-9">'+stu.phone+'</div>' +
+                        '</div>'+
+                        '<div class="row cl">' +
+                        '<label class="col-sm-3">市：</label>' +
+                        '<div class="col-sm-9">'+stu.city+'</div>' +
+                        '</div>'+
+                        '<div class="row cl">' +
+                        '<label class="col-sm-3">大学：</label>' +
+                        '<div class="col-sm-9">'+stu.university+'</div>' +
+                        '</div>'+
+                        '<div class="row cl">' +
+                        '<label class="col-sm-3">学院：</label>' +
+                        '<div class="col-sm-9">'+stu.school+'</div>' +
+                        '</div>'+
+                        '<div class="viewer"><div class="row cl">' +
+                        '<label class="col-sm-3">身份证：</label>' +
+                        '<div class="col-sm-9">'+idCard+'</div>' +
+                        '</div>'+
+                        '<div class="row cl">' +
+                        '<label class="col-sm-3">学生证：</label>' +
+                        '<div class="col-sm-9">'+stuCard+'</div>' +
+                        '</div></div>'+
+                        '<div class="row cl">' +
+                        '<label class="col-sm-3">认证状态：</label>' +
+                        '<div class="col-sm-9">'+status+'</div>' +
+                        '</div>';
+                    $('#authDetail').html(str);
+                    $('.viewer').viewer();
                 }
-                number = stu.number;
-                university = stu.university;
-                id = res.id;
-                var str =   '<div class="row cl">' +
-                                '<label class="col-sm-3">姓名：</label>' +
-                                '<div class="col-sm-9">'+stu.name+'</div>' +
-                            '</div>'+
-                            '<div class="row cl">' +
-                                '<label class="col-sm-3">学号：</label>' +
-                                '<div class="col-sm-9">'+stu.number+'</div>' +
-                            '</div>'+
-                            '<div class="row cl">' +
-                                '<label class="col-sm-3">手机号：</label>' +
-                                '<div class="col-sm-9">'+stu.phone+'</div>' +
-                            '</div>'+
-                            '<div class="row cl">' +
-                                '<label class="col-sm-3">市：</label>' +
-                                '<div class="col-sm-9">'+stu.city+'</div>' +
-                            '</div>'+
-                            '<div class="row cl">' +
-                                '<label class="col-sm-3">大学：</label>' +
-                                '<div class="col-sm-9">'+stu.university+'</div>' +
-                            '</div>'+
-                            '<div class="row cl">' +
-                                '<label class="col-sm-3">学院：</label>' +
-                                '<div class="col-sm-9">'+stu.school+'</div>' +
-                            '</div>'+
-                            '<div class="viewer"><div class="row cl">' +
-                                '<label class="col-sm-3">身份证：</label>' +
-                                '<div class="col-sm-9">'+idCard+'</div>' +
-                            '</div>'+
-                            '<div class="row cl">' +
-                                '<label class="col-sm-3">学生证：</label>' +
-                                '<div class="col-sm-9">'+stuCard+'</div>' +
-                            '</div></div>'+
-                            '<div class="row cl">' +
-                                '<label class="col-sm-3">认证状态：</label>' +
-                                '<div class="col-sm-9">'+status+'</div>' +
-                            '</div>';
-                $('#authDetail').html(str);
-                $('.viewer').viewer();
             }
         }
     })
