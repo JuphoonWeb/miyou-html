@@ -67,6 +67,8 @@
             <!--<img src="static/images/nodata.svg" alt="">-->
         <!--</div>-->
     <!--</div>-->
+    <h3 style="text-align: center">用户占比折线图</h3>
+    <div id="main" style="width: 100%;height:400px;"></div>
 </div>
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
@@ -74,7 +76,7 @@
 <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
-<script type="text/javascript" src="lib/Chart.min.js"></script>
+<script type="text/javascript" src="lib/echarts.common.min.js"></script>
 <script type="text/javascript" src="static/js/index.js"></script>
 
 
@@ -86,7 +88,6 @@
         endDate: null,
         type: ''
     }
-    var oldChart = null
 
     $(function(){
         $('#search-end-date').val(new Date().Format('yyyy-MM-dd'));
@@ -135,6 +136,7 @@
                     var list = response.data
                     var activityTypes = {}
                     var labels = [];
+                    var legend = [];
                     var lineData = [];
                     var options = $('select#search-activity-type').children()
                     for(var i = 1; i < options.length; i++){
@@ -144,7 +146,22 @@
                     if(list){
                         for(var i = 0; i<list.length; i++){
                             labels.push(list[i].statisDate);
-
+                            $.each(list[i].usersStatis.cityStatis,function(index,ele){
+                                if(legend.length<list[i].usersStatis.cityStatis.length){
+                                    legend.push(ele.city);
+                                    lineData.push({
+                                        name:ele.city,
+                                        type:'line',
+                                        smooth:true,
+                                        data:[]
+                                    })
+                                }
+                                $.each(lineData,function(i,e){
+                                    if(e.name == ele.city){
+                                        e.data.push(ele.rate.split('%')[0]);
+                                    }
+                                })
+                            })
                             trs = '<tr>'+
                                 '<td>'+list[i].registDate+'</td>'+
                                 '<td>'+list[i].registCount+'</td>'+
@@ -156,8 +173,8 @@
                     }else{
                         $('#nodata').show();
                     }
-                    $('#activity-tbody').html(trs)
-                    oldChart = showChart(labels, lineData, oldChart);
+                    $('#activity-tbody').html(trs);
+                    showChart(labels, legend, lineData);
                 }else if(status === 0){
                     layer.open({
                         type: 0,
@@ -173,42 +190,38 @@
         })
     }
 
-    function showChart(labels,data, oldChart){
-        if(oldChart){
-            oldChart.data.labels = labels
-            oldChart.data.datasets[0].data = data
-            oldChart.update()
-            return oldChart
-        }else{
-            var ctx = $('#register-chart')[0].getContext('2d');
-            var chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels : labels,
-                    datasets: [
-                        {
-                            label: '注册人数',
-                            backgroundColor : "rgba(151,187,205,0.5)",
-                            borderColor : "rgba(151,187,205,1)",
-                            data : data
-                        },
-                        {
-                            label: '人数',
-                            backgroundColor : "rgba(151,187,205,0.6)",
-                            borderColor : "rgba(101,187,105,1)",
-                            data : [123,224,375,426,123,224,267,428,349,666,123,224,224,375,426,901]
-                        }
-                    ]
-                },
-                options: {
-                    tooltips: {
-                        mode: 'index'
-                    }
+    function showChart(labels,legend,data){
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                show: false
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:legend
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: labels
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value} %'
                 }
-            })
-            return chart
-        }
+            },
+            series: data
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
     }
+
 </script>
 </body>
 </html>
