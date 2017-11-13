@@ -16,6 +16,7 @@
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
 <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
+
 <style>
     span.num+span.num{
         margin-left: 15px;
@@ -73,7 +74,7 @@
             
     </div>
 
-    <canvas  height="80" id="auth-chart"></canvas>
+    <div id="auth-chart" style="width:auto;height:400px;"></div>
     <div class="mt-20">
         <table class="table table-bordered table-border table-hover table-bg table-sort mt-10" id="auth-table">
             <thead>
@@ -97,7 +98,7 @@
 </div>
 
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript" src="lib/Chart.min.js"></script>
+<script type="text/javascript" src="lib/echarts.common.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
@@ -112,7 +113,7 @@
         endDate: '',
         city: ''
     };
-    var oldChart = null
+    var authChart = null
     var downloadUrl = 'http://218.204.254.209:28812/miyou/api/excel/authStudentExport'
 
     $(function(){
@@ -120,6 +121,12 @@
         getCity()
         getNumData()
         getChartData(searchPara)
+        $(window).resize(function(){
+            if(authChart){
+                authChart.resize()
+        }
+    })
+
     })
 
     $('#search-btn').click(function(){
@@ -172,7 +179,11 @@
             successFunc: function(response){
                 if(response.code == 1){
                     var data = response.data
-                    oldChart = renderChart(data.auth, oldChart)
+                    authChart = renderChart(data.auth)
+                    $(document).on('resize', function(){
+                        console.log('resize')
+                        authChart.resize()
+                    })
                     setNumData(data)
                     renderTable(data.auth)
                         
@@ -184,7 +195,7 @@
         })
     }
 
-    function renderChart(data, oldChart){
+    function renderChart(data, authChart){
         var cityTitle = searchPara.city || '全部'
         $('#city-title').text(cityTitle)
         var labels = []
@@ -195,54 +206,35 @@
             authPassData.push(data[i].authPassCount)
             authingData.push(data[i].authingCount)
         }
-        if(oldChart){
-            oldChart.data.labels = labels
-            oldChart.data.datasets[0].data = authPassData
-            oldChart.data.datasets[1].data = authingData
-            oldChart.update()
-            return oldChart
-        }else{
-            var ctx = $('#auth-chart').get(0).getContext('2d')
-            var myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: '认证通过',
-                                data: authPassData,
-                                backgroundColor: 'rgba(66, 152, 66, 0.2)',
-                                borderColor: 'rgba(66, 152, 66, 1)',
-                                // lineTension : 0,
-                                borderWidth: 1,
-                            },
-                            {
-                                label: '认证中',
-                                data: authingData,
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                // lineTension : 0,
-                                borderWidth: 1,
-                            }
-                        ]
-                    },
-                    options: {
-                        scales: {
-                            yAxes:[ {
-                                ticks: {
-                                     beginAtZero:true,
-                                     // stepSize: 1,
-                                }
-                            }]  
-                            
-                        },
-                        tooltips: {
-                            mode: 'index'
-                        }
-                    }
-                })
-            return myChart
+        
+        var chart = echarts.init($('#auth-chart').get(0))
+        var option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['审核通过', '认证中']
+            },
+            xAxis: {
+                data: labels,
+            },
+            color: ['rgba(66, 152, 66, 1)', 'rgba(54, 162, 235, 1)'],
+            yAxis: {},
+            series: [{
+                name: '审核通过',
+                type: 'line',
+                data: authPassData
+            },
+            {
+                name: '认证中',
+                type: 'line',
+                data: authingData
+            }]
         }
+
+        chart.setOption(option)
+        return chart
+
     }
 
     function renderTable(data){
