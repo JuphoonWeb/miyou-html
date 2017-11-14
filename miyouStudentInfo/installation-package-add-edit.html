@@ -55,6 +55,12 @@
 					<input type="text" class="input-text" value="" placeholder="VersionCode" id="version-code" name="versionCode" >
 				</div>
 			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>下载页面地址：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="下载页面地址" id="download-page-url" name="downloadPageUrl" >
+				</div>
+			</div>
 
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>更新说明：</label>
@@ -119,6 +125,7 @@
 			$('#version-name').val(editInfo.versionName)
 			$('.radio.app-type#app-type-'+editInfo.appType).attr('checked', true)
 			$('#version-code').val(editInfo.versionCode)
+			$('#download-page-url').val(editInfo.downloadPageUrl)
 			$('#update-instructions').val(editInfo.updateInstructions)
 			$('.radio.mandatoryUpdate').eq(1-editInfo.mandatoryUpdate).attr('checked', true)
 			$('#file-name').val(editInfo.downloadUrl)
@@ -141,6 +148,7 @@
 		    appType: $('.radio.app-type:checked').val(),
 		    versionName: $('#version-name').val(),
 		    versionCode: $('#version-code').val(),
+		    downloadPageUrl: $('#download-page-url').val(),
 		    updateInstructions: $('#update-instructions').val(),
 		   	mandatoryUpdate: $('.radio.mandatoryUpdate:checked').val(),
 		   	file: $('#install-package').get(0).files[0]
@@ -152,6 +160,8 @@
 			layer.msg('请输入VersionName')
 		}else if(apkInfo.versionCode === ''){
 			layer.msg('请输入VersionCode')
+		}else if(apkInfo.downloadPageUrl === ''){
+			layer.msg('请输入下载页面地址')
 		}else if(!/^\d+(\.\d+)*$/.test(apkInfo.versionCode)){
 			if(/\.$/.test(apkInfo.versionCode)){
 				layer.msg('VersionCode小数点不能放在最后')
