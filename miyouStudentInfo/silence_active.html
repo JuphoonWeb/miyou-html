@@ -49,26 +49,27 @@
             <!--<span class="num">深圳：<strong id="shenzhen-num" >0</strong> </span>-->
         <!--</div>-->
     </div>
-    <!--<canvas id="register-chart" height="80"></canvas>-->
-    <!--<div class="mt-20">-->
-        <!--<table class="table table-bordered table-border table-hover table-bg " id="activity-table">-->
-            <!--<thead>-->
-            <!--<tr class="text-c">-->
-                <!--<th width="100">日期</th>-->
-                <!--<th width="100">新增用户数</th>-->
-                <!--<th width="100">详情</th>-->
-            <!--</tr>-->
-            <!--</thead>-->
-            <!--<tbody id="activity-tbody" class="text-c" >-->
-            <!--</tbody>-->
-        <!--</table>-->
-        <!--<div class="pagination r" id="pagination"></div>-->
-        <!--<div class="nodata" id="nodata">-->
-            <!--<img src="static/images/nodata.svg" alt="">-->
-        <!--</div>-->
-    <!--</div>-->
-    <h3 style="text-align: center">用户占比折线图</h3>
+    <h3 style="text-align: center">活跃、沉默用户占比折线图</h3>
+    <p style="text-align: center">点击下列图例展示隐藏</p>
     <div id="main" style="width: 100%;height:400px;"></div>
+    <div class="mt-20">
+        <table class="table table-bordered table-border table-hover table-bg " id="activity-table">
+            <thead>
+            <tr class="text-c">
+                <th width="100">日期</th>
+                <th width="100">活跃总人数</th>
+                <th width="100">活跃占比</th>
+                <th width="100">操作</th>
+            </tr>
+            </thead>
+            <tbody id="activity-tbody" class="text-c" >
+            </tbody>
+        </table>
+        <div class="pagination r" id="pagination"></div>
+        <div class="nodata" id="nodata">
+            <img src="static/images/nodata.svg" alt="">
+        </div>
+    </div>
 </div>
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
@@ -163,10 +164,11 @@
                                 })
                             })
                             trs = '<tr>'+
-                                '<td>'+list[i].registDate+'</td>'+
-                                '<td>'+list[i].registCount+'</td>'+
-                                '<td>'+
-                                '<button  onclick="layer_show(\'当日注册详情\',\'statistics-daily-register.html#'+list[i].registDate+'&'+searchPara.city+'\',\'\',\'600\');" class="btn btn-primary-outline radius" >查看</button>'+
+                                '<td>'+list[i].statisDate+'</td>'+
+                                '<td>'+list[i].usersStatis.sum+'</td>'+
+                                '<td>'+list[i].usersStatis.allRate+'</td>'+
+                                '<td>' +
+                                '<a href="'+list[i].url+'" class="btn btn-primary-outline radius">导出excel</a>'+
                                 '</td>'+
                                 '</tr>'+trs
                         }
@@ -203,7 +205,26 @@
                 trigger: 'axis'
             },
             legend: {
-                data:legend
+                data:legend,
+                selected: {
+                    '东莞':false,
+                    '中山':false,
+                    '云浮':false,
+                    '佛山':false,
+                    '广州':false,
+                    '惠州':false,
+                    '揭阳':false,
+                    '梅州':false,
+                    '汕头':false,
+                    '汕尾':false,
+                    '江门':false,
+                    '河源':false,
+                    '茂名':false,
+                    '清远':false,
+                    '阳江':false,
+                    '潮州':false,
+                    '肇庆':false
+                }
             },
             xAxis: {
                 type: 'category',

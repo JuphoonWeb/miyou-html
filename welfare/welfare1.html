@@ -164,7 +164,7 @@
                         btnStr = '<span class="had-receive">已领取</span>';
                     }
                 }
-                str +=  '<a href="./welfare_detail.html?id='+ele.id+'&phone='+phone+'" class="welfare-item'+clz+'">'+
+                str +=  '<a href="./welfare_detail1.html?id='+ele.id+'&phone='+phone+'" class="welfare-item'+clz+'">'+
                     '<div class="icon"><img src="./images/icon_1.png"></div>'+
                     '<div class="info">'+
                     '<p class="title">'+ele.welfareName+'</p>'+
@@ -193,7 +193,7 @@
 
     $(document).on('click','.J_showPopup',function(e){
         e.preventDefault();
-        authPop('您还未成为认证用户','完成学生身份认证即可<br>添加10个免费通话联系人并领取8G流量','立即认证','../greenPepper/auth.html?phone='+phone);
+        authPop('您还未成为认证用户','完成学生身份认证即可<br>添加10个免费通话联系人并领取8G流量','立即认证','../auth/auth.html?phone='+phone);
     });
 
 </script>
