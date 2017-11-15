@@ -27,48 +27,32 @@
 
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计管理 <span class="c-gray en">&gt;</span>  活跃沉默用户 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" >
-    <h3 id="register-total" style="text-align: center"></h3>
-    <h5 id="city-count" style="text-align: center"></h5>
     <div class="cl pd-5 bg-1 bk-gray mt-20">
         <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" placeholder=" 开始时间" style="width: 150px">
         <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}'})" id="search-end-date" class="input-text Wdate formControls" placeholder=" 结束时间" style="width: 150px">
-
-        <span class="select-box" style="width: 100px">
-                <select class="select J_select" id="search-type">
-                    <option value="0">活跃</option>
-                    <option value="1">沉默</option>
-                </select>
-        </span>
         <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
-
-        <!--<div class="r">-->
-            <!--<strong>注册总计-</strong>-->
-            <!--<span class="num">湛江：<strong id="zhangjiang-num" >0</strong> </span>-->
-            <!--<span class="num">韶关：<strong id="shaoguan-num" >0</strong> </span>-->
-            <!--<span class="num">珠海：<strong id="zhuhai-num" >0</strong> </span>-->
-            <!--<span class="num">深圳：<strong id="shenzhen-num" >0</strong> </span>-->
-        <!--</div>-->
     </div>
-    <!--<canvas id="register-chart" height="80"></canvas>-->
-    <!--<div class="mt-20">-->
-        <!--<table class="table table-bordered table-border table-hover table-bg " id="activity-table">-->
-            <!--<thead>-->
-            <!--<tr class="text-c">-->
-                <!--<th width="100">日期</th>-->
-                <!--<th width="100">新增用户数</th>-->
-                <!--<th width="100">详情</th>-->
-            <!--</tr>-->
-            <!--</thead>-->
-            <!--<tbody id="activity-tbody" class="text-c" >-->
-            <!--</tbody>-->
-        <!--</table>-->
-        <!--<div class="pagination r" id="pagination"></div>-->
-        <!--<div class="nodata" id="nodata">-->
-            <!--<img src="static/images/nodata.svg" alt="">-->
-        <!--</div>-->
-    <!--</div>-->
-    <h3 style="text-align: center">用户占比折线图</h3>
+    <h3 style="text-align: center">沉默用户占比折线图</h3>
+    <p style="text-align: center">点击下列图例展示隐藏</p>
     <div id="main" style="width: 100%;height:400px;"></div>
+    <div class="mt-20">
+        <table class="table table-bordered table-border table-hover table-bg " id="activity-table">
+            <thead>
+            <tr class="text-c">
+                <th width="100">日期</th>
+                <th width="100">沉默总人数</th>
+                <th width="100">沉默人数占比</th>
+                <th width="100">操作</th>
+            </tr>
+            </thead>
+            <tbody id="activity-tbody" class="text-c" >
+            </tbody>
+        </table>
+        <div class="pagination r" id="pagination"></div>
+        <div class="nodata" id="nodata">
+            <img src="static/images/nodata.svg" alt="">
+        </div>
+    </div>
 </div>
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
@@ -86,7 +70,7 @@
     var searchPara = {
         startDate: null,
         endDate: null,
-        type: ''
+        type: '1'
     }
 
     $(function(){
@@ -108,9 +92,6 @@
         var endDate = new Date($('#search-end-date').val())
         endDate.setDate(endDate.getDate()+1)
         searchPara.endDate = endDate.Format('yyyy-MM-dd')
-        console.log('结束时间： '+ searchPara.endDate)
-
-        searchPara.type = $('#search-type').children('option:selected').attr('value')
         getData(searchPara)
     })
 
@@ -134,14 +115,9 @@
                 if(status === 1){
                     $('#nodata').hide()
                     var list = response.data
-                    var activityTypes = {}
                     var labels = [];
                     var legend = [];
                     var lineData = [];
-                    var options = $('select#search-activity-type').children()
-                    for(var i = 1; i < options.length; i++){
-                        activityTypes[ options[i].value ] = options[i].text
-                    }
                     var trs = ''
                     if(list){
                         for(var i = 0; i<list.length; i++){
@@ -163,10 +139,11 @@
                                 })
                             })
                             trs = '<tr>'+
-                                '<td>'+list[i].registDate+'</td>'+
-                                '<td>'+list[i].registCount+'</td>'+
-                                '<td>'+
-                                '<button  onclick="layer_show(\'当日注册详情\',\'statistics-daily-register.html#'+list[i].registDate+'&'+searchPara.city+'\',\'\',\'600\');" class="btn btn-primary-outline radius" >查看</button>'+
+                                '<td>'+list[i].statisDate+'</td>'+
+                                '<td>'+list[i].usersStatis.sum+'</td>'+
+                                '<td>'+list[i].usersStatis.allRate+'</td>'+
+                                '<td>' +
+                                '<a href="'+list[i].url+'" class="btn btn-primary-outline radius">导出excel</a>'+
                                 '</td>'+
                                 '</tr>'+trs
                         }
@@ -203,7 +180,26 @@
                 trigger: 'axis'
             },
             legend: {
-                data:legend
+                data:legend,
+                selected: {
+                    '东莞':false,
+                    '中山':false,
+                    '云浮':false,
+                    '佛山':false,
+                    '广州':false,
+                    '惠州':false,
+                    '揭阳':false,
+                    '梅州':false,
+                    '汕头':false,
+                    '汕尾':false,
+                    '江门':false,
+                    '河源':false,
+                    '茂名':false,
+                    '清远':false,
+                    '阳江':false,
+                    '潮州':false,
+                    '肇庆':false
+                }
             },
             xAxis: {
                 type: 'category',
