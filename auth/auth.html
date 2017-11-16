@@ -90,7 +90,7 @@
 		<img src="img/imgNotice.png" alt="" class="notice">
 		<div class="msg" id="msg">
 		</div>
-		<button id="auth-btn">立即完善</button>
+		<button class="btn" id="auth-btn">立即完善</button>
 	</div>
 	<div id="auth-info">
 		<div class="content">
@@ -105,7 +105,7 @@
 				</div>
 			</div>
 		</div>
-		<button id="change-btn">修改资料</button>
+		<button class="btn" id="change-btn">修改资料</button>
 	</div>
 
 	<script src="js/zepto.min.js"></script>
@@ -133,7 +133,9 @@
 					if(response.code === 1){
 						var data = response.data
 						sessionStorage.setItem('api_token', data.api_token)
-						if(data.type === 1){
+						var status = data.type
+
+						if(status >= 5){
 							$('#un-auth').hide()
 							$('#auth-info').show()
 
@@ -142,27 +144,22 @@
 							$('#org').text(data.organizes[0].organizeName)
 							$('#school-badge').attr('src',data.organizes[0].imageUrl)
 							sessionStorage.setItem('userInfo', JSON.stringify(data))
-						}else{
-							$('#un-auth').show()
-							$('#auth-info').hide()
-							
-							var msgHtml = '<p class="primary-msg">您的信息还未完善</p>'
-							if(data.isGzMobile){
-								msgHtml += '<p class="secondary-msg" id="secondary-msg">完善资料即可<br>添加10个免费通话联系人并领取8G流量</p>'
-
-							}else{
-								msgHtml += '<p class="secondary-msg">完善资料即可解锁“逛一逛”所有功能</p>'
-							}
-							$('#msg').append(msgHtml)
-							if(data.type === 1){
-								dialog({
-									text: '<p style="margin:0">你有认证信息正在审核<br>点击页面右上角查看进度</p>',
-									ok: function() {
-										native.dismissWebView()
-									}
-								})
-							}
-
+						}else if(status === -1){
+							unauthInit(data)
+						}else if(status === 0 || status === 3){
+							dialog({
+								text: '您的信息正在审核中',
+								ok: function(){
+									native.dismissWebView()
+								}
+							})
+						}else if(status === 1 || status === 4){
+							dialog({
+								text: ' 您的信息未通过审核，请重新提交',
+								ok: function(){
+									unauthInit(data)
+								}
+							})
 						}
 					}else if(response.code === 0){
 						// notice(response.error)
@@ -194,9 +191,22 @@
 			})
 		})
 		$('#auth-btn, #change-btn').click(function(){
-			
-			window.open('phone-auth.html','_self')
+			window.open('phone-auth.html', '_self')
 		})
+
+		function unauthInit(data){
+			$('#un-auth').show()
+			$('#auth-info').hide()
+			
+			var msgHtml = '<p class="primary-msg">您的信息还未完善</p>'
+			if(data.isGzMobile){
+				msgHtml += '<p class="secondary-msg" id="secondary-msg">完善资料即可<br>添加10个免费通话联系人并领取8G流量</p>'
+
+			}else{
+				msgHtml += '<p class="secondary-msg">完善资料即可解锁“逛一逛”所有功能</p>'
+			}
+			$('#msg').append(msgHtml)
+		}
 	</script>
 </body>
 </html>
