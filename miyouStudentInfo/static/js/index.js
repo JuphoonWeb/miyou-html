@@ -150,3 +150,11 @@ function timeFormat(time){
 	return new Date(time).Format('yyyy-MM-dd hh:mm:ss')
 }
 
+$('input').on('input', function(){
+	var val = $(this).val()
+	var jsReg = /.*(<script>).*(<\/script>)*.*/i
+	if(jsReg.test(val)){
+		$(this).val('')
+	}
+})
+
