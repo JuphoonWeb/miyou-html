@@ -146,7 +146,7 @@
 							sessionStorage.setItem('userInfo', JSON.stringify(data))
 						}else if(status === -1){
 							unauthInit(data)
-						}else if(status === 0 || status === 3){
+						}else if(status <= 3 && status != 1){
 							dialog({
 								text: '您的信息正在审核中',
 								ok: function(){

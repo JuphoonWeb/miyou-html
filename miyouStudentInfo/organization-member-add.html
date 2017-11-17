@@ -25,6 +25,28 @@
 <body>
 	<article class="page-container">
 		<form action="" method="post" class="form form-horizontal" id="apk-form">
+			
+			<div class="row cl ">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>组织类型：</label>
+				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+					<div class="radio-box">
+						<input type="radio" checked class="radio org-type" name="org-type" id="" value="1" ><label for="" >学校</label>
+					</div>
+					<div class="radio-box">
+						<input type="radio" class="radio org-type" name="org-type" id="" value="0"><label for="">公司</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="row cl" id="city-container">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>城市：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+						<select class="select" size="1" name="city" id="city">
+							<option value="" selected>请选择城市</option>
+						</select>
+						</span> 
+					</div>
+			</div>
 			<div class="row cl" id="city-container">
 					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>组织：</label>
 					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
@@ -45,10 +67,10 @@
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>性别：</label>
 				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
 					<div class="radio-box">
-						<input type="radio" checked class="radio" name="sex" id="" value="1" ><label for="" >男</label>
+						<input type="radio" checked class="radio sex" name="sex" id="" value="1" ><label for="" >男</label>
 					</div>
 					<div class="radio-box">
-						<input type="radio" class="radio" name="sex" id="" value="0"><label for="">女</label>
+						<input type="radio" class="radio sex" name="sex" id="" value="0"><label for="">女</label>
 					</div>
 				</div>
 			</div>
@@ -94,11 +116,12 @@
 	}
 
 	$(function(){
-		getOrg()
+		getCity()
 		$('.skin-minimal .radio').iCheck({
 			// radioClass: 'iradio-green',
 			increaseArea: '20%',
 		})
+
 	})
 
 	$('#submit').click(function(event){
@@ -107,11 +130,12 @@
 		    memberName: $('#member-name').val(),
 		    phone: $('#phone').val(),
 		    shortPhone: $('#short-phone').val(),
-		    sex: $('.radio:checked').val(),
+		    sex: $('.radio.sex:checked').val(),
 		    orgId: $('#org').val()
 		}   	
-
-		if(!orgMember.orgId){
+		if(!$('#city').val()){
+			layer.msg('请选择城市')
+		}else if(!orgMember.orgId){
 			layer.msg('请选择组织')
 		}else if(orgMember.memberName === ''){
 			layer.msg('请输入姓名')
@@ -164,33 +188,63 @@
 		}
 	})
 
-	function getOrg(){
+
+	$('#city').change(function(){
+		getOrg($('.radio.org-type:checked').val(), $(this).val())
+	})
+
+	$('.skin-minimal .radio.org-type').on('ifChecked', function(){
+		getOrg($(this).val(), $('#city').val())	
+	})
+
+	function getCity(){
 		ajax({
-			url: 'admin/organize/getOrganizes',
+			url: 'api/orgh5/getCity',
 			data: {
 				size: 500,
 			},
 			successFunc: function(response){
 				if(response.code === 1){
-					fillSelect('#org', response.data.list)
+					fillSelect('#city', response.data)
 				}else if(response.code === 0){
 					layer.msg(response.error)
 				}
 			},
 			errorFunc: errorFunc
 		})
+	}
 
-		//填充select元素
+
+	function getOrg(type,city){
+		ajax({
+			url: 'api/orgh5/getOrganizes',
+			data: {
+				type: type,
+				city: city,
+			},
+			z_type: 0,
+			successFunc: function(response){
+				if(response.code === 1){
+					fillSelect('#org', response.data)
+				}else if(response.code === 0){
+					layer.msg(response.error)
+				}
+			},
+			errorFunc: errorFunc
+		})
+	}
+
+	//填充select元素
 		function  fillSelect(selectorStr,data){
 			var options = '' 
 			for(var i = 0; i < data.length; i++){
-				var name = data[i].organizeName
+				var name = data[i].name || data[i].organizeName
 				var value = data[i].id
 				options += '<option value="'+value+'" >'+name+'</option>'
 			}
+			$(selectorStr).children('option+option').remove()
 			$(selectorStr).append(options)
 		}
-	}
 </script> 
 </body>
 </html>
