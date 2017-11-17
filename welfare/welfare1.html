@@ -123,11 +123,11 @@
                 constTotal = data.data.total,
                 clz = '';
             switch(auth){
-                case 0://未认证
-                    clz = ' J_showPopup';
+                case 5://已认证
+                case 6://已认证
                     break;
-                case 1://已认证
-                    break;
+                default://未认证
+                clz = ' J_showPopup';
             }
             if(constTotal%constSize==0){
                 totalPage = constTotal/constSize;
@@ -144,7 +144,8 @@
                     remainDays = getTimeDifference(ele.nowTime,ele.endTime),
                     remainPer = remainDays/allDays*100,
                     remainStr = '剩余'+remainDays+'天',
-                    btnStr = '';
+                    btnStr = '',
+                    link = './welfare_detail1.html?id='+ele.id+'&phone='+phone;
                 if(remainDays==0){
                     remainStr = '今天结束';
                 }
@@ -152,7 +153,13 @@
                     if(ele.welfareProId=='MFLLQJ'){
                         btnStr = '<span class="wait-to-receive">未激活</span>';
                         clz = '';
-                    }else{
+                    }
+                    else if(ele.welfareProId=='#'){
+                        btnStr = '<span class="wait-to-receive">签到</span>'
+                        clz = '';
+                        link = '../dailySign/daily_sign.html?phone='+phone;
+                    }
+                    else{
                         btnStr = '<span class="wait-to-receive">待领取</span>';
                     }
                 }
@@ -164,7 +171,7 @@
                         btnStr = '<span class="had-receive">已领取</span>';
                     }
                 }
-                str +=  '<a href="./welfare_detail1.html?id='+ele.id+'&phone='+phone+'" class="welfare-item'+clz+'">'+
+                str +=  '<a href="'+link+'" class="welfare-item'+clz+'">'+
                     '<div class="icon"><img src="./images/icon_1.png"></div>'+
                     '<div class="info">'+
                     '<p class="title">'+ele.welfareName+'</p>'+
@@ -193,7 +200,7 @@
 
     $(document).on('click','.J_showPopup',function(e){
         e.preventDefault();
-        authPop('您还未成为认证用户','完成学生身份认证即可<br>添加10个免费通话联系人并领取8G流量','立即认证','../auth/auth.html?phone='+phone);
+        authPop('您还未成为认证用户','完成详细资料即可<br>添加10个免费通话联系人并领取8G流量','立即认证','../auth/auth.html?phone='+phone);
     });
 
 </script>

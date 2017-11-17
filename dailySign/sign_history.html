@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>签到历史</title>
+    <link rel="stylesheet" type="text/css" href="../welfare/static/reset.css">
+</head>
+<style>
+    .z_body{
+        position: relative;
+    }
+    .no-data{
+        display: none;
+        padding-top:140px;
+        text-align: center;
+    }
+    .data-list{
+        font-size:18px;
+        color:rgb(51,51,51);
+    }
+    .data-list li{
+        padding: 16px 18px;
+        border-bottom:1px solid rgb(230,230,230);
+    }
+    .no-data p{
+        margin-top:25px;
+        font-size: 18px;
+        color:rgb(143,163,177);
+    }
+</style>
+<body class="z_body">
+<ul class="data-list J_list"></ul>
+<div class="no-data J_nodata">
+    <img src="./images/no-data.png">
+    <p>暂无签到记录</p>
+</div>
+
+<script type="text/javascript" src="../welfare/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="../welfare/static/common.js"></script>
+<script>
+    var phone = GetQueryString('phone');
+    if(phone){
+        init();
+    }
+    function init(){
+        _ajax('get','api/h5/getSignHistory',{'phone':phone},function(data){
+            if(data.data.length){
+                var str = '';
+
+                $.each(data.data,function(index,ele){
+                    var year=new Date(ele.signDate).getFullYear();
+                    var month=new Date(ele.signDate).getMonth()+1;
+                    var date=new Date(ele.signDate).getDate();
+                    var day = year+'/'+month+'/'+date;
+                    str += '<li>'+day+'完成签到打卡</li>';
+                })
+                $('.J_list').html(str);
+            }else{
+                $('.J_nodata').show();
+            }
+        });
+    }
+</script>
+</body>
+</html>

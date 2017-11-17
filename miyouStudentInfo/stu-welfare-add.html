@@ -22,6 +22,20 @@
 
     <title>福利</title>
 </head>
+<style>
+    .city-checkbox{
+        float: left;
+        margin-right: 20px;
+    }
+    .city-checkbox input{
+        width: 20px;
+        vertical-align: bottom;
+    }
+    .city-checkbox input,.city-checkbox label{
+        height: 31px;
+        line-height:31px;
+    }
+</style>
 <body>
 <article class="page-container">
     <form action="" method="post" class="form form-horizontal" id="form-member-add">
@@ -45,6 +59,12 @@
             </div>
         </div>
         <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">福利应用城市：</label>
+            <div class="formControls col-xs-8 col-sm-9 J_city_checkbox">
+
+            </div>
+        </div>
+        <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">描述：</label>
             <div class="formControls col-xs-8 col-sm-9">
                 <input type="text" class="input-text" id="welfareDesc" name="welfareDesc">
@@ -65,7 +85,7 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">福利结束时间：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <div class="input-text" id="endTime" name="endTime" onclick="WdatePicker()" style="cursor: pointer" data-time=" 23:59:59"></div>
+                <div class="input-text" id="endTime" name="endTime" onclick="WdatePicker()" style="cursor: pointer" data-time=""></div>
             </div>
         </div>
         <div class="row cl">
@@ -100,6 +120,36 @@
 <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript" src="static/js/index.js"></script>
 <script>
+    var token = window.location.href.split('?token=')[1];
+    ajax({
+        url: 'api/orgh5/getCity',
+        method: 'get',
+        successFunc:function (data) {
+            if(data.code == 1){
+                var str = '';
+                $.each(data.data,function(index,ele){
+                    var checked = '';
+                    if(token){
+                        var string = decodeURI(token),
+                            tokenData = JSON.parse(string);
+                        if(tokenData.citys){
+                            $.each(tokenData.citys.split(','),function(i,e){
+                                if(ele.name == e){
+                                    checked = 'checked';
+                                }
+                            });
+                        }
+                    }
+                    str += '<span class="city-checkbox">' +
+                        '<input type="checkbox" class="input-text" id="'+ele.id+'" value="'+ele.id+'" name="city-check" '+checked+'>' +
+                        '<label for="'+ele.id+'">'+ele.name+'</label>' +
+                        '</span>';
+                });
+                $('.J_city_checkbox').html(str);
+            }
+        }
+    });
+
     Date.prototype.Format = function (fmt) { //author: meizz
         var o = {
             "M+": this.getMonth() + 1, //月份
@@ -115,10 +165,9 @@
             if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
         return fmt;
     };
-    var hash = window.location.hash;
     //如果是编辑则会带参数
-    if(hash){
-        var string = decodeURI(hash).split('#')[1],
+    if(token){
+        var string = decodeURI(token),
             data = JSON.parse(string);
         $.each($('.input-text'),function(index,ele){
             var ele = $(ele);
@@ -137,25 +186,48 @@
 
     $('#submit').click(function(event){
         event.preventDefault();
-        var indata = {};
+        var indata = {},
+            enabled = true;
         $.each($('.input-text'),function(index,ele){
             var ele = $(ele);
             if(ele.is('div')){
                 if(ele.text()==''){
                     $.Huimodalalert('请选择对应福利时间',2000);
-                    return false;
+                    enabled = false;
                 }
-                indata[ele.attr('name')] = ele.text()+ele.attr('data-time');
+                if(ele.attr('name')=='endTime'){
+                    var timestamp = new Date(ele.text()).getTime(),
+                        endDate = new Date(timestamp+86400000),
+                        endYear = endDate.getFullYear(),
+                        endMonth = endDate.getMonth()+1,
+                        endDay = endDate.getDate(),
+                        endDataStr = endYear+'-'+endMonth+'-'+endDay;
+                        indata[ele.attr('name')] = endDataStr;
+                }else{
+                    indata[ele.attr('name')] = ele.text();
+                }
+
             }else{
-                if(ele.val()==''){
-                    $.Huimodalalert('请输入完整福利信息',2000);
-                    return false;
+                if(ele.attr('name')!='city-check'){
+                    if(ele.val()==''){
+                        $.Huimodalalert('请输入完整福利信息',2000);
+                        enabled = false;
+                    }
+                    indata[ele.attr('name')] = ele.val();
                 }
-                indata[ele.attr('name')] = ele.val();
             }
         });
-        if(Object.keys(indata).length!=8)return false;
-        if(hash){
+        var chk_value =[];
+        $('input[name="city-check"]:checked').each(function() {
+            chk_value.push($(this).val());
+        })
+        if(!chk_value.length){
+            $.Huimodalalert('请勾选福利应用城市',2000);
+            enabled = false;
+        }
+        indata['cityId'] = chk_value;
+        if(!enabled)return false;
+        if(token){
             indata.id = $('#id').val();
             ajax({
                 url: 'admin/welfare/updateWelfare',
@@ -167,6 +239,8 @@
                         setTimeout(function(){
                             parent.location.reload()
                         },2000)
+                    }else{
+                        layer.msg(data.error);
                     }
                 }
             });
@@ -181,6 +255,8 @@
                         setTimeout(function(){
                             parent.location.reload()
                         },2000)
+                    }else{
+                        layer.msg(data.error);
                     }
                 }
             });
