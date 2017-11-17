@@ -123,11 +123,11 @@
                 constTotal = data.data.total,
                 clz = '';
             switch(auth){
-                case 0://未认证
-                    clz = ' J_showPopup';
+                case 5://已认证
+                case 6://已认证
                     break;
-                case 1://已认证
-                    break;
+                default://未认证
+                clz = ' J_showPopup';
             }
             if(constTotal%constSize==0){
                 totalPage = constTotal/constSize;

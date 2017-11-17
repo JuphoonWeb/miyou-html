@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>每日签到</title>
+    <link rel="stylesheet" type="text/css" href="../welfare/static/reset.css">
+</head>
+<style>
+    .z_body{
+        position: relative;
+    }
+    .pic{
+        display: block;
+        margin:20px auto;
+    }
+    .desc{
+        width: 320px;
+        margin: 0 auto;
+        font-size: 18px;
+        color: #000;
+        text-align: center;
+        line-height: 1.3;
+    }
+    .desc i,.role-content i{
+        font-style: normal;
+        color: rgb(255,87,113);
+    }
+    .sign{
+        width: 285px;
+        margin:25px auto 0;
+        height: 50px;
+        line-height: 50px;
+        border-radius: 30px;
+        text-align: center;
+        font-size: 20px;
+        color: #fff;
+        background: rgba(242,170,25,0.5);
+    }
+    .sign.enable{
+        cursor: pointer;
+        background: url('../welfare/images/receive_btn.png') no-repeat center;
+    }
+    .warn-text{
+        width: 200px;
+        margin: 0 auto;
+        color: rgb(255,87,113);
+        padding: 10px 0;
+    }
+    .history-line{
+        padding: 14px 0;
+        text-align: center;
+    }
+    .sign-history{
+        font-size: 16px;
+        color: rgb(250,181,86);
+        text-decoration: none;
+    }
+    .role-title,.role-content{
+        font-size: 14px;
+        color: #000;
+        padding: 11px;
+    }
+    .role-title{
+        border-bottom: 0.5px solid rgb(128,128,128);
+        margin-top: 10px;
+    }
+    .role-content{
+        line-height: 1.5;
+    }
+    .progress-bar{
+        height: 2px;
+        border-radius: 1.5px;
+        background-color: rgb(216,216,216);
+    }
+    .sign-count{
+        width: 80%;
+        margin:0 auto;
+    }
+    .sign-count p{
+        text-align: center;
+        padding-top: 20px;
+        font-size: 14px;
+        color: rgb(51,51,51);
+    }
+    .sign-count p span{
+        color: rgb(242,170,25);
+    }
+    .progress-bar .bar{
+        width: 50%;
+        height: 2px;
+        border-radius: 1.5px;
+        background-color: rgb(245,172,44);
+        position: relative;
+        margin-top: 15px;
+    }
+    .progress-bar .bar span{
+        position: absolute;
+        right: 0;
+        transform:translate(50%,-50%);
+        -webkit-transform:translate(50%,-50%);
+        min-width: 50px;
+        padding: 3px 0;
+        text-align: center;
+        font-size: 16px;
+        border: rgb(242,170,25) 1px solid;
+        border-radius: 4px;
+        color: rgb(242,170,25);
+        background-color: #fff;
+    }
+    .complete{
+        margin: 15px 18px 0;
+        font-size: 14px;
+        color: rgb(250,181,86);
+        line-height:1.5;
+    }
+</style>
+<body class="z_body">
+    <img src="../welfare/images/pic.png" class="pic">
+    <p class="warn-text">连续签到10天领取50元话费</p>
+    <p class="sign-count J_count"></p>
+    <div class="sign J_sign"></div>
+    <div class="complete J_complete" style="display: none">恭喜您在流量短号已连续签到满10天，为感谢您的支持，我们将在活动结束后15个工作日内赠送您50元话费至注册所用的湛江移动号码，请留意到账短信，谢谢参与！</div>
+    <div class="history-line">
+        <a href="" class="sign-history J_history">历史签到</a>
+    </div>
+    <p class="role-title">业务规则</p>
+    <p class="role-content">
+        1、签到领话费仅面向湛江已认证的流量短号用户；<br>
+        2、即日起至2017年12月31日，活动期间受邀用户连续签到满10天，即可获赠50元话费，限前10000名客户；<br>
+        3、话费在活动结束后的15个工作日内赠送，赠送时会有短信提醒，请留意短信通知；<br>
+        4、参与号码说明：限湛江移动号码参与，万能副卡、和多号、家庭计划副号、公务机、一卡双号副号测、信息机、极光宽带副号、随心王、无限量套餐等特殊号码不能参与。
+    <p>
+<script type="text/javascript" src="../welfare/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="../welfare/static/common.js"></script>
+<script>
+    var phone = GetQueryString('phone');
+    if(phone){
+        $('.J_history').attr('href','./sign_history.html?phone='+phone);
+        init();
+    }
+    $(document).on('click','.J_sign.enable',function(){
+        toast('请稍后');
+        _ajax('post','api/h5/dailySign',{'phone':phone},function(data){
+            removeToast();
+            if(data.code==1){
+                init();
+            }else{
+                toast('福利领取失败，请重试',2000,callback);
+            }
+        })
+    });
+    function init(){
+        _ajax('get','api/h5/getSignCount',{'phone':phone},function(data){
+            var count = data.data.signCount;
+            var bar = '<div class="progress-bar"><div class="bar" style="width:'+count*10+'%"><span>'+count+'天</span></div></div>',
+                count_text = '';
+            if(count<10){
+                count_text = '<p>已连续签到 <span>'+count+'</span> 天，剩余 <span>'+(10-count)+'</span> 天</p>';
+                if(data.data.isSign==0){
+                    $('.J_sign').addClass('enable').text('签到');
+                }else{
+                    $('.J_sign').removeClass('enable').text('今日已签到');
+                }
+            }else{
+                count_text = '<p>已连续签到 <span>'+count+'</span> 天</p>';
+                $('.J_sign').removeClass('enable').text('已完成签到任务');
+                $('.J_complete').show();
+            }
+            $('.J_count').html(bar+count_text);
+        });
+    }
+</script>
+</body>
+</html>

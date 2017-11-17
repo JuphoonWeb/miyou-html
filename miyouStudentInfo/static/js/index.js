@@ -34,17 +34,17 @@ function ajax(dataObj){
 	    	}else if(res.code === -1){
 	    		relogin()
 	    	}else{
-		    	console.log('success',res)
+		    	// console.log('success',res)
 		    	dataObj.successFunc && dataObj.successFunc(res)
 		    }
 	    },
 	    errorFunc = function(xhr, status){
 	    	layer.closeAll()
-	    	console.log('error',status)
+	    	// console.log('error',status)
 	    	dataObj.errorFunc && dataObj.errorFunc(xhr, status)
 	    },
 	    beforeSendFunc = function(xhr, settings){
-	    	console.log('beforeSend')
+	    	// console.log('beforeSend')
 	    	dataObj.beforeSendFunc && dataObj.beforeSendFunc(xhr, settings)	
 	    }
 	    var data = dataObj.data
@@ -54,11 +54,12 @@ function ajax(dataObj){
 			data.size = data.size || 12
 		}
 
-		var menuUrl = window.location.href.replace('#','').split('/').reverse()[0].split('?')[0]
-		
+		var menuUrl = window.location.href.split('?')[0].replace('#','').split('/').reverse()[0]
+
 		if(menuUrl){
 			var reg = /(.+?html)/
-			menuUrl = reg.exec(menuUrl)[1] 
+			menuUrl = reg.exec(menuUrl)[1]
+			// console.log(menuUrl);
 		}
 
 	$.ajax({
@@ -118,7 +119,7 @@ function removeRepeat(array){
 	}
 	return resultArray;
 }
-var authLevelStatus = ["一级未审核","一级审核拒绝","一级审核通过","二级未审核","二级审核拒绝","二级审核通过"];
+var authLevelStatus = ["一级未审核","一级审核拒绝","一级审核通过","二级未审核","二级审核拒绝","二级审核通过","excel或手工添加"];
 
 
 
