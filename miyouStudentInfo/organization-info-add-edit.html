@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico" >
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" href="lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
+<title>新增组织</title>
+</head>
+<body>
+	<article class="page-container">
+		<form action="" method="post" class="form form-horizontal" id="apk-form">
+			<div class="row cl" id="city-container">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>城市：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+						<select class="select" size="1" name="city" id="city">
+							<option value="" selected>请选择城市</option>
+						</select>
+						</span> 
+					</div>
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>组织名称：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="请输入组织名称" id="org-name" name="orgName" >
+				</div>
+			</div>
+			<div class="row cl ">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>组织类型：</label>
+				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+					<div class="radio-box">
+						<input type="radio" class="radio org-type" name="org-type" id="org-type-1" value="1"><label for="org-type-1">学校</label>
+					</div>
+					<div class="radio-box">
+						<input type="radio" class="radio org-type" name="org-type" id="org-type-2" value="2" ><label for="org-type-2">公司</label>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3"><span id="logo-red-star" class="c-red">*</span>组织Logo：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span class="btn-upload form-group" style="width:100%">
+					  <input placeholder="选择图片文件" class="input-text upload-url radius"type="text" name="uploadfile-1" id="file-name" readonly  style="width:82%" ><a href="javascript:void();" class="btn btn-primary radius" style="width:18%" ><i class="Hui-iconfont">&#xe646;</i> 浏览文件</a>
+					  <input type="file" id="org-logo" name="file" accept="image/jpg,image/jpeg,image/png" class="input-file">
+					</span>
+				</div>
+			</div>
+
+			
+			
+			<div class="row cl">
+				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+					<input id="submit" class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+				</div>
+			</div>
+		</form>
+		
+	</article>
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+
+
+<script type="text/javascript" src="static/js/index.js"></script>
+
+
+
+<script type="text/javascript">
+	var editOrgInfo = JSON.parse(sessionStorage.getItem('editOrgInfo'))
+
+	var errorFunc = function(xhr, status){
+		layer.msg(status)
+	}
+
+	$(function(){
+		getCity()
+		
+		if(editOrgInfo){
+			$('#logo-red-star').hide()
+
+			$('#org-name').val(editOrgInfo.organizeName)
+			
+			$('.radio.org-type#org-type-'+editOrgInfo.orgType).prop('checked', true)
+			$('#file-name').val(editOrgInfo.imageUrl)
+		}else{
+			$('.radio.org-type').eq(0).attr('checked', true)
+			$('.radio.mandatoryUpdate').eq(0).attr('checked', true)
+		}
+
+		$('.skin-minimal .radio').iCheck({
+			// radioClass: 'iradio-green',
+			increaseArea: '20%',
+		})
+	})
+
+	$('#submit').click(function(event){
+		event.preventDefault()
+		var orgInfo = {
+		    organizeName: $('#org-name').val(),
+		    orgType: $('.radio.org-type:checked').val(),
+		    proId: $('#city').val(),
+		   	file: $('#org-logo').get(0).files[0]
+		}   	
+
+		if(!orgInfo.proId){
+			layer.msg('请选择城市')
+		}else if(orgInfo.organizeName === ''){
+			layer.msg('请输入组织名称')
+		}
+		else if(orgInfo.file == undefined && !editOrgInfo){
+			layer.msg('请选择组织Logo图片')
+		}
+		else{
+			var destination = '添加'
+			var url = 'admin/organize/addOrganize'
+
+			if(editOrgInfo){
+				url = 'admin/organize/updateOrganize'
+				var destination = '修改'
+				orgInfo.id = editOrgInfo.id
+			}
+			
+			var formData = new FormData()
+			for(var key in orgInfo){
+				formData.append(key, orgInfo[key])
+			}
+			
+			ajax({
+				url: url,
+				method: 'post',
+				timeout: 10*60*1000,
+				data: formData,
+				cache: false,
+				processData: false,
+			    contentType: false,
+				successFunc: function(response){
+					var status = response.code
+					if(status === 1){
+						layer.msg(destination + '成功')
+						setTimeout(function(){
+							parent.location.reload()
+						}, 1000)
+					}else if(status === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: destination + '失败',
+								content: response.error
+							})
+
+						}
+				},
+				errorFunc: function(xhr, status){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: destination + '失败',
+						content: status
+					})
+				}
+			})
+		}
+	})
+
+	function getCity(){
+		ajax({
+			url: 'admin/getDistrict',
+			data: {
+				parentId: 20,
+			},
+			successFunc: function(response){
+				if(response.code === 1){
+					fillSelect('#city', response.data)
+				}else if(response.code === 0){
+					layer.msg(response.error)
+				}
+			},
+			errorFunc: errorFunc
+		})
+
+		//填充select元素
+		function  fillSelect(selectorStr,data){
+			var options = '' 
+			for(var i = 0; i < data.length; i++){
+				var name = data[i].name || ''
+				var value = data[i].id || ''
+				var selected = (editOrgInfo && editOrgInfo.city == name)? 'selected': ''
+				options += '<option value="'+value+'" '+selected+' >'+name+'</option>'
+			}
+			$(selectorStr).append(options)
+		}
+	}
+</script> 
+</body>
+</html>

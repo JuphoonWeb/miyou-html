@@ -43,7 +43,7 @@ function getCookie(name){
 			tempArr = tempArr.map(function(x){
 				return x.split('=');
 			})
-			for(let item of tempArr){
+			for(var item of tempArr){
 				var key = decodeURIComponent(item[0]);
 				cookieObj[key] = decodeURIComponent(item[1]);
 			}

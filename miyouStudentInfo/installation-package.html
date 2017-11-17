@@ -23,7 +23,7 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 安装包管理 <span class="c-gray en">&gt;</span>  安装包管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container" id="student-list">
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
-		<button id="add-btn" onclick="addInstallPackage()" title="新增账号" class="btn btn-success-outline radius" ><i class="Hui-iconfont">&#xe607;</i>新增安装包</button>
+		<button id="add-btn" onclick="addInstallPackage()" title="新增安装包" class="btn btn-success-outline radius" ><i class="Hui-iconfont">&#xe607;</i>新增安装包</button>
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
@@ -35,7 +35,7 @@
 				<th width="50">应用类型</th>
 				<th width="100">VersionName</th>
 				<th width="50">VersionCode</th>
-				<th width="80">更新时间</th>
+				<th width="100">更新时间</th>
 				<th width="100">安装包下载地址</th>
 				<th width="100">下载页面地址</th>
 				<th width="50">是否强制升级</th>		
@@ -95,7 +95,6 @@
 				}
 			},
 			errorFunc: errorFunc
-			
 		})
 	}
 

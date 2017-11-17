@@ -1,0 +1,250 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico" >
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" href="lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script> 
+<title>新增组织成员</title>
+</head>
+<body>
+	<article class="page-container">
+		<form action="" method="post" class="form form-horizontal" id="apk-form">
+			
+			<div class="row cl ">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>组织类型：</label>
+				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+					<div class="radio-box">
+						<input type="radio" checked class="radio org-type" name="org-type" id="" value="1" ><label for="" >学校</label>
+					</div>
+					<div class="radio-box">
+						<input type="radio" class="radio org-type" name="org-type" id="" value="0"><label for="">公司</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="row cl" id="city-container">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>城市：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+						<select class="select" size="1" name="city" id="city">
+							<option value="" selected>请选择城市</option>
+						</select>
+						</span> 
+					</div>
+			</div>
+			<div class="row cl" id="city-container">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>组织：</label>
+					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+						<select class="select" size="1" name="org" id="org">
+							<option value="" selected>请选择组织</option>
+						</select>
+						</span> 
+					</div>
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>姓名：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="请输入姓名" id="member-name" name="memberName" >
+				</div>
+			</div>
+			<div class="row cl ">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>性别：</label>
+				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+					<div class="radio-box">
+						<input type="radio" checked class="radio sex" name="sex" id="" value="1" ><label for="" >男</label>
+					</div>
+					<div class="radio-box">
+						<input type="radio" class="radio sex" name="sex" id="" value="0"><label for="">女</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>手机号码：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="请输入手机号码（长号）" id="phone" name="phone" >
+				</div>
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>短号：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="请输入短号" id="short-phone" name="shortPhone" >
+				</div>
+			</div>
+			<div class="row cl">
+				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+					<input id="submit" class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+				</div>
+			</div>
+		</form>
+		
+	</article>
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+
+
+<script type="text/javascript" src="static/js/index.js"></script>
+
+
+
+<script type="text/javascript">
+
+	var errorFunc = function(xhr, status){
+		layer.msg(status)
+	}
+
+	$(function(){
+		getCity()
+		$('.skin-minimal .radio').iCheck({
+			// radioClass: 'iradio-green',
+			increaseArea: '20%',
+		})
+
+	})
+
+	$('#submit').click(function(event){
+		event.preventDefault()
+		var orgMember = {
+		    memberName: $('#member-name').val(),
+		    phone: $('#phone').val(),
+		    shortPhone: $('#short-phone').val(),
+		    sex: $('.radio.sex:checked').val(),
+		    orgId: $('#org').val()
+		}   	
+		if(!$('#city').val()){
+			layer.msg('请选择城市')
+		}else if(!orgMember.orgId){
+			layer.msg('请选择组织')
+		}else if(orgMember.memberName === ''){
+			layer.msg('请输入姓名')
+			$('#member-name').focus()
+		}else if(orgMember.phone === ''){
+			layer.msg('请输入手机号码（长号）')
+			$('#phone').focus()
+		}else if( !(/^1[3|4|5|7|8][0-9]\d{8}$/.test(orgMember.phone))){
+			layer.msg('请填写正确格式的手机号码（长号）')
+			$('#phone').focus()
+		}else if(orgMember.shortPhone === ''){
+			layer.msg('请输入手机短号')
+			$('#short-phone').focus()
+		}
+		else{
+			
+			ajax({
+				url: 'admin/organize/addMember',
+				method: 'post',
+				timeout: 10*1000,
+				data: orgMember,
+				successFunc: function(response){
+					var status = response.code
+					if(status === 1){
+						layer.msg('添加成功')
+						setTimeout(function(){
+							parent.location.reload()
+						}, 1000)
+					}else if(status === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '添加失败',
+								content: response.error
+							})
+
+						}
+				},
+				errorFunc: function(xhr, status){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '添加失败',
+						content: status
+					})
+				}
+			})
+		}
+	})
+
+
+	$('#city').change(function(){
+		getOrg($('.radio.org-type:checked').val(), $(this).val())
+	})
+
+	$('.skin-minimal .radio.org-type').on('ifChecked', function(){
+		getOrg($(this).val(), $('#city').val())	
+	})
+
+	function getCity(){
+		ajax({
+			url: 'api/orgh5/getCity',
+			data: {
+				size: 500,
+			},
+			successFunc: function(response){
+				if(response.code === 1){
+					fillSelect('#city', response.data)
+				}else if(response.code === 0){
+					layer.msg(response.error)
+				}
+			},
+			errorFunc: errorFunc
+		})
+	}
+
+
+	function getOrg(type,city){
+		ajax({
+			url: 'api/orgh5/getOrganizes',
+			data: {
+				type: type,
+				city: city,
+			},
+			z_type: 0,
+			successFunc: function(response){
+				if(response.code === 1){
+					fillSelect('#org', response.data)
+				}else if(response.code === 0){
+					layer.msg(response.error)
+				}
+			},
+			errorFunc: errorFunc
+		})
+	}
+
+	//填充select元素
+		function  fillSelect(selectorStr,data){
+			var options = '' 
+			for(var i = 0; i < data.length; i++){
+				var name = data[i].name || data[i].organizeName
+				var value = data[i].id
+				options += '<option value="'+value+'" >'+name+'</option>'
+			}
+			$(selectorStr).children('option+option').remove()
+			$(selectorStr).append(options)
+		}
+</script> 
+</body>
+</html>

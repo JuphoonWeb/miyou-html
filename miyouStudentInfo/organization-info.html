@@ -1,10 +1,236 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="lib/lightbox2/2.8.1/css/lightbox.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>组织信息管理</title>
 </head>
-<body>
+<body >
 
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 组织管理 <span class="c-gray en">&gt;</span>  组织信息管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+	<div class="cl pd-5 bg-1 bk-gray mt-20"> 
+		<input id="search-org-name" type="text" style="width:200px" class="input-text radius" placeholder="组织名称 "> 
+		<button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+		<button id="add-btn" onclick="addOrg()" title="新增组织" class="btn btn-success-outline radius" ><i class="Hui-iconfont">&#xe607;</i>新增组织</button>
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+	</div>
+	<div class="mt-20">
+	<table class="table table-bordered table-border table-hover table-bg ">
+		<thead>
+			<tr class="text-c">
+				<th width="50">序号</th>
+				<th width="70">组织名称</th>
+				<th width="50">组织类型</th>
+				<th width="50">组织Logo</th>
+				<th width="50">城市</th>
+				<th width="100">组织信息创建时间</th>
+				<th width="100">组织信息修改时间</th>
+				<th width="160">操作</th>
+			</tr>
+		</thead>
+		<tbody id="org-info-tbody" class="text-c" >	
+		</tbody>
+	</table>
+	<div class="pagination r" id="pagination"></div>
+	<div class="nodata" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript"  src="lib/lightbox2/2.8.1/js/lightbox.min.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script> 
+
+
+<script type="text/javascript">
+	var isPageInit = false;
+	var searchPara = {
+		page: 1,
+		size: 12,
+		organizeName: ''
+	}
+	var orgList = []
+
+	$(function(){
+		getData(searchPara)		
+	})
+
+	$('#search-btn').click(function(){
+		isPageInit = false
+		$('#pagination').hide()
+
+		searchPara.page = 1
+		searchPara.organizeName = $('#search-org-name').val()
+		getData(searchPara)
+	})
+
+	function getData(searchPara){
+
+		ajax({
+			url: 'admin/organize/getOrganizes',
+			data: searchPara,
+			successFunc: function(response){
+				var status = response.code
+				if(status === 1){
+					orgList = response.data.list
+					renderTable(response.data)
+				}else if(status === 0){
+					layer.open({
+						type: 0,
+						closeBtn: 0,
+						icon:7, 
+						title: '获取数据失败',
+						content: response.error
+					})
+
+				}
+			},
+			errorFunc: function(xhr, status){
+				layer.open({
+					type: 0,
+					closeBtn: 0,
+					icon:7, 
+					title: '出现错误',
+					content: status
+				})
+			}
+		})
+	}
+
+	function renderTable(data){
+		var list = data.list
+		if(list.length == 0){
+			$('#nodata').show()
+		}else{
+			$('#nodata').hide()
+		}
+		var trs = ''
+		for(var i = 0; i<list.length; i++){
+			var sequence = (searchPara.page-1)*searchPara.size+i+1
+			var orgType = list[i].orgType == 1 ? 
+					'<span class="label label-success radius">学校</span>': 
+					'<span class="label label-primary radius">公司</span>'
+			var createTime = timeFormat(list[i].createTime)
+			var updateTime = timeFormat(list[i].upadteTime)
+			var imageUrl = list[i].imageUrl || ''
+			var orgLogo = imageUrl!=='' ?
+						  '<div title="点击图片预览" >'+
+						  	'<a  href="'+imageUrl+'" data-lightbox="gallery" data-title="'+list[i].organizeName+'">'+
+								'<img src="'+imageUrl+'" alt=""/>'+
+							'</a>'+ 
+						  '</div>':
+						  ''
+
+		    trs += '<tr>'+
+		    			'<td>'+sequence+'</td>'+
+		    			'<td>'+list[i].organizeName+'</td>'+
+		    			'<td>'+orgType+'</td>'+
+		    			'<td class="ellipsis-td" >'+orgLogo+'</td>'+
+		    			'<td>'+list[i].city+'</td>'+
+		    			'<td>'+createTime+'</td>'+
+		    			'<td>'+updateTime+'</td>'+
+		    			'<td>'+
+							'<button onclick="editOrgInfo('+i+')" class="btn btn-secondary-outline radius"><span class="Hui-iconfont">&#xe60c;</span>修改'+
+							'</button>'+
+							'<button  onclick="deleteOrgInfo('+i+')" style="margin-left:15px" class="btn btn-danger-outline radius">'+
+								'<span class="Hui-iconfont">&#xe609;</span>删除'+
+							'</button>'+
+						'</td>'+
+				    '</tr>' 
+		}
+		$('#org-info-tbody').html(trs)
+		$('#data-num').text(data.total)
+		if(!isPageInit && data.total > searchPara.size){
+			$('#pagination').show()
+			var pages = Math.ceil(data.total/searchPara.size)
+			laypage({
+			    cont: 'pagination',
+			    curr: 1, 
+			    pages: pages,
+			    groups: 5,
+			    jump: function(obj,first) {
+			    	if(!first){
+			    		console.log(obj.curr)
+			    		searchPara.page =obj.curr
+				    	getData(searchPara)
+					}
+			    }
+		  });
+		
+		}
+		isPageInit = true
+	}
+
+	//	添加
+	function addOrg(){
+		sessionStorage.removeItem('editOrgInfo')
+		layer_show('新增组织','organization-info-add-edit.html','','350');
+	}
+
+	//编辑
+	function editOrgInfo(index){
+		var editOrgInfo = orgList[index]
+		sessionStorage.setItem('editOrgInfo', JSON.stringify(editOrgInfo))
+		layer_show('修改组织信息','organization-info-add-edit.html','','350');
+	}
+
+	function deleteOrgInfo(index){
+		var deleteOrg = orgList[index]
+		layer.confirm('确定组织 ['+deleteOrg.organizeName+'] 吗？',{
+			title: '提示',
+			icon:3,
+			closeBtn: 0,
+			yes: function(){
+				ajax({
+					url: 'admin/organize/deleteOrganize',
+					type: 'post',
+					data: {
+						 id: deleteOrg.id
+					},
+					successFunc: function(response){
+						var status = response.code
+						if(status === 1){
+							layer.msg('已删除')
+							setTimeout(function(){
+								window.location.reload()
+							},1000)
+						}else if(status === 0){
+							layer.open({
+								type: 0,
+								closeBtn: 0,
+								icon:7, 
+								title: '删除失败',
+								content: response.error
+							})
+						}
+					},
+					errorFunc: function(xhr, status){
+						layer.msg(status)
+					}
+				})
+			}
+		});
+	}
+
+</script>  
 </body>
 </html>

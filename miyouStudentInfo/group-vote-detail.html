@@ -27,11 +27,11 @@
 <body>
 
 <div class="page-container">
-   <canvas id="vote-chart" width="400" height="300"></canvas>
+   <div id="vote-chart" style="height:400px" ></div>
 </div>
 
 <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript" src="lib/Chart.min.js"></script>
+<script type="text/javascript" src="lib/echarts.common.min.js"></script>
 <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
 <script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
@@ -50,38 +50,30 @@
                         voteLabels.push(item.chooseName)
                         voteData.push(item.voteCount)
                     })
-                    
-                    var ctx = $('#vote-chart').get(0).getContext('2d')
-                    
-                    var myChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels : voteLabels,
-                            datasets: [
-                               {    
-                                    label: '票数',
-                                    backgroundColor : "rgba(151,187,205,0.5)",
-                                    borderColor : "rgba(151,187,205,1)",
-                                    data : voteData
-                                }
-                            ]
+
+                    var chart = echarts.init($('#vote-chart').get(0))
+                    var option = {
+                        tooltip: {
+                            trigger: 'item'
                         },
-                        options: {
-                            scales: {
-                                yAxes: [{
-                                    ticks: {
-                                        beginAtZero:true,
-                                        // stepSize: 1,
-                                    }
-                                }],
-                                xAxes: [{
-                                    maxBarThickness: 100
-                                }]
-                            },
-
-
-                        }
-                    })
+                        legend: {
+                            data: ['票数']
+                        },
+                        xAxis: {
+                            data: voteLabels
+                        },
+                        color: ['rgba(151,187,205,0.5)'],
+                        yAxis: {
+                            minInterval: 1
+                        },
+                        series: [{
+                            name: '票数',
+                            type: 'bar',
+                            data: voteData,
+                            barMaxWidth: 100
+                        }]
+                    }
+                    chart.setOption(option)
                 }else if(response.code === 0){
                     layer.msg(response.error)
                 }
