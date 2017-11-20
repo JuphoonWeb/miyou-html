@@ -221,10 +221,10 @@
         $('input[name="city-check"]:checked').each(function() {
             chk_value.push($(this).val());
         })
-        if(!chk_value.length){
-            $.Huimodalalert('请勾选福利应用城市',2000);
-            enabled = false;
-        }
+//        if(!chk_value.length){
+//            $.Huimodalalert('请勾选福利应用城市',2000);
+//            enabled = false;
+//        }
         indata['cityId'] = chk_value;
         if(!enabled)return false;
         if(token){
