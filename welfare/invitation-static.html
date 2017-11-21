@@ -144,7 +144,10 @@
 </div>
 <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="./static/common.js"></script>
+<!-- <script src="static/vconsole.min.js" ></script> -->
 <script type="text/javascript">
+    // var vconsole = new VConsole()
+
     var u = navigator.userAgent;
     var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
     var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
@@ -164,6 +167,30 @@
             return false;
         }
     }
+    // 取得下载页面地址, appType-- 1: Android 2: iOS
+    function getDownloadUrl(appType){
+        var downloadUrl = appType === 1 ? 
+                        'https://www.pgyer.com/jqwanbeta':
+                        'https://www.pgyer.com/ypob';
+        _ajax('get', 'api/getNewestPackage', {
+            appType: appType
+        }, function(response){
+            console.log(response);
+            if(response.code === 1){
+                if(response.data && response.data.downloadFileUrl){
+                    downloadUrl = response.data.downloadFileUrl;
+                }
+
+            }else if(response.code === 0){
+                toast(response.error);
+            }else{
+                toast('出现错误');
+            }
+        }, function(xhr, status){
+            toast(status);
+        })
+        return downloadUrl;
+    }
     if(is_weixn()){
         var str = '<p class="weixin-warn"><span>'+warn_text+'</span></p>'
         $('.z_body').prepend(str);
@@ -174,12 +201,14 @@
             alert(warn_text);
             return false;
         }
-        toast('正在跳转',5000);
         if(isAndroid){
-            location.href = 'https://www.pgyer.com/jqwanbeta';
+            toast('开始下载',5000);
+           location.href = getDownloadUrl(1);
         }
         else if(isIOS){
-            location.href = 'https://www.pgyer.com/ypob';
+            //因为没有iOS安装包信息，iOS安装包只能是跳转到之前的下载页面
+           toast('开始跳转', 5000);
+           location.href = getDownloadUrl(2);
         }
     })
 </script>
