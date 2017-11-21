@@ -123,16 +123,16 @@
 		if(editInfo){
 			$('#app-name').val(editInfo.appName)
 			$('#version-name').val(editInfo.versionName)
-			$('.radio.app-type#app-type-'+editInfo.appType).attr('checked', true)
+			$('.radio.app-type#app-type-'+editInfo.appType).prop('checked', true)
 			$('#version-code').val(editInfo.versionCode)
 			$('#download-page-url').val(editInfo.downloadPageUrl)
 			$('#update-instructions').val(editInfo.updateInstructions)
-			$('.radio.mandatoryUpdate').eq(1-editInfo.mandatoryUpdate).attr('checked', true)
+			$('.radio.mandatoryUpdate').eq(1-editInfo.mandatoryUpdate).prop('checked', true)
 			$('#file-name').val(editInfo.downloadUrl)
 			$('#file-red-start').hide()
 		}else{
-			$('.radio.app-type').eq(0).attr('checked', true)
-			$('.radio.mandatoryUpdate').eq(0).attr('checked', true)
+			$('.radio.app-type').eq(0).prop('checked', true)
+			$('.radio.mandatoryUpdate').eq(0).prop('checked', true)
 		}
 
 		$('.skin-minimal .radio').iCheck({

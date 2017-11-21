@@ -32,4 +32,7 @@ tr:hover .ellipsis-td{
 	width: auto;
 	height: auto;
 } */
+td .btn+.btn{
+	margin-left:15px;
+}
 

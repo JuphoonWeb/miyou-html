@@ -58,11 +58,12 @@
         <table class="table table-bordered table-border table-hover table-bg " id="org-member-table">
             <thead>
             <tr class="text-c">
-                <th width="100">序号</th>
-                <th width="200">姓名</th>
-                <th width="100">性别</th>
-                <th width="200">手机</th>
-                <th width="250">组织名称</th>
+                <th width="50">序号</th>
+                <th width="80">姓名</th>
+                <th width="50">性别</th>
+                <th width="80">手机</th>
+                <th width="100">组织名称</th>
+                <th width="100">操作</th>
             </tr>
             </thead>
             <tbody id="org-member-tbody" class="text-c">
@@ -82,12 +83,13 @@
     <script type="text/javascript" src="static/js/index.js"></script>
 
     <script type="text/javascript">
-    var isPageInit = false;
-    var searchPara = {
-        page: 1,
-        size: 14,
-        phone: ''
-    }
+    var isPageInit = false,
+        searchPara = {
+            page: 1,
+            size: 11,
+            phone: ''
+        },
+        memberList = []
 
     $(function(){
         getData(searchPara)     
@@ -101,6 +103,7 @@
             successFunc: function(response){
                 var status = response.code
                 if(status === 1){
+                    memberList = response.data.list
                     renderTable(response.data)
                 }else if(status === 0){
                     layer.open({
@@ -135,6 +138,13 @@
                         '<td>'+sex+'</td>'+
                         '<td>'+list[i].phone+'</td>'+
                         '<td>'+list[i].organizeName+'</td>'+
+                        '<td>'+
+                            '<button onclick="editOrgMember('+i+')" class="btn btn-secondary-outline radius"><span class="Hui-iconfont">&#xe60c;</span>修改'+
+                            '</button>'+
+                            '<button  onclick="deleteOrgMember('+i+')" style="margin-left:15px" class="btn btn-danger-outline radius">'+
+                                '<span class="Hui-iconfont">&#xe609;</span>删除'+
+                            '</button>'+
+                        '</td>'+
                     '</tr>' 
         }
         $('#org-member-tbody').html(trs)
@@ -236,14 +246,6 @@
                                         '</a> '+
                                     '</td>'+
                                 '</tr>'+
-                                // '<tr>'+
-                                //     '<th width="100" >重复数据</th>'+
-                                //     '<td>'+data.repeateCount+
-                                //         '<a id="download-repeate-file" href="'+data.repeateUrl+'"  download="'+getFileName(data.repeateUrl)+'"  class="r btn btn-secondary radius" style="margin-right:10px">'+
-                                //             '<i class="Hui-iconfont">&#xe641;</i>导出'+
-                                //         '</a> '+
-                                //     '</td>'+
-                                // '</tr>'+
                             '</table>'+
                         '</div>',
                         btn: '确定',
@@ -309,7 +311,55 @@
     })
 
     function orgMemberAdd(){
-        layer_show('单个添加组织成员','organization-member-add.html','','500');
+        sessionStorage.removeItem('editOrgMember')
+        layer_show('单个添加组织成员','organization-member-add-edit.html','','500');
+    }
+
+    //编辑
+    function editOrgMember(index){
+        var editOrgMember = memberList[index]
+        sessionStorage.setItem('editOrgMember', JSON.stringify(editOrgMember))
+        layer_show('修改组织成员信息','organization-member-add-edit.html','','500');
+    }
+
+    function deleteOrgMember(index){
+        var deleteMember = memberList[index]
+
+        layer.confirm('确定删除 ['+deleteMember.memberName+'] 吗？',{
+            title: '提示',
+            icon:3,
+            closeBtn: 0,
+            yes: function(){
+                ajax({
+                    url: 'admin/mem/deleteOrganizeMem',
+                    type: 'post',
+                    data: {
+                         memId: deleteMember.id,
+                         orgId: deleteMember.orgId
+                    },
+                    successFunc: function(response){
+                        var status = response.code
+                        if(status === 1){
+                            layer.msg('已删除')
+                            setTimeout(function(){
+                                window.location.reload()
+                            },1000)
+                        }else if(status === 0){
+                            layer.open({
+                                type: 0,
+                                closeBtn: 0,
+                                icon:7, 
+                                title: '删除失败',
+                                content: response.error
+                            })
+                        }
+                    },
+                    errorFunc: function(xhr, status){
+                        layer.msg(status)
+                    }
+                })
+            }
+        });
     }
 
     </script>
