@@ -126,7 +126,7 @@
 				data:{
 					phone: sessionStorage.getItem('phone'),
 				},
-				async: false,
+				// async: false,
 				success: function(response) {
 
 					if(response.code === 1){
@@ -147,7 +147,7 @@
 							unauthInit(data)
 						}else if(status <= 3 && status != 1){
 							dialog({
-								text: '您的信息正在审核中',
+								text: '您的信息正在审核中，工作人员将在7个工作日内根据您的信息完成审核',
 								ok: function(){
 									native.dismissWebView()
 								}

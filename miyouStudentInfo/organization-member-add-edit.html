@@ -111,12 +111,22 @@
 
 <script type="text/javascript">
 
+	var editOrgMember = JSON.parse(sessionStorage.getItem('editOrgMember'))
+	var async = editOrgMember ? false: true
 	var errorFunc = function(xhr, status){
 		layer.msg(status)
 	}
 
 	$(function(){
 		getCity()
+		
+
+		if(editOrgMember){
+			$('#member-name').val(editOrgMember.memberName)
+			$('#phone').val(editOrgMember.phone)
+			$('.radio.sex').eq(1 - editOrgMember.sex).prop('checked', true)
+		}
+
 		$('.skin-minimal .radio').iCheck({
 			// radioClass: 'iradio-green',
 			increaseArea: '20%',
@@ -152,15 +162,27 @@
 		}
 		else{
 			
+			var purpose = '添加',
+				url = 'admin/organize/addMember'
+
+			if(editOrgMember){
+				purpose = '修改'
+				url = 'admin/mem/updateOrganizeMem'
+				orgMember.id = editOrgMember.id
+				orgMember.organizeId = orgMember.orgId
+				delete orgMember.orgId
+			}	
+
 			ajax({
-				url: 'admin/organize/addMember',
+				url: url,
 				method: 'post',
 				timeout: 10*1000,
 				data: orgMember,
+				z_type: 0,
 				successFunc: function(response){
 					var status = response.code
 					if(status === 1){
-						layer.msg('添加成功')
+						layer.msg(purpose + '成功')
 						setTimeout(function(){
 							parent.location.reload()
 						}, 1000)
@@ -169,7 +191,7 @@
 								type: 0,
 								closeBtn: 0,
 								icon:7, 
-								title: '添加失败',
+								title: purpose + '失败',
 								content: response.error
 							})
 
@@ -180,7 +202,7 @@
 						type: 0,
 						closeBtn: 0,
 						icon:7, 
-						title: '添加失败',
+						title: purpose + '失败',
 						content: status
 					})
 				}
@@ -203,6 +225,7 @@
 			data: {
 				size: 500,
 			},
+			async: async,
 			successFunc: function(response){
 				if(response.code === 1){
 					fillSelect('#city', response.data)
@@ -222,6 +245,7 @@
 				type: type,
 				city: city,
 			},
+			async: async,
 			z_type: 0,
 			successFunc: function(response){
 				if(response.code === 1){
