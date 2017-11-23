@@ -1,0 +1,179 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/main.css" />
+    <title>当日注册统计</title>
+</head>
+<body>
+<div class="page-container" id="student-list">
+    <div class="cl pd-5 bg-1 bk-gray mt-20" id="statistics_line">
+        <span class="r">共有数据：<strong id="data-num">0</strong> 条</span>
+    </div>
+    <div class="mt-20">
+        <table class="table table-bordered table-border table-hover table-bg " id="welfare-table">
+            <thead>
+            <tr class="text-c">
+                <th>序号</th>
+                <th>手机号</th>
+                <th>签到时间</th>
+            </tr>
+            </thead>
+            <tbody id="welfare-tbody" class="text-c">
+            </tbody>
+        </table>
+        <div class="pagination r" id="pagination"></div>
+        <div class="nodata" id="nodata">
+            <img src="static/images/nodata.svg" alt="">
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script>
+
+<script type="text/javascript">
+
+    var isPageInit = false;
+    var currPage = 1;
+    var size = 12;
+    var url = 'admin/dailySign/getSignHistory';
+    var phone = location.hash.split('#')[1];
+    var successFunc = function(response){
+        layer.closeAll()
+        if(response.code === 1){
+            var list = response.data
+            $('#nodata').hide()
+            var trs = '';
+            if(list.length){
+                for(var i = 0; i < list.length; i++){
+                    trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].phone+'</td><td>'+new Date(list[i].signDate).Format("yyyy-MM-dd hh:mm:ss")+'</td></tr>'
+                }
+            }else{
+                $('#nodata').show()
+            }
+
+
+            // 判断数据是否取得成功
+            $('#welfare-tbody').html(trs)
+            $('#data-num').text(response.data.length)
+            if(!isPageInit && response.data.length > size){
+                $('#pagination').show()
+                var pages = Math.ceil(response.data.length/size)
+                laypage({
+                    cont: 'pagination',
+                    curr: 1,
+                    pages: pages,
+                    groups: 5,
+                    jump: function (obj,first) {
+                        if(!first){
+                            currPage = obj.curr
+                            ajax({
+                                url: url,
+                                data: {
+                                    'page': currPage,
+                                    'size': size,
+                                    'phone':phone
+                                },
+                                successFunc: successFunc,
+                                errorFunc: errorFunc
+                            })
+                        }
+                    }
+                })
+            }
+            isPageInit = true
+
+
+        }
+        else if(response.code === 0){
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                icon:7,
+                title: '出现错误',
+                content: response.error
+            })
+        }else if(response.code === -1){
+            sessionStorage.removeItem('uuid')
+            sessionStorage.removeItem('login')
+            sessionStorage.removeItem('username')
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                icon:7,
+                title: '重新登录',
+                content: '超过30分钟未操作，已自动登出，请重新登录',
+                yes: function() {
+                    parent.window.open('login.html', '_self')
+                }
+            })
+
+        }
+    }
+
+    var errorFunc = function(xhr,status) {
+        console.log('error', status)
+        layer.closeAll()
+        if(!isPageInit){
+            layer.closeAll()
+            $('#nodata').show()
+        }else{
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                icon:7,
+                title: '获取数据失败',
+                content: '请检查网络'
+            })
+        }
+    }
+
+    function init(){
+        if(!sessionStorage.getItem('uuid')){
+            layer.open({
+                type: 0,
+                closeBtn: 0,
+                shade: [1,'#fff'],
+                title: '未登录',
+                icon: 7,
+                content: '请登录',
+                yes:function (){
+                    parent.window.open('login.html', '_self')
+                }
+            })
+        }
+
+        currPage = 1
+
+        ajax({
+            url: url,
+            data:{
+                'page':currPage,
+                'size':12,
+                'phone':phone
+            },
+            successFunc: successFunc,
+            errorFunc: errorFunc
+        })
+    }
+    init();
+</script>
+</body>
+</html>
