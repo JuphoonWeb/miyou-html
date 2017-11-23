@@ -145,7 +145,7 @@
         <input type="text" pattern="[0-9]*" placeholder="输入验证码" id="code" class="code">
         <button class="send-code" id="sendCode" disabled>发送验证码</button>
     </div>
-    <button class="submit" id="submit" disabled>下载</button>
+    <button class="submit" id="submit" >下载</button>
     <p class="bottom-text"><span>广东移动用户</span>在本产品内产生的<br>所有流量费用全免</p>
     <img src="./images/bg_down.png" class="bottom-bg">
 </div>
@@ -207,7 +207,7 @@
                 }
             },1000);
         })
-    }).on('click','#submit',function(){
+    }).on('click','#submit', function(){
         if(is_weixn()){
             alert(warn_text);
             return false;
@@ -224,10 +224,10 @@
             'code':code,
             'token':token,
             'type':'1'
-        },function(data){
+        }, function(data){
             toast('正在跳转',5000);
             if(isAndroid){
-                location.href = 'https://www.pgyer.com/jqwanbeta';
+                location.href = getDownloadUrl(1);
             }
             else if(isIOS){
                 location.href = 'https://itunes.apple.com/cn/app/%E6%B5%81%E9%87%8F%E7%9F%AD%E5%8F%B7/id1301158859?mt=8';
