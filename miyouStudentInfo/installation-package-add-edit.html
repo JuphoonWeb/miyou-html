@@ -44,6 +44,12 @@
 				</div>
 			</div>
 			<div class="row cl" >
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>包名：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="VersionName" id="app-id" name="appId" >
+				</div>
+			</div>
+			<div class="row cl" >
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>VersionName：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="text" class="input-text" value="" placeholder="VersionName" id="version-name" name="versionName" >
@@ -146,6 +152,7 @@
 		var apkInfo = {
 		    appName: $('#app-name').val(),
 		    appType: $('.radio.app-type:checked').val(),
+			appId: $('#app-id').val(),
 		    versionName: $('#version-name').val(),
 		    versionCode: $('#version-code').val(),
 		    downloadPageUrl: $('#download-page-url').val(),
@@ -157,8 +164,10 @@
 		if(apkInfo.appName === ''){
 			layer.msg('请输入应用名')
 		}else if(apkInfo.versionName === ''){
-			layer.msg('请输入VersionName')
-		}else if(apkInfo.versionCode === ''){
+            layer.msg('请输入VersionName')
+        }else if(apkInfo.appId === ''){
+            layer.msg('请输入包名')
+        }else if(apkInfo.versionCode === ''){
 			layer.msg('请输入VersionCode')
 		}else if(apkInfo.downloadPageUrl === ''){
 			layer.msg('请输入下载页面地址')
