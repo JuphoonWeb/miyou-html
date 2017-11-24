@@ -1,0 +1,237 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <style>
+        span.num+span.num{
+            margin-left: 15px;
+        }
+    </style>
+    <title>组织和组织成员统计</title>
+</head>
+<body>
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计 <span class="c-gray en">&gt;</span>  群组成员统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" >
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" placeholder=" 开始时间" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}'})" id="search-end-date" class="input-text Wdate formControls" placeholder=" 结束时间" style="width: 150px">
+        <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        <button id="export" title="导出" class="btn btn-primary-outline radius" style="width:100px">导出excel</button>
+        <div class="r">
+            <span class="num">群组总数量：<strong id="group_total" >0</strong> </span>
+        </div>
+    </div>
+    <div id="lineChart" style="width: 100%;height:400px;margin-top: 10px"></div>
+    <div id="barChart" style="width: 100%;height:400px;margin-top: 10px"></div>
+</div>
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="lib/echarts.common.min.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script>
+
+
+<script type="text/javascript">
+    var isPageInit = false
+
+    var searchPara = {
+        startDate: null,
+        endDate: null
+    }
+
+    $(function(){
+        getData(searchPara);
+        getTotal();
+        $('#search-end-date').val(new Date().Format('yyyy-MM-dd'));
+        $('#search-start-date').val(new Date(new Date()*1-86400000*30).Format('yyyy-MM-dd'));
+        $('#search-btn').click();
+    })
+
+    $(document).on('change', '#search-start-date', '#search-end-date', function(){
+        if($(this).val === ''){
+            $(this).val(null)
+        }
+    })
+
+    $('#search-btn').click(function(){
+        searchPara.startDate = $('#search-start-date').val();
+        //因为时分秒为 00:00:00，要查到最完整的数据，结束日期必须往后推一天
+        var endDate = new Date($('#search-end-date').val());
+        endDate.setDate(endDate.getDate()+1);
+        searchPara.endDate = endDate.Format('yyyy-MM-dd');
+        getStatistics(searchPara);
+    })
+
+    function errorFunc(xhr, status){
+        layer.open({
+            type: 0,
+            closeBtn: 0,
+            icon:7,
+            title: '出现错误',
+            content: status
+        })
+    }
+    function getTotal(){
+        ajax({
+            url:'admin/auth/getCountGroupUrl',
+            successFunc: function(response){
+                if(response.code==1){
+                    $('#group_total').text(response.data);
+                }
+            }
+        })
+    }
+    function getStatistics(params){
+        var labels = [],lineData = [];
+        ajax({
+            url: 'admin/auth/getNewGroupsByTimeUrl',
+            data: params,
+            successFunc: function(response){
+                var status = response.code,
+                    data1 = [];
+                if(status === 1){
+                    var list = response.data;
+                    for(var i=0;i<list.length;i++){
+                        data1.push(list[i].newGroup);
+                        labels.push(list[i].time);
+                    }
+                    lineData.push({
+                        name:'新增群组数量',
+                        type:'line',
+                        smooth:true,
+                        data:data1
+                    });
+                    showChart('lineChart','群组新增数量折线图',labels,lineData);
+                }else if(status === 0){
+                    layer.open({
+                        type: 0,
+                        closeBtn: 0,
+                        icon:7,
+                        title: '获取数据失败',
+                        content: response.error
+                    })
+
+                }
+            },
+            errorFunc: errorFunc
+        })
+    }
+    //data对象包含 page, size, phone, type, createTime, city, schoolName
+    function getData(){
+        ajax({
+            url: 'admin/auth/getGroupStatisMessage',
+            successFunc: function(response){
+                var status = response.code;
+                if(status === 1){
+                    var labels = ['0-10人','10-29人','30-100人','100人以上'],
+                        data = response.data;
+                    showBarChart('barChart','群组成员数量柱状图',labels,data);
+                }else if(status === 0){
+                    layer.open({
+                        type: 0,
+                        closeBtn: 0,
+                        icon:7,
+                        title: '获取数据失败',
+                        content: response.error
+                    })
+
+                }
+            },
+            errorFunc: errorFunc
+        })
+    }
+
+    function showChart(id,title,labels,data){
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById(id));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: title,
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: labels
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: data
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    }
+    function showBarChart(id,title,labels,data){
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById(id));
+
+        // 指定图表的配置项和数据
+        var option = {
+            color: ['#3398DB'],
+            title: {
+                text: title,
+                left: 'center'
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : labels,
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'直接访问',
+                    type:'bar',
+                    barWidth: '30%',
+                    data:data
+                }
+            ]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    }
+
+    $(document).on('click','#export',function(){
+        location.href = 'http://218.204.254.209:28812/miyou/api/excel/getOrgMemNewDaily?startDate='+searchPara.startDate+'&endDate='+searchPara.endDate;
+    })
+</script>
+</body>
+</html>
