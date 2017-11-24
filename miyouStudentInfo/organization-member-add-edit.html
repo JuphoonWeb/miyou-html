@@ -124,12 +124,32 @@
 			$('#phone').val(editOrgMember.phone)
 			$('#short-phone').val(editOrgMember.shortPhone)
 			$('.radio.sex').eq(1 - editOrgMember.sex).prop('checked', true)
+			$('.radio.org-type').eq(editOrgMember.orgType - 1).prop('checked', true)
+			$('#city').val(editOrgMember.proId)
+			getOrg(editOrgMember.orgType, editOrgMember.proId)
+
+			if(editOrgMember.relationNamePath){
+				var names = editOrgMember.split('-').slice(1)
+				var ids = editOrgMember.relationIdsPath.split(',').slice(1)
+				var depList = []
+				for(var i = 0,len = names.lenght; i < len; i++){
+					depList.push({
+						'orgName': names[i],
+						'orgId': ids[i]
+					})
+				}
+
+
+
+			}
+
 		}
 
 		$('.skin-minimal .radio').iCheck({
 			// radioClass: 'iradio-green',
 			increaseArea: '20%',
 		})
+
 
 	})
 
@@ -163,7 +183,7 @@
 		}else if(orgMember.shortPhone === ''){
 			layer.msg('请输入手机短号')
 			$('#short-phone').focus()
-		}else if( !(/^\d{6}$/.test(orgMember.shortPhone))){
+		}else if( !(/^\d{3,6}$/.test(orgMember.shortPhone))){
 			layer.msg('请填写正确格式的手机短号')
 			$('#short-phone').focus()
 		}
@@ -176,8 +196,6 @@
 				purpose = '修改'
 				url = 'admin/mem/updateOrganizeMem'
 				orgMember.id = editOrgMember.id
-				orgMember.organizeId = orgMember.orgId
-				delete orgMember.orgId
 			}	
 
 			ajax({
@@ -255,7 +273,7 @@
 				var n = $('.dep').length
 				var data = response.data
 				if(data && data.length > 0){
-					depContainer.after(
+					$('#name-container').before(
 					'<div class="row cl dep-container" >'+
 						'<div class="formControls col-xs-offset-4 col-sm-offset-3 col-xs-8 col-sm-9"> <span class="select-box">'+
 							'<select class="select dep" size="1" id="dep-'+n+'" name="dep" >'+
@@ -306,6 +324,9 @@
 			successFunc: function(response){
 				if(response.code === 1){
 					fillSelect('#org', response.data)
+					if(editOrgMember){
+						$('#org').val(editOrgMember.orgId)
+					}
 				}else if(response.code === 0){
 					layer.msg(response.error)
 				}
