@@ -53,7 +53,7 @@
                 <th>性别</th>
                 <th>手机号</th>
                 <th>市</th>
-                <th>组织名</th>
+                <th>所在组织部门</th>
                 <th>提交认证时间</th>
                 <th width="10%">审核状态</th>
                 <th>操作</th>
@@ -126,12 +126,16 @@
                     accept = 5;
                     refuse = 4;
                 }
-                if(dataLevel!=2&&dataLevel!=5&&dataLevel!=6){
+                if(dataLevel==0||dataLevel==3){
                     options = '<input class="btn btn-success-outline radius" type="button" value="审核通过" onclick="update('+list[i].authId+','+accept+','+list[i].id+')">' +
                               '<input class="btn btn-danger-outline radius ml-10" type="button" value="审核拒绝"onclick="show_modal('+list[i].authId+','+refuse+','+list[i].id+')">';
+                }else if(dataLevel==1||dataLevel==4){
+                    options = '<input class="btn btn-success-outline radius" type="button" value="审核通过" onclick="update('+list[i].authId+','+accept+','+list[i].id+')" style="display: none">' +
+                              '<input class="btn btn-primary radius J_re_examine" type="button" value="重新认证">' +
+                              '<input class="btn btn-danger-outline radius ml-10" type="button" value="审核拒绝"onclick="show_modal('+list[i].authId+','+refuse+','+list[i].id+')" style="display: none">';
                 }
 //                console.log(list[i]);
-                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].memberName+'</td><td>'+(list[i].sex=0?"女":"男")+'</td><td>'+list[i].phone+'</td><td>'+list[i].city+'</td><td>'+list[i].organizeName+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td><td>'+authLevelStatus[dataLevel]+'</td><td>'+options+'</td></tr>'
+                trs+= '<tr><td>'+(i+1)+'</td><td>'+list[i].memberName+'</td><td>'+(list[i].sex=0?"女":"男")+'</td><td>'+list[i].phone+'</td><td>'+list[i].city+'</td><td>'+(list[i].relationNamePath||list[i].organizeName)+'</td><td>'+new Date(list[i].createTime).Format("yyyy-MM-dd hh:mm:ss")+'</td><td>'+authLevelStatus[dataLevel]+'</td><td>'+options+'</td></tr>'
             }
 
             // 判断数据是否取得成功
@@ -249,7 +253,9 @@
         $("#modal-examine").modal("hide");
         $('#refuse_reason').val('');
         update(ids[0],ids[1],ids[2],reason);
-    })
+    }).on('click','.J_re_examine',function(){
+       $(this).hide().siblings('.btn').show();
+    });
 
     init()
 
