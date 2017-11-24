@@ -30,10 +30,10 @@
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>组织类型：</label>
 				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
 					<div class="radio-box">
-						<input type="radio" checked class="radio org-type" name="org-type" id="" value="1" ><label for="" >学校</label>
+						<input type="radio" checked class="radio org-type" name="org-type" id="org-type-school" value="1" ><label for="org-type-school" >学校</label>
 					</div>
 					<div class="radio-box">
-						<input type="radio" class="radio org-type" name="org-type" id="" value="2"><label for="">公司</label>
+						<input type="radio" class="radio org-type" name="org-type" id="org-type-company" value="2"><label for="org-type-company">公司</label>
 					</div>
 				</div>
 			</div>
@@ -57,7 +57,7 @@
 					</div>
 			</div>
 
-			<div class="row cl">
+			<div class="row cl" id="name-container">
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>姓名：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="text" class="input-text" value="" placeholder="请输入姓名" id="member-name" name="memberName" >
@@ -67,10 +67,10 @@
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>性别：</label>
 				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
 					<div class="radio-box">
-						<input type="radio" checked class="radio sex" name="sex" id="" value="1" ><label for="" >男</label>
+						<input type="radio" checked class="radio sex" name="sex" id="sex-male" value="1" ><label for="sex-male" >男</label>
 					</div>
 					<div class="radio-box">
-						<input type="radio" class="radio sex" name="sex" id="" value="0"><label for="">女</label>
+						<input type="radio" class="radio sex" name="sex" id="sex-female" value="0"><label for="sex-female">女</label>
 					</div>
 				</div>
 			</div>
@@ -119,11 +119,10 @@
 
 	$(function(){
 		getCity()
-		
-
 		if(editOrgMember){
 			$('#member-name').val(editOrgMember.memberName)
 			$('#phone').val(editOrgMember.phone)
+			$('#short-phone').val(editOrgMember.shortPhone)
 			$('.radio.sex').eq(1 - editOrgMember.sex).prop('checked', true)
 		}
 
@@ -141,7 +140,12 @@
 		    phone: $('#phone').val(),
 		    shortPhone: $('#short-phone').val(),
 		    sex: $('.radio.sex:checked').val(),
-		    orgId: $('#org').val()
+		    orgId: $('#org').val(),
+		    depId: $('#org').val()
+		}
+		if($('.dep').length > 0){
+			var n = $('.dep').length - 1
+			depId = $('#dep-'+ n).val()
 		}   	
 		if(!$('#city').val()){
 			layer.msg('请选择城市')
@@ -158,6 +162,9 @@
 			$('#phone').focus()
 		}else if(orgMember.shortPhone === ''){
 			layer.msg('请输入手机短号')
+			$('#short-phone').focus()
+		}else if( !(/^\d{6}$/.test(orgMember.shortPhone))){
+			layer.msg('请填写正确格式的手机短号')
 			$('#short-phone').focus()
 		}
 		else{
@@ -215,6 +222,54 @@
 		getOrg($('.radio.org-type:checked').val(), $(this).val())
 	})
 
+	$('#org').change(function(){
+		$('.dep-container').remove()
+		ajax({
+		 	url: 'admin/organize/getDepsByPid?pid=' + $(this).val(),
+			successFunc: function(response){
+				var data = response.data
+				if(data && data.length > 0){
+					$('#name-container').before(
+					'<div class="row cl dep-container" >'+
+						'<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>学院/部门：</label>'+
+						'<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">'+
+							'<select class="select dep" id="dep-0" size="1" name="dep" >'+
+								'<option value="" selected>请选择学院/部门</option>'+
+							'</select>'+
+							'</span>'+ 
+						'</div>'+
+					'</div>'
+					)
+					fillSelect('#dep-0', data)
+				}
+			}			
+		})
+	})
+
+	$(document).on('change', '.dep', function(){
+		var depContainer = $(this).parents('.dep-container') 
+		depContainer.nextAll('.dep-container').remove()
+		ajax({
+		 	url: 'admin/organize/getDepsByPid?pid=' + $(this).val(),
+			successFunc: function(response){
+				var n = $('.dep').length
+				var data = response.data
+				if(data && data.length > 0){
+					depContainer.after(
+					'<div class="row cl dep-container" >'+
+						'<div class="formControls col-xs-offset-4 col-sm-offset-3 col-xs-8 col-sm-9"> <span class="select-box">'+
+							'<select class="select dep" size="1" id="dep-'+n+'" name="dep" >'+
+								'<option value="" selected>请选择组织信息</option>'+
+							'</select>'+
+							'</span>'+ 
+						'</div>'+
+					'</div>'
+					)
+					fillSelect('#dep-'+n+'', data)
+				}
+			}			
+		})
+	})
 
 	$('.skin-minimal .radio.org-type').on('ifChecked', function(){
 		getOrg($(this).val(), $('#city').val())	
@@ -264,7 +319,7 @@
 			var options = '' 
 			for(var i = 0; i < data.length; i++){
 				var name = data[i].name || data[i].organizeName
-				var value = data[i].id
+				var value = data[i].id || data[i].orgId
 				options += '<option value="'+value+'" >'+name+'</option>'
 			}
 			$(selectorStr).children('option+option').remove()
