@@ -33,7 +33,7 @@
 						<input type="radio" checked class="radio org-type" name="org-type" id="" value="1" ><label for="" >学校</label>
 					</div>
 					<div class="radio-box">
-						<input type="radio" class="radio org-type" name="org-type" id="" value="0"><label for="">公司</label>
+						<input type="radio" class="radio org-type" name="org-type" id="" value="2"><label for="">公司</label>
 					</div>
 				</div>
 			</div>
@@ -47,7 +47,7 @@
 						</span> 
 					</div>
 			</div>
-			<div class="row cl" id="city-container">
+			<div class="row cl" id="org-container">
 					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>组织：</label>
 					<div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
 						<select class="select" size="1" name="org" id="org">
@@ -214,6 +214,7 @@
 	$('#city').change(function(){
 		getOrg($('.radio.org-type:checked').val(), $(this).val())
 	})
+
 
 	$('.skin-minimal .radio.org-type').on('ifChecked', function(){
 		getOrg($(this).val(), $('#city').val())	

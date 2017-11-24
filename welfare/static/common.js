@@ -89,3 +89,28 @@ function removeToast(){
 $(document).on('click','.J_close',function(){
    $('.J_pop').remove();
 });
+
+// 取得下载页面地址, appType-- 1: Android 2: iOS
+function getDownloadUrl(appType){
+    var downloadUrl = appType === 1 ? 
+                    'https://www.pgyer.com/jqwanbeta':
+                    'https://www.pgyer.com/ypob';
+    _ajax('get', 'api/getNewestPackage', {
+        appType: appType
+    }, function(response){
+        console.log(response);
+        if(response.code === 1){
+            if(response.data && response.data.downloadFileUrl){
+                downloadUrl = response.data.downloadFileUrl;
+            }
+
+        }else if(response.code === 0){
+            toast(response.error);
+        }else{
+            toast('出现错误');
+        }
+    }, function(xhr, status){
+        toast(status);
+    })
+    return downloadUrl;
+}
