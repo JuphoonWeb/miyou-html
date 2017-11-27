@@ -151,7 +151,7 @@
 	}).on('click','.J_feedback',function(){
         toast('意见反馈提交中');
         _ajax('post','/api/upload/sdkLog',{
-            'userName':phone,
+            'username':phone,
             'reason':$('.J_feedback_text').text()
         },function(data){
             if(data.code==1){
