@@ -152,7 +152,6 @@
                         title: '获取数据失败',
                         content: response.error
                     })
-
                 }
             },
             errorFunc: errorFunc
@@ -218,9 +217,9 @@
             ],
             series : [
                 {
-                    name:'直接访问',
+                    name:'群组成员',
                     type:'bar',
-                    barWidth: '30%',
+                    barWidth: '20%',
                     data:data
                 }
             ]
@@ -230,7 +229,7 @@
     }
 
     $(document).on('click','#export',function(){
-        location.href = 'http://218.204.254.209:28812/miyou/api/excel/getOrgMemNewDaily?startDate='+searchPara.startDate+'&endDate='+searchPara.endDate;
+        location.href = 'http://218.204.254.209:28811/cloud/group/downloadGroupStatisMessage?small=0&big=200';
     })
 </script>
 </body>

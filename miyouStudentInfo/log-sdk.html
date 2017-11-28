@@ -114,6 +114,7 @@
 		$('#nodata').hide()
 					
 		var list = data.list
+
 		var trs = ''
 		$('#sdk-tbody').children().remove()
 		if(list.length === 0){
@@ -125,16 +126,21 @@
 			var phone = list[i].username || ''
 			var date = (new Date(list[i].createDate)).Format('yyyy-MM-dd hh:mm:ss')
 			var url = list[i].logUrl
-			var fileName = url.split('/').reverse()[0] 
+			var fileName = ''
+			var download = ''
+			if(url && url != null){
+                fileName = url.split('/').reverse()[0]
+				download =  '<a href="'+url+'" download="'+fileName+'" class="btn btn-secondary-outline radius">'+
+								'<span class="Hui-iconfont">&#xe640;</span>下载日志'+
+							'</a>';
+			}
 			trs += '<tr>'+
 					'<td>'+sequence+'</td>'+
 					'<td>'+phone+'</td>'+
 					'<td>'+list[i].reason+'</td>'+
 					'<td>'+date+'</td>'+
 					'<td>'+
-						'<a href="'+url+'" download="'+fileName+'" class="btn btn-secondary-outline radius">'+
-							'<span class="Hui-iconfont">&#xe640;</span>下载日志'+
-						'</a>'+
+					download+
 					'</td>'+
 				'</tr>'
 			
