@@ -132,12 +132,13 @@
         for(var i = 0; i<list.length; i++){
             var sequence = (searchPara.page-1)*searchPara.size+i+1
             var sex = list[i].sex ? '男': '女'
+            var organizeName = list[i].relationNamePath || list[i].organizeName
             trs += '<tr>'+
                         '<td>'+sequence+'</td>'+
                         '<td>'+list[i].memberName+'</td>'+
                         '<td>'+sex+'</td>'+
                         '<td>'+list[i].phone+'</td>'+
-                        '<td>'+list[i].organizeName+'</td>'+
+                        '<td>'+organizeName+'</td>'+
                         '<td>'+
                             '<button onclick="editOrgMember('+i+')" class="btn btn-secondary-outline radius"><span class="Hui-iconfont">&#xe60c;</span>修改'+
                             '</button>'+
