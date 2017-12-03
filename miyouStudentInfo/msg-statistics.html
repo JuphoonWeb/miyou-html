@@ -21,10 +21,14 @@
     span.num+span.num{
         margin-left: 15px;
     }
+    .tip{
+        font-size: 12px;
+        color:rgb(54,54,54);
+    }
     tr td.date{
         font-weight: bold;
     }
-    tr.private:hover + tr.group{
+    .private:hover+.group {
         background-color: rgb(245, 245, 245)
     }
 
@@ -66,10 +70,12 @@
     </div>
      <div  class="text-c mt-20">
         <h2>私信统计</h2>
+        <p class="tip">点击图例可筛选</p>
         <div id="private-chart" style="width:auto;height:400px;"></div>
     </div>
     <div class="text-c mt-20">
         <h2>群组消息统计</h2>
+        <p class="tip">点击图例可筛选</p>
         <div id="group-chart" style="width:auto;height:400px;"></div>
     </div>
     <div class="mt-20">
@@ -117,7 +123,6 @@
 
     $(function(){
         setDuration(1)
-        getCity()
         getNumData()
         getChartData(searchPara)
         $(window).resize(function(){
@@ -147,7 +152,14 @@
     })
 
     $('#search-city').change(function(){
-        
+    })
+
+    $(document).on('mouseover', '.group', function(){
+        $(this).prev('.private').css('backgroundColor', 'rgb(245, 245, 245)')
+    })
+
+    $(document).on('mouseout', '.group', function(){
+        $(this).prev('.private').css('backgroundColor', 'rgb(255, 255, 255)')
     })
     
      // durationType值定义： 1: 最近一个月 2：最近半年 3：自定义  
@@ -258,7 +270,6 @@
 
         chart.setOption(option)
         return chart
-
     }
 
     function renderTable(privateData, groupData){
@@ -279,7 +290,8 @@
             var gAudioCount = groupData[i].audioCount || 0
             var gVideoCount = groupData[i].videoCount || 0
 
-            trs +='<tr class="private">'+
+            trs +=
+                '<tr class="private">'+
                     '<td class="date" rowspan="2" >'+date+'</td>'+
                     '<td >私信</td>'+
                     '<td>'+pTextCount+'</td>'+
@@ -310,8 +322,6 @@
             },
             errorFunc: errorFunc
         })
-
-       
     }
 
     function setNumData(data){

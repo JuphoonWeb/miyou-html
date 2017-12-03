@@ -1,0 +1,264 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>下载统计</title>
+</head>
+<body>
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计 <span class="c-gray en">&gt;</span>下载统计 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    
+<div class="page-container" >
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+       
+        <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}',maxDate:'%y-%M-%d'})" id="search-end-date" class="input-text Wdate formControls"style="width: 150px">
+
+        <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+            
+    </div>
+     <div  class="text-c mt-20">
+        <h2>下载次数-时间统计</h2>
+        <div id="time-chart" style="width:auto;height:400px;"></div>
+    </div>
+    <div class="text-c mt-20">
+        <h2>下载次数-版本统计</h2>
+        <div id="version-chart" style="width:auto;height:400px;"></div>
+    </div>
+  <!--   <div class="mt-20">
+        <table class="table table-bordered table-border table-hover table-bg table-sort mt-10" id="auth-table">
+            <thead>
+                <tr class="text-c">
+                    <th width="100">版本</th>
+                    <th width="100">下载次数</th>
+                    <th width="100">操作</th>
+                </tr>
+            </thead>
+            <tbody id="version-tbody" class="text-c">
+            </tbody>
+        </table>
+    </div> -->
+    <div class="pagination" id="pagination">
+        
+    </div>
+    <div class="nodata" id="nodata">
+        <img src="static/images/nodata.svg" alt="">
+    </div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/echarts.common.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script> 
+<script type="text/javascript">
+
+    var searchPara = {
+        startDate: '',
+        endDate: '',
+    };
+    var timeChart = null
+    var versionChart = null
+    var versionList = []
+
+    $(function(){
+        setDuration(1)
+        getChartData(searchPara)
+        $(window).resize(function(){
+            if(groupChart){
+                groupChart.resize()
+            }
+            if(privateChart){
+                privateChart.resize()
+            }
+    })
+
+    })
+
+    $('#search-btn').click(function(){
+        searchPara.startDate = $('#search-start-date').val()
+        var endDate = new Date($('#search-end-date').val())
+        // endDate.setDate(endDate.getDate()+1)        
+        searchPara.endDate = endDate.Format('yyyy-MM-dd')
+        getChartData(searchPara)
+    })
+
+     // durationType值定义： 1: 最近一个月 2：最近半年 3：自定义  
+    function setDuration(durationType){
+        if(durationType != 3){
+            var nowTime = new Date()
+            var endDate = nowTime.Format('yyyy-MM-dd')
+            var startDate = new Date()
+            if(durationType == 1){
+                startDate.setMonth(nowTime.getMonth()-1)
+            }else if(durationType == 2){
+                startDate.setMonth(nowTime.getMonth()-6)
+            }
+            startDate = startDate.Format('yyyy-MM-dd')
+            $('#search-start-date').val(startDate)
+            $('#search-end-date').val(endDate) 
+            searchPara.startDate = startDate
+            
+            //因为时分秒为 00:00:00，要查到最完整的数据，结束日期必须往后推一天
+            nowTime.setDate(nowTime.getDate()+1)        
+            searchPara.endDate = nowTime.Format('yyyy-MM-dd')
+        }
+    }
+
+    function getChartData(data){
+        console.log('getChartData')
+        ajax({
+            url: 'admin/apk/getDownloadApkMess',
+            data: data,
+            z_type: 0,
+            successFunc: function(response){
+                if(response.code == 1){
+                    var timeData = response.data.countByTime
+                    var versionData = response.data.counByVersion
+                    timeChart = renderLineChart(timeData)
+                    versionChart = renderBarChart(versionData)
+                    versionList = versionData
+                    renderTable(versionData)                           
+                }else if(response.code == 0){
+                    layer.msg(response.error)
+                }
+            },
+            errorFunc: errorFunc
+        })
+    }
+
+    function renderLineChart(data){
+        var labels = []
+        var countData = []
+        for(var i = 0; i < data.length; i++){
+            labels.push(dateFormat(data[i].downloadTime))
+            countData.push(data[i].sum) 
+        }
+        
+        var chart = echarts.init($('#time-chart').get(0))
+        var option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['下载次数']
+            },
+            xAxis: {
+                data: labels,
+            },
+            color: ['rgba(66, 152, 66,.8)'],
+            yAxis: {},
+            series: [{
+                name: '下载次数',
+                type: 'line',
+                smooth: true,
+                data: countData
+            }]
+        }
+
+        chart.setOption(option)
+        return chart
+    }
+
+    function exportData(index){
+        var version = versionList[index].version
+        ajax({
+            url: 'admin/apk/saveApkDownloadMess',
+            type: 'post',
+            z_type: 0,
+            data: {
+                version: version.toString()
+            },
+            successFunc: function(response){
+                console.log(response)
+                if(response.code === 1){
+
+                }else if(response.code === 0){
+                    layer.msg(response.error)
+                }
+            },
+            errorFunc: errorFunc
+        })
+    }
+
+    function renderBarChart(data){
+        var labels = []
+        var countData = []
+        for(var i = 0; i < data.length; i++){
+            labels.push(data[i].version)
+            countData.push(data[i].sum) 
+        }
+        
+        var chart = echarts.init($('#version-chart').get(0))
+        var option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['下载次数']
+            },
+            xAxis: {
+                data: labels,
+                name: 'App版本',
+            },
+            color: ['rgba(54, 162, 235, .5)'],
+            yAxis: {},
+            series: [{
+                name: '下载次数',
+                type: 'bar',
+                smooth: true,
+                data: countData,
+                barMaxWidth: 80
+            }]
+        }
+
+        chart.setOption(option)
+        return chart
+    }
+
+    function renderTable(data){
+        var trs = ''
+        
+        for(var i = 0, len = data.length ; i < len; i++){
+           var version = data[i].version
+           var count = data[i].sum 
+           var exportable = count? '': 'disabled'
+           var exportBtn = '<button onclick="exportData('+i+')" class="btn btn-secondary-outline radius '+exportable+' ">'+
+                            '<i class="Hui-iconfont">&#xe641;</i>导出'+
+                       '</button> '
+
+            trs +=
+                  '<tr class="group">'+
+                    '<td>'+version+'</td>'+
+                    '<td>'+count+'</td>'+
+                    '<td>'+exportBtn+'</td>'+
+                  '</tr>'
+        }
+        $('#version-tbody').html(trs)
+    }
+  
+    function errorFunc(xhr, status){
+        layer.msg(status)
+    }
+  
+</script> 
+</body>
+</html>
