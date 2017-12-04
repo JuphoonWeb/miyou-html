@@ -1,7 +1,7 @@
 var domain = 'http://218.204.254.209:28811/miyou/';
 // var domain = 'http://192.168.0.46:8086/miyou/';
 // var domain = 'http://192.168.12.121:8086/miyou/';
-
+// var domain = 'http://122.227.209.194:8086/miyou/';
 
 function _ajax(type,url,param,success,error){
 	$.ajax({
@@ -101,6 +101,11 @@ function getDownloadUrl(appType){
         console.log(response);
         if(response.code === 1){
             if(response.data && response.data.downloadFileUrl){
+                var version = response.data.versionName
+                _ajax('post', 'api/apk/saveApkDownloadMess', {
+                    version: version,
+                    type: appType
+                    })
                 downloadUrl = response.data.downloadFileUrl;
             }
 
