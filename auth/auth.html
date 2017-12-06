@@ -32,7 +32,7 @@
 		#un-auth #auth-btn{
 			width:43%;
 			height:50px;
-			margin: 0 auto;
+			margin: 15px auto;
 			border-radius: 30px;
 			font-size:18px;
 		}
@@ -90,7 +90,7 @@
 		<img src="img/imgNotice.png" alt="" class="notice">
 		<div class="msg" id="msg">
 		</div>
-		<button class="btn" id="auth-btn">立即完善</button>
+		<button class="btn" id="auth-btn">立即认证</button>
 	</div>
 	<div id="auth-info">
 		<div class="content">
@@ -197,13 +197,14 @@
 			$('#un-auth').show()
 			$('#auth-info').hide()
 			
-			var msgHtml = '<p class="primary-msg">您的信息还未完善</p>'
-			if(data.isGzMobile){
-				msgHtml += '<p class="secondary-msg" id="secondary-msg">完善资料即可<br>添加10个免费通话联系人并领取8G流量</p>'
+			var msgHtml = '<p class="primary-msg">您的信息还未通过认证</p>'
+			// if(data.isGzMobile){
+			// 	msgHtml += '<p class="secondary-msg" id="secondary-msg">完善资料即可<br>添加10个免费通话联系人并领取8G流量</p>'
 
-			}else{
-				msgHtml += '<p class="secondary-msg">完善资料即可解锁“逛一逛”所有功能</p>'
-			}
+			// }else{
+			// 	msgHtml += '<p class="secondary-msg">完善资料即可解锁“逛一逛”所有功能</p>'
+			// }
+			msgHtml += '<p class="secondary-msg">完成用户认证后即可加入到<br>您所在学校/公司的流量短号，<br>同学校/公司成员间享受视频通话免费</p>'
 			$('#msg').append(msgHtml)
 		}
 	</script>
