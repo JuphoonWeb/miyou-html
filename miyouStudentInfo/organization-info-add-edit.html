@@ -41,6 +41,12 @@
 					<input type="text" class="input-text" value="" placeholder="请输入组织名称" id="org-name" name="orgName" >
 				</div>
 			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>组织Id：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="" placeholder="请输入组织Id（数字）" id="org-code" name="orgCode" >
+				</div>
+			</div>
 			<div class="row cl ">
 				<label class="form-label col-xs-4 col-sm-3"><span class="required-label c-red">*</span>组织类型：</label>
 				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
@@ -62,9 +68,6 @@
 					</span>
 				</div>
 			</div>
-
-			
-			
 			<div class="row cl">
 				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
 					<input id="submit" class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
@@ -98,11 +101,10 @@
 		
 		if(editOrgInfo){
 			$('#logo-red-star').hide()
-
 			$('#org-name').val(editOrgInfo.organizeName)
-			
 			$('.radio.org-type#org-type-'+editOrgInfo.orgType).prop('checked', true)
 			$('#file-name').val(editOrgInfo.imageUrl)
+			$('#orgCode').val(editOrgInfo.orgCode)
 		}else{
 			$('.radio.org-type').eq(0).attr('checked', true)
 			$('.radio.mandatoryUpdate').eq(0).attr('checked', true)
@@ -114,10 +116,17 @@
 		})
 	})
 
+	$(document).on('input', '#org-code', function(){
+		if( !(/^\d+$/).test($(this).val()) ) {
+			$(this).val('')
+		}
+	})
+
 	$('#submit').click(function(event){
 		event.preventDefault()
 		var orgInfo = {
 		    organizeName: $('#org-name').val(),
+		    orgCode: $('#org-code').val(),
 		    orgType: $('.radio.org-type:checked').val(),
 		    proId: $('#city').val(),
 		   	file: $('#org-logo').get(0).files[0]
@@ -127,6 +136,9 @@
 			layer.msg('请选择城市')
 		}else if(orgInfo.organizeName === ''){
 			layer.msg('请输入组织名称')
+		}
+		else if (orgInfo.orgCode === '') {
+			layer.msg('请输入组织Id')
 		}
 		else if(orgInfo.file == undefined && !editOrgInfo){
 			layer.msg('请选择组织Logo图片')
