@@ -1,0 +1,392 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+
+<style>
+    span.num+span.num{
+        display: inline-block;
+        margin-top: 15px;
+        margin-left: 15px;
+    }
+    .tip{
+        text-align: center;
+        font-size: 12px;
+        color: rgb(54, 54, 54);
+    }
+</style>
+<title>通话概览</title>
+</head>
+<body>
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>Cloud统计<span class="c-gray en">&gt;</span>通话概览<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    
+<div class="page-container" >
+    
+    <div class="text-c" >
+        <h3>
+            <span>总计-</span>
+            <span class="num">通话次数：<span id="call-count">0</span></span>
+            <span class="num">视频次数：<span id="video-count">0</span></span>
+            <span class="num">音频次数：<span id="audio-count">0</span></span>
+            <br>
+            <span class="num">总人数：<span id="people-count">0</span></span>
+            <span class="num">总时长：<span id="all-time-long">0</span></span>
+        </h3>
+    </div>
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+       
+        <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}',maxDate:'%y-%M-%d'})" id="search-end-date" class="input-text Wdate formControls"style="width: 150px">
+        <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        
+        <a id="export-btn" href="http://192.168.10.67:8087/cloud/justalk/downloadCallDetailMessage" download="" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe641;</i>Excel导出</a>
+    </div>
+    <div class="tip mt-20">点击图例可筛选</div>
+    <div id="dialog-chart" class="mt-10" style="width:auto;height:400px;">
+    </div>
+    <div class="tip mt-20">点击图例可筛选</div>
+    <div id="rate-chart" class="mt-10" style="width:auto;height:400px;">
+    </div>
+    <div class="mt-20">
+        <table class="table table-bordered table-border table-hover table-bg table-sort mt-10" id="auth-table">
+            <thead>
+                <tr class="text-c">
+                    <th width="100">日期</th>
+                    <th width="100">通话次数</th>
+                    <th width="100">视频次数</th>
+                    <th width="100">音频次数</th>
+                    <th width="100">总人数</th>
+                    <th width="100">通话时长</th>
+                    <th width="100">平均时长</th>
+                    <th width="100">并发数</th>
+                </tr>
+            </thead>
+            <tbody id="dialog-tbody" class="text-c">
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination" id="pagination">
+        
+    </div>
+    <div class="nodata" id="nodata">
+        <img src="static/images/nodata.svg" alt="">
+    </div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/echarts.common.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script> 
+<script type="text/javascript">
+
+    var searchPara = {
+        page: 1,
+        size: 500,
+        startTime: null,
+        endTime: null,
+    }
+    var dialogChart = null
+    var rateChart = null
+    var downloadUrl = 'http://192.168.10.67:8087/cloud/justalk/downloadCallDetailMessage?page=1&size=500'
+
+    $(function(){
+        getNumData()
+        setDuration(1)
+        getDialogChartData(searchPara)
+        getRateChartData(searchPara)
+        $(window).resize(function(){
+            dialogChart && dialogChart.resize()
+            rateChart && rateChart.resize()
+        })
+
+    })
+
+    $('#search-btn').click(function(){
+        var startTime = new Date($('#search-start-date').val())
+        searchPara.startTime = getTime10(startTime)
+        var endTime = new Date($('#search-end-date').val())
+        // endTime.setDate(endTime.getDate()+1)        
+        searchPara.endTime = getTime10(endTime)
+        getDialogChartData(searchPara)
+        getRateChartData(searchPara)
+    })
+
+    $('#export-btn').click(function(){
+        cloudAjax({
+            url: 'justalk/downloadCallDetailMessage',
+            data: searchPara
+        })
+    })
+
+     // durationType值定义： 1: 最近一个月 2：最近半年 3：自定义  
+    function setDuration(durationType){
+        if(durationType != 3){
+            var nowTime = new Date()
+            var endTime = nowTime.Format('yyyy-MM-dd')
+            var startTime = new Date()
+            if(durationType == 1){
+                startTime.setMonth(nowTime.getMonth()-1)
+            }else if(durationType == 2){
+                startTime.setMonth(nowTime.getMonth()-6)
+            }
+            
+            startTime = startTime.Format('yyyy-MM-dd')
+
+            searchPara.startTime = getTime10(startTime)
+            searchPara.endTime = getTime10(endTime)
+            console.log(searchPara)
+            $('#search-start-date').val(startTime)
+            $('#search-end-date').val(endTime) 
+            
+            
+            //因为时分秒为 00:00:00，要查到最完整的数据，结束日期必须往后推一天
+            // nowTime.setDate(nowTime.getDate()+1)        
+            // searchPara.endTime = (nowTime.getTime())/1000
+        }
+    }
+
+    function getDialogChartData(data){
+        cloudAjax({
+            url: 'justalk/getCallDetailMessage',
+            data: data,
+            type: 'get',
+            // z_type: 0,
+            successFunc: function(response){
+                var chartData = response.list
+                
+                dialogChart = renderDialogChart(chartData)
+
+                renderTable(chartData)
+                $('#export-btn').attr('href', downloadUrl + '&startTime=' + data.startTime + '&endTime=' + data.endTime)
+                
+            },
+            errorFunc: errorFunc
+        })
+    }
+
+    function renderDialogChart(data){
+        var labels = []
+        var dialogData = []
+        var videoData = []
+        var audioData = []
+        var personData = []
+        var dialogDuration = []
+        var averageDuration = []
+        var concurrentData = []
+        for(var i = 0; i < data.length; i++){
+            var item = data[i]
+            labels.push(dateFormat(item.time))
+            dialogData.push(item.callSum)
+            videoData.push(item.videoSum)
+            audioData.push(item.audioSum)
+            personData.push(item.totalPerson)
+            dialogDuration.push(item.callTime)
+            averageDuration.push(item.avgTime)
+            concurrentData.push(item.concurrent)
+        } 
+        
+        var chart = echarts.init($('#dialog-chart').get(0))
+        var option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['通话次数', '视频次数', '音频次数', '总人数', '通话时长', '平均时长', '并发数'],
+                selected: {
+                    '视频次数':false,
+                    '音频次数':false,
+                    '总人数':false,
+                    '通话时长':false,
+                    '平均时长':false,
+                    '并发数':false,
+                }
+            },
+             
+            xAxis: {
+                data: labels,
+            },
+            // color: ['rgba(66, 152, 66, 1)', 'rgba(54, 162, 235, 1)'],
+            yAxis: {},
+            series: [{
+                name: '通话次数',
+                type: 'line',
+                smooth: true,
+                data: dialogData
+            },{
+                name: '视频次数',
+                type: 'line',
+                smooth: true,
+                data: videoData
+            },{
+                name: '音频次数',
+                type: 'line',
+                smooth: true,
+                data: audioData
+            },{
+                name: '总人数',
+                type: 'line',
+                smooth: true,
+                data: personData
+            },{
+                name: '通话时长',
+                type: 'line',
+                smooth: true,
+                data: dialogDuration
+            },{
+                name: '平均时长',
+                type: 'line',
+                smooth: true,
+                data: averageDuration
+            },{
+                name: '并发数',
+                type: 'line',
+                smooth: true,
+                data: concurrentData
+            }]
+        }
+
+        chart.setOption(option)
+        return chart
+    }
+
+
+    function getRateChartData(data){
+        var rateChartData = []
+        cloudAjax({
+            url: 'justalk/getCallRate',
+            data: data,
+            successFunc: function(response){
+                if(response.code === 1){    
+                    rateChart = renderRateChart(response.data)
+                }
+            },
+            errorFunc: errorFunc
+        })
+    }
+    function renderRateChart(data){
+        var labels = []
+        var successData = []
+        var ringData = []
+        for(var i = 0; i < data.length; i++){
+            var item = data[i]
+            labels.push(dateFormat(item.time))
+            successData.push(item.callOkRate * 100)
+            ringData.push(item.ringRate * 100)
+        } 
+        
+        var chart = echarts.init($('#rate-chart').get(0))
+        var option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: [ '通话成功率', '振铃率' ]
+            },
+            xAxis: {
+                data: labels
+            },
+            // color: ['rgba(66, 152, 66, 1)', 'rgba(54, 162, 235, 1)'],
+            yAxis: {},
+            series: [
+            {
+                name: '通话成功率',
+                type: 'line',
+                smooth: true,
+                data: successData
+            },{
+                name: '振铃率',
+                type: 'line',
+                smooth: true,
+                data: ringData
+            }]
+        }
+
+        chart.setOption(option)
+        return chart
+
+    }
+
+    function renderTable(data){
+        data = data.reverse()
+        var trs = ''
+        
+        data.forEach(function(item){
+            var date =  dateFormat(item.time)
+            trs +='<tr>'+
+                    '<td>'+date+'</td>'+
+                    '<td>'+item.callSum+'</td>'+
+                    '<td>'+item.videoSum+'</td>'+
+                    '<td>'+item.audioSum+'</td>'+
+                    '<td>'+item.totalPerson+'</td>'+
+                    '<td>'+item.callTime+'</td>'+
+                    '<td>'+item.avgTime+'</td>'+
+                    '<td>'+item.concurrent+'</td>'+
+                  '</tr>'
+        })
+        $('#dialog-tbody').html(trs)
+    }
+   
+    function getNumData(){
+        cloudAjax({
+            url: 'justalk/getCountTotal',
+            successFunc: function(response){
+                if(response.code === 1){
+                    var data = response.data
+                    $('#call-count').text(data.CountCallAll)
+                    $('#video-count').text(data.CountVideoAll)
+                    $('#audio-count').text(data.CountAudioAll)
+                    $('#people-count').text(data.CountCallPerson)
+                    $('#all-time-long').text(data.CountTotalCallTime)
+                }
+            },
+            errorFunc: errorFunc
+        })
+    }
+
+    function setNumData(data){
+        if(data.authCityTotal){
+            $('#city-num').show()
+
+            var cityTotal = data.authCityTotal
+            $('#city-auth-all-count').text(cityTotal.authAllCount)
+            $('#city-authing-count').text(cityTotal.authIngCount)
+            $('#city-auth-pass-count').text(cityTotal.authPassCount)
+            $('#city-auth-reject-count').text(cityTotal.authRejectCount)
+        }else{
+            $('#city-num').hide()
+
+            $('#auth-all-count').text(data.authAllCount)
+            $('#authing-count').text(data.authIngCount)
+            $('#auth-pass-count').text(data.authPassCount)
+            $('#auth-reject-count').text(data.authRejectCount)
+        }
+    }
+
+    function errorFunc(xhr, status){
+        layer.msg(status)
+    }
+   
+</script> 
+</body>
+</html>

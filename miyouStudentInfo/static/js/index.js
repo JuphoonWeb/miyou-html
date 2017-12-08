@@ -1,19 +1,15 @@
-
-function ajax(dataObj){
+function ajax(dataObj, type){
 
 	$(document).unbind('ajaxStart')
     $(document).ajaxStart(function(){
 		layer.load()
-
 	})
-	// var url = 'http://192.168.0.46:8086/miyou/'
-    // var url = 'http://192.168.12.121:8086/miyou/'
-    // var url = 'http://192.168.15.161:8086/miyou/'
+	// var type = type || ':8086/miyou/'
+	// var url = 'http://192.168.0.46' + type
+	// var url = 'http://192.168.10.67' + type
     // var url = 'http://122.227.209.194:8086/miyou/'
-
+    var type = type || ':28812/miyou/'
     var url = 'http://218.204.254.209:28812/miyou/'
-
-
     url += dataObj.url
 	var method = dataObj.method || dataObj.type || 'get',
 		async = dataObj.hasOwnProperty('async') ? dataObj.async : true,
@@ -63,7 +59,6 @@ function ajax(dataObj){
 		}
 
 	$.ajax({
-		
 		url: url,
 		type: method,
 		async: async,
@@ -83,6 +78,11 @@ function ajax(dataObj){
 		error: errorFunc 
 	})
 }
+
+function cloudAjax(dataObj){
+	ajax(dataObj, ':28811/cloud/')
+}
+
 
 // Date对象格式化
 Date.prototype.Format = function (fmt) { //author: meizz
@@ -145,10 +145,20 @@ function showNodata(){
 	$('#data-num').text(0)
 }
 
-//将13位时间戳转换为'yyyy-MM-dd hh:mm:ss'形式
+//将时间戳转换为'yyyy-MM-dd hh:mm:ss'形式
 function timeFormat(time){
 	time = (time && time.toString().length == 10 )? time*1000 : time //若是10位，则转换为13位
 	return new Date(time).Format('yyyy-MM-dd hh:mm:ss')
+}
+
+function dateFormat(time){
+	time = (time && time.toString().length == 10 )? time*1000 : time //若是10位，则转换为13位
+	return new Date(time).Format('yyyy-MM-dd')
+}
+
+//取得10位时间戳
+function getTime10(timeStr){
+	return Date.parse(new Date(timeStr))/1000
 }
 
 $('input').on('input', function(){

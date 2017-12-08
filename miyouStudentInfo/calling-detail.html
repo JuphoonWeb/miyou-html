@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>通话呼叫信息详单</title>
+</head>
+<body >
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>Cloud统计 <span class="c-gray en">&gt;</span>通话呼叫信息详单<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+	<div class="cl pd-5 bg-1 bk-gray mt-20 skin-minimal"> 
+		  <input type="text" onfocus="WdatePicker({onpicking:function(dp){
+		  	search( dp.cal.getNewDateStr() )
+		  } ,maxDate:'#F{\'%y-%M-%d\'}' })" id="search-time"  placeholder="日期" class="input-text Wdate formControls"  style="width: 200px">
+
+	  <input id="call-id" type="text" style="width:200px" class="input-text radius" placeholder="Call Id "> 
+		<button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+
+		<div class="check-box ml-30">
+			<input type="checkbox" class="checkbox" id="calling-success" name="type" value="1" ><label for="calling-success">呼叫成功</label>
+		</div>
+
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+	</div>
+	<div class="mt-20">
+	<table class="table table-bordered table-border table-hover table-bg " id="admin-table">
+		<thead>
+			<tr class="text-c">
+				<th width="50">序号</th>
+				<th width="100">Call Id</th>
+				<th width="100">开始时间</th>
+				<th width="100">结束时间</th>
+				<th width="80">主叫</th>
+				<th width="80">被叫</th>
+				<th width="100">错误原因</th>
+				<th width="80">是否振铃</th>
+				<th width="100">status</th>
+				<th width="100">relcode</th>
+				<th width="100">rpcinfo</th>
+			</tr>
+		</thead>
+		<tbody id="calling-tbody" class="text-c" >	
+		</tbody>
+	</table>
+	<div class="pagination r" id="pagination"></div>
+	<div class="nodata" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script> 
+
+
+<script type="text/javascript">
+	var isPageInit = false
+	var isDialogSuccess = false
+	
+	var searchPara = {
+		page: 1,
+		size: 12,
+		startTime: null,
+		callid: ''
+	}
+
+	function prepareSearch(){
+		isPageInit = false
+		$('#pagination').hide()
+		searchPara.page = 1
+	}
+
+	function search(dateStr){
+		prepareSearch()
+		searchPara.startTime = getTime10(dateStr)
+		getData(searchPara, isDialogSuccess)
+	}
+
+	function getData(searchPara, isDialogSuccess){
+		var url = 'justalk/getFalseCallMessage'
+		if(isDialogSuccess){
+			url = 'justalk/getSuccessCallMessage'
+		}
+
+		cloudAjax({
+			url: url,
+			data: searchPara,
+			successFunc: function(response){
+					var list = response.list
+					if(list.length > 0){
+						renderTable(response)
+					}else{
+						showNodata()
+					}
+			}
+			
+		})
+	}
+
+	function renderTable(data){
+			var list = data.list
+			$('#nodata').hide()
+
+			var trs = ''
+			for(var i = 0; i<list.length; i++){
+				var item = list[i]
+				var sequence = (searchPara.page-1)*searchPara.size+i+1
+				var startTime = timeFormat(item.st)
+				var endTime = timeFormat(item.et)
+				var reason = item.reason || ''
+				var ringed = item.ringed ? '是' : '否' 
+				if(isDialogSuccess){
+					ringed = ''
+				}
+				trs += 	'<tr>'+
+							'<td>'+ sequence + '</td>'+
+							'<td>' + item.callid + '</td>'+
+							'<td>'+ startTime + '</td>'+
+							'<td>'+ endTime + '</td>'+
+							'<td class="ellipsis-td">'+ item.fromuser + '</td>'+
+							'<td class="ellipsis-td">'+ item.touser + '</td>'+
+							'<td class="ellipsis-td" >'+ reason + '</td>'+
+							'<td>'+ ringed + '</td>'+
+							'<td>'+ item.status + '</td>'+
+							'<td>'+ item.relcode + '</td>'+
+							'<td class="ellipsis-td" >'+ item.rpcinfo + '</td>'+
+						'</tr>'
+			}
+			$('#calling-tbody').html(trs)
+			$('#data-num').text(data.total)
+			if(!isPageInit && data.total > searchPara.size){
+				$('#pagination').show()
+				var pages = Math.ceil(data.total/searchPara.size)
+				laypage({
+				    cont: 'pagination',
+				    curr: 1, 
+				    pages: pages,
+				    groups: 5,
+				    jump: function(obj,first) {
+				    	if(!first){
+				    		console.log(obj.curr)
+				    		searchPara.page =obj.curr
+					    	getData(searchPara, isDialogSuccess)
+						}
+				    }
+			  });
+			
+			}
+			isPageInit = true
+	}
+	//cloudAjax error函数
+	function errorFunc(xhr, status){
+		layer.open({
+			type: 0,
+			closeBtn: 0,
+			icon:7, 
+			title: '出现错误',
+			content: status
+		})
+	}
+
+	$(function(){
+		var timeStr = dateFormat(new Date())
+
+		$('.skin-minimal .checkbox').iCheck({
+			checkboxClass: 'icheckbox',
+			increaseArea: '20%',
+		})
+
+		$('#search-time').val(timeStr)
+		searchPara.startTime = getTime10(timeStr)
+		getData(searchPara, isDialogSuccess)	
+	})
+
+
+	$('#search-time').change(function(){
+		prepareSearch()
+		searchPara.startTime = getTime10($(this).val())
+		getData(searchPara, isDialogSuccess)
+	})
+
+	$('.skin-minimal .checkbox').on('ifChanged', function(event){
+			  isDialogSuccess = $(this).prop('checked')
+			  prepareSearch()
+			  console.log('success', isDialogSuccess)
+			  getData(searchPara, isDialogSuccess)
+	})
+
+	$('#search-btn').click(function(){
+		prepareSearch()
+		searchPara.callid = $('#call-id').val()
+		getData(searchPara, isDialogSuccess)
+
+	})
+
+
+</script>  
+</body>
+</html>
