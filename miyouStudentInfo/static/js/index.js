@@ -8,7 +8,7 @@ function ajax(dataObj, type){
 	// var url = 'http://192.168.0.46' + type
 	// var url = 'http://192.168.10.67' + type
     // var url = 'http://122.227.209.194:8086/miyou/'
-    var type = type || ':28812/miyou/'
+    // var type = type || ':28812/miyou/'
     var url = 'http://218.204.254.209:28812/miyou/'
     url += dataObj.url
 	var method = dataObj.method || dataObj.type || 'get',
@@ -80,7 +80,7 @@ function ajax(dataObj, type){
 }
 
 function cloudAjax(dataObj){
-	ajax(dataObj, ':28811/cloud/')
+	ajax(dataObj, ':8087/cloud/')
 }
 
 
@@ -168,4 +168,15 @@ $('input').on('input', function(){
 		$(this).val('')
 	}
 })
+
+//Ajax error函数
+function errorFunc(xhr, status){
+	layer.open({
+		type: 0,
+		closeBtn: 0,
+		icon:7, 
+		title: '出现错误',
+		content: status
+	})
+}
 
