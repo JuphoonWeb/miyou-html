@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>每日会议统计</title>
+</head>
+<body >
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>Cloud统计 <span class="c-gray en">&gt;</span>每日会议统计<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+	<div class="cl pd-5 bg-1 bk-gray mt-20 skin-minimal"> 
+	   <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-time\')}'})" id="search-start-time" class="input-text Wdate formControls" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-time\')}',maxDate:'%y-%M-%d'})" id="search-end-time" class="input-text Wdate formControls"style="width: 150px">
+		<button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+		<a id="export-btn" href="" download="" class="btn btn-secondary-outline radius"><i class="Hui-iconfont">&#xe641;</i>Excel导出</a>
+
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+	</div>
+	<div class="mt-20">
+	<table class="table table-bordered table-border table-hover table-bg " id="admin-table">
+		<thead>
+			<tr class="text-c">
+				<th width="30">序号</th>
+				<th width="150">日期</th>
+				<th width="100">会议个数</th>
+				<th width="100">会议预约人数</th>
+				<th width="100">会议总人数</th>
+				<th width="150">会议时长</th>
+				<th width="100">参会总时长（分钟）</th>
+				<th width="100">总发送流量</th>
+				<th width="100">总接收流量</th>
+				<th width="100">参会总流量(Kb)</th>
+				<th width="100">会议人均码率(Kbps)</th>
+			</tr>
+		</thead>
+		<tbody id="meeting-tbody" class="text-c" >	
+		</tbody>
+	</table>
+	<div class="pagination r" id="pagination"></div>
+	<div class="nodata" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script> 
+
+
+<script type="text/javascript">
+	
+	var searchPara = {
+		startTime: null,
+		endTime: null
+	}
+	var downloadUrl = 'http://192.168.10.67:8087/cloud/justalk/downloadDayMeetingStatis?'
+
+	function getData(searchPara){
+		var url = 'justalk/getDayMeetingStatis'
+
+		cloudAjax({
+			url: url,
+			data: searchPara,
+			z_type: 0,
+			successFunc: function(response){
+					if(response.code === 1){
+						var list = response.data
+						if(list.length > 0){
+							renderTable(list)
+							$('#export-btn')
+								.removeClass('disabled')
+								.attr('href', downloadUrl + 'startTime=' + searchPara.startTime + '&endTime=' + searchPara.endTime)
+						}else{
+							showNodata()
+							$('#export-btn').addClass('disabled')
+						}
+					}
+			},
+			errorFunc: errorFunc
+			
+		})
+	}
+
+	function renderTable(data){
+			var list = data
+			$('#nodata').hide()
+
+			var trs = ''
+			for(var i = 0; i<list.length; i++){
+				var item = list[i]
+				var sequence = i+1
+				var date = dateFormat(item.time)
+				trs += 	'<tr>'+
+							'<td>'+ sequence + '</td>'+
+							'<td>' + date + '</td>'+
+							'<td>'+ item.meetingNum + '</td>'+
+							'<td>'+ item.meetingPersionNum + '</td>'+
+							'<td >'+ item.meetingAllPersionNum + '</td>'+
+							'<td >'+ item.meetingTime + '</td>'+
+							'<td >'+ item.meetingAllTime + '</td>'+
+							'<td >'+ item.allSkb + '</td>'+
+							'<td >'+ item.allRkb + '</td>'+
+							'<td >'+ item.allKb + '</td>'+
+							'<td >'+ item.avgKb + '</td>'+
+						'</tr>'
+			}
+			$('#meeting-tbody').html(trs)
+			$('#data-num').text(list.length)
+	}
+	
+
+	$(function(){
+		var tempTime = new Date()
+		var endTimeStr = dateFormat(tempTime)
+		tempTime.setDate(tempTime.getMonth() - 1)		
+		var startTimeStr = dateFormat(tempTime)
+
+		$('#search-start-time').val(startTimeStr)
+		$('#search-end-time').val(endTimeStr)
+
+		searchPara.startTime = getTime10(startTimeStr)
+		searchPara.endTime = getTime10(endTimeStr)
+
+		getData(searchPara)	
+	})
+
+
+	$('#search-btn').click(function(){
+		searchPara.startTime = getTime10($('#search-start-time').val())
+		searchPara.endTime = getTime10($('#search-end-time').val())
+		getData(searchPara)
+
+	})
+
+
+</script>  
+</body>
+</html>

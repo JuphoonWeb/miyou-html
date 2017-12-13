@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<title>当前会议列表</title>
+</head>
+<body >
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>Cloud统计 <span class="c-gray en">&gt;</span>当前会议列表<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container" id="student-list">
+	<div class="cl pd-5 bg-1 bk-gray mt-20 skin-minimal"> 
+		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
+	</div>
+	<div class="mt-20">
+	<table class="table table-bordered table-border table-hover table-bg " id="admin-table">
+		<thead>
+			<tr class="text-c">
+				<th width="50">序号</th>
+				<th width="100">会议号</th>
+				<th width="100">开始时间</th>
+				<th width="100">会议名称</th>
+				<th width="80">会议类型</th>
+				<th width="100">已进行（分钟）</th>
+				<th width="100">与会人数</th>
+				<th width="80">会议人数上限</th>
+				<th width="100">域</th>
+				<th width="100">APP</th>
+				<th width="100">所在服务器</th>
+			</tr>
+		</thead>
+		<tbody id="meeting-tbody" class="text-c" >	
+		</tbody>
+	</table>
+	<div class="pagination r" id="pagination"></div>
+	<div class="nodata" id="nodata">
+		<img src="static/images/nodata.svg" alt="">
+	</div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script> 
+
+
+<script type="text/javascript">
+
+	function getData(searchPara){
+		var url = 'justalk/getCurrentMeetingList'
+		cloudAjax({
+			url: url,
+			successFunc: function(response){
+					var list = response.data
+					if(list.length > 0){
+						renderTable(list)
+					}else{
+						showNodata()
+					}
+			},
+			errorFunc: errorFunc
+			
+		})
+	}
+
+	function renderTable(data){
+			var list = data
+			$('#nodata').hide()
+
+			var trs = ''
+			for(var i = 0; i<list.length; i++){
+				var item = list[i]
+				// var sequence = searchPara.size+i+1
+				var startTime = timeFormat(item.st)
+				trs += 	'<tr>'+
+							'<td>'+ (i+1) + '</td>'+
+							'<td>' + item.id + '</td>'+
+							'<td>'+ startTime + '</td>'+
+							'<td>'+ item.title + '</td>'+
+							'<td>'+ item.media + '</td>'+
+							'<td>'+ item.dt + '</td>'+
+							'<td>'+ item.sender + '</td>'+
+							'<td>'+ item.capacity + '</td>'+
+							'<td>'+ item.domainid + '</td>'+
+							'<td>'+ item.appid + '</td>'+
+							'<td class="ellipsis-td" >'+ item.jsmi + '</td>'+
+						'</tr>'
+			}
+			$('#meeting-tbody').html(trs)
+			$('#data-num').text(list.length)
+	}
+	//cloudAjax error函数
+	function errorFunc(xhr, status){
+		layer.open({
+			type: 0,
+			closeBtn: 0,
+			icon:7, 
+			title: '出现错误',
+			content: status
+		})
+	}
+
+	$(function(){
+		getData()	
+	})
+
+</script>  
+</body>
+</html>
