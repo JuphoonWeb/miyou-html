@@ -110,7 +110,8 @@
 					}else{
 						showNodata()
 					}
-			}
+			},
+			errorFunc: errorFunc
 			
 		})
 	}
@@ -166,16 +167,7 @@
 			}
 			isPageInit = true
 	}
-	//cloudAjax error函数
-	function errorFunc(xhr, status){
-		layer.open({
-			type: 0,
-			closeBtn: 0,
-			icon:7, 
-			title: '出现错误',
-			content: status
-		})
-	}
+	
 
 	$(function(){
 		var timeStr = dateFormat(new Date())

@@ -1,0 +1,253 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+
+<style>
+    .tip{
+        text-align: center;
+        font-size: 12px;
+        color: rgb(54, 54, 54);
+    }
+</style>
+<title>按户龄统计通话</title>
+</head>
+<body>
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>Cloud统计<span class="c-gray en">&gt;</span>按户龄统计通话<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    
+<div class="page-container" >
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+       
+        <input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'search-end-date\')}' })" id="search-start-date" class="input-text Wdate formControls" style="width: 150px">
+        <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'search-start-date\')}',maxDate:'%y-%M-%d'})" id="search-end-date" class="input-text Wdate formControls"style="width: 150px">
+        <span class="select-box" style="width: 150px">
+                <select class="select J_select" id="dialog-type">
+                    <option value="">通话类型</option>
+                    <option value="video">视频</option>
+                    <option value="audio">音频</option>
+                </select>
+        </span>
+        <span class="select-box" style="width: 150px">
+                <select class="select J_select" id="call-type">
+                    <option value="">呼叫类型</option>
+                    <option value="caller">主叫</option>
+                    <option value="callee">被叫</option>
+                </select>
+        </span>
+
+        <button id="search-btn" title="根据输入条件查询" class="btn btn-primary-outline radius" style="width:100px"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+        
+    </div>
+    <div id="data-container">
+        <h3 class="text-c" >按户龄统计通话</h3>
+        <div class="tip mt-10">点击图例可筛选</div>
+        <div id="dialog-chart" class="mt-10" style="width:auto;height:400px;">
+        </div>
+        <div class="mt-20">
+            <table class="table table-bordered table-border table-hover table-bg table-sort mt-10">
+                <thead>
+                    <tr class="text-c">
+                        <th width="100">排名</th>
+                        <th width="100">户龄</th>
+                        <th width="100">次数</th>
+                        <th width="100">百分比</th>
+                    </tr>
+                </thead>
+                <tbody id="dialog-tbody" class="text-c">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="nodata" id="nodata">
+        <img src="static/images/nodata.svg" alt="">
+    </div>
+</div>
+
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/echarts.common.min.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+<script type="text/javascript"  src="lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script> 
+<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="static/js/index.js"></script> 
+<script type="text/javascript">
+
+    var searchPara = {
+        startTime: null,
+        endTime: null,
+        who: '',
+        cme: ''
+    }
+    var dialogChart = null
+
+    $(function(){
+        setDuration(1)
+        getChartData(searchPara)
+        getTableData(searchPara)
+        $(window).resize(function(){
+            if(dialogChart){
+                dialogChart.resize()
+            }
+        })
+
+    })
+
+    $('#search-btn').click(function(){
+        searchPara.startTime = getTime10($('#search-start-date').val())
+        searchPara.endTime = getTime10($('#search-end-date').val())
+
+        searchPara.who = $('#call-type').val()
+        searchPara.cme = $('#dialog-type').val()
+
+        getChartData(searchPara)
+        getTableData(searchPara)
+    })
+
+     // durationType值定义： 1: 最近一个月 2：最近半年 3：自定义  
+    function setDuration(durationType){
+        if(durationType != 3){
+            var nowTime = new Date()
+            var endTime = nowTime.Format('yyyy-MM-dd')
+            var startTime = new Date()
+            if(durationType == 1){
+                startTime.setMonth(nowTime.getMonth()-1)
+            }else if(durationType == 2){
+                startTime.setMonth(nowTime.getMonth()-6)
+            }
+            
+            startTime = startTime.Format('yyyy-MM-dd')
+
+            searchPara.startTime = getTime10(startTime)
+            searchPara.endTime = getTime10(nowTime.Format('yyyy-MM-dd'))
+            $('#search-start-date').val(startTime)
+            $('#search-end-date').val(endTime) 
+        }
+    }
+
+    function getChartData(data){
+        cloudAjax({
+            url: 'justalk/getCallAgeListByTime',
+            data: data,
+            type: 'get',
+            z_type: 0,
+            successFunc: function(response){
+                if(response.code === 1){
+                    if(response.data.length > 0){
+                        $('#nodata').hide()
+                        $('#data-container').show()
+                        dialogChart = renderChart(response.data)
+                    }
+                    else{
+                        $('#data-container').hide()
+                        $('#nodata').show()
+                    }
+                }
+            },
+            errorFunc: errorFunc
+        })
+    }
+
+    function renderChart(data){
+        var labels = [] 
+        var day1Data = [], day1to3Data = [], day3to7Data = [], day7to30Data = [],day30Data = []
+        data.forEach(function(item){
+            labels.push(dateFormat(item.time))
+            day1Data.push(item.day01)
+            day1to3Data.push(item.day1to3Data)
+            day3to7Data.push(item.day37)
+            day7to30Data.push(item.day730)
+            day30Data.push(item.day30)
+        }) 
+        
+        var chart = echarts.init($('#dialog-chart').get(0))
+        var option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['当天注册用户', '1-3天注册用户', '3-7天注册用户', '7-30天注册用户', '30天以上注册用户']
+            },
+            xAxis: {
+                data: labels,
+            },
+            yAxis: {},
+            series: [
+                {
+                    type: 'line',
+                    name: '当天注册用户',
+                    data: day1Data
+                },
+                {
+                    type: 'line',
+                    name: '1-3天注册用户',
+                    data: day1to3Data
+                },{
+                    type: 'line',
+                    name: '3-7天注册用户',
+                    data: day3to7Data
+                },{
+                    type: 'line',
+                    name: '7-30天注册用户',
+                    data: day7to30Data
+                },{
+                    type: 'line',
+                    name: '30天以上注册用户',
+                    data: day30Data
+                }
+            ]
+        }
+
+        chart.setOption(option)
+        return chart
+    }
+
+    function getTableData(data){
+        var rateChartData = []
+        cloudAjax({
+            url: 'justalk/getCountCallAgeMessage',
+            data: data,
+            z_type: 0,
+            successFunc: function(response){
+                if(response.code === 1){    
+                    renderTable(response.data)
+                }
+            },
+            errorFunc: errorFunc
+        })
+    }
+    function renderTable(data){
+        var trs = ''
+        data.forEach(function(item, index){
+            trs += '<tr>'+
+                        '<td>'+ (index + 1) +'</td>' +
+                        '<td>'+ item.mess +'</td>' +
+                        '<td>'+ item.total +'</td>' +
+                        '<td>'+ parseFloat(item.rate)*100 +'%</td>' +
+                   '</tr>'
+        })
+        $('#dialog-tbody').html(trs)
+    }
+    function errorFunc(xhr, status){
+        layer.msg(status)
+    }
+   
+</script> 
+</body>
+</html>

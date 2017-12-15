@@ -155,14 +155,8 @@
 
             searchPara.startTime = getTime10(startTime)
             searchPara.endTime = getTime10(endTime)
-            console.log(searchPara)
             $('#search-start-date').val(startTime)
             $('#search-end-date').val(endTime) 
-            
-            
-            //因为时分秒为 00:00:00，要查到最完整的数据，结束日期必须往后推一天
-            // nowTime.setDate(nowTime.getDate()+1)        
-            // searchPara.endTime = (nowTime.getTime())/1000
         }
     }
 
@@ -364,24 +358,7 @@
         })
     }
 
-    function setNumData(data){
-        if(data.authCityTotal){
-            $('#city-num').show()
-
-            var cityTotal = data.authCityTotal
-            $('#city-auth-all-count').text(cityTotal.authAllCount)
-            $('#city-authing-count').text(cityTotal.authIngCount)
-            $('#city-auth-pass-count').text(cityTotal.authPassCount)
-            $('#city-auth-reject-count').text(cityTotal.authRejectCount)
-        }else{
-            $('#city-num').hide()
-
-            $('#auth-all-count').text(data.authAllCount)
-            $('#authing-count').text(data.authIngCount)
-            $('#auth-pass-count').text(data.authPassCount)
-            $('#auth-reject-count').text(data.authRejectCount)
-        }
-    }
+   
 
     function errorFunc(xhr, status){
         layer.msg(status)
