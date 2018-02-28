@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+
 <html>
 <head>
 <meta charset="utf-8">
@@ -48,7 +48,7 @@
 		<span class="r">共有数据：<strong id="data-num">0</strong> 条</span> 
 	</div>
 	<div class="mt-20">
-	<table class="table table-bordered table-border table-hover table-bg " id="activity-table">
+	<table class="table table-bordered  table-hover table-bg " id="activity-table">
 		<thead>
 			<tr class="text-c">
 				<th width="50">序号</th>
@@ -157,7 +157,6 @@
 	function getActivityTypes(){
 		ajax({
 			url: 'api/activity/getActivityType',
-			async: false,
 			successFunc: function(response){
 				if(response.code === 1){
 					fillSelect('#search-activity-type', response.data)

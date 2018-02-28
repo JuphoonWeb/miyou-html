@@ -155,7 +155,7 @@
 			$('#type-select-container').hide()
 			$('#member-phone-container').hide()
 		}
-		console.log(index)
+		// console.log(index)
 		var apiName = $(this).children('option:checked').text() 
 		$('#api-name').text(apiName)
 		url = urlList[index]
@@ -198,7 +198,7 @@
 			}else if(index == 0){
 				dataList[index].phone = phone
 			}
-			console.log(dataList[index])
+			// console.log(dataList[index])
 
 			$.ajax({
 				url: url,
@@ -208,7 +208,7 @@
 				},
 				data: dataList[index],
 				success: function(response){
-					console.log(response)
+					// console.log(response)
 					// var json = JSON.stringify(response, null, 2)
 					$('#api-response').html(syntaxHighlight(response))
 				}

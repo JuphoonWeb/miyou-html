@@ -31,7 +31,7 @@
 			left: 50%;
 			transform: translateX(-50%);
 			width: 400px;
-			height:250px;
+			height:300px;
 			z-index:1000;
 		}
 		.legend-text{
@@ -313,6 +313,13 @@
 				<input type="password" class="input-text radius size-L" id="password" required >
 			</div>
 		</div>
+		<div class="row cl">
+			<label for="" class="form-label col-xs-4 col-sm-3" >验证码</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" maxlength="4" class="input-text radius size-L l" id="auth-code" required style="width:150px;" >
+				<img class="r" id="auth-code-img" alt="验证码" style="cursor: pointer;" title="点击换一张" />
+			</div>
+		</div>
 		<button id="login-btn" class="btn btn-primary radius btn-block size-L">登录 </button>
 		<div class="row cl" >
 			<div class="remember-password-box col-md-4">
@@ -326,60 +333,74 @@
 <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
 <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>	
 <script type="text/javascript" src="static/js/index.js"></script>
-
-
+<script type="text/javascript" src="lib/uuid.js" ></script>
+<script type="text/javascript" src="lib/base64.min.js" ></script>
 <script>
 
- 	$('#login-btn').click(function(event){
- 		event.preventDefault()
-	 	var	username = $('#username').val()
- 		var password = $('#password').val()
- 		if(username === ''){
- 			layer.msg('请输入用户名')
- 			$('#username')[0].focus()
- 		}else if(password === ''){
- 			layer.msg('请输入密码')
- 			$('#password')[0].focus()
- 		}else{
+	var unique = null;
 
+	function setAuthCodeImg(){
+		var unique = uuid.v4();
+		$('#auth-code-img').attr('src', 'http://192.168.20.43:8086/miyou/defaultKaptcha?unique=' + unique);
+		return unique;
+	}
+
+	$(function(){
+		$('#auth-code-img').click();
+		$('#auth-code').val('');
+	});
+
+	$('#auth-code-img').click(function(){
+		unique = setAuthCodeImg();
+	});
+
+ 	$('#login-btn').click(function(event){
+ 		event.preventDefault();
+	 	var	username = $('#username').val();
+ 		var password = $('#password').val();
+ 		var code = $('#auth-code').val();
+ 		if(username === ''){
+ 			layer.msg('请输入用户名');
+ 			$('#username')[0].focus();
+ 		}else if(password === ''){
+ 			layer.msg('请输入密码');
+ 			$('#password')[0].focus();
+ 		}else if(code === ''){
+ 			layer.msg('请输入验证码');
+ 			$('#auth-code')[0].focus();
+ 		}else{
  			ajax({
  				url: 'login',
  				method: 'post',
  				timeout: 10*1000,
  				data: {
 	 				username: username,
-	 				password: password,
+	 				password: Base64.encode(password),
+	 				code: code,
+	 				unique: unique
 	 			},
  				successFunc: function(response,status) {
 		 			if(response.code === 1){
-		 				var data = response.data
-		 				sessionStorage.setItem('uuid',data.uuid)
-		 				sessionStorage.setItem('userData',JSON.stringify(data))
-		 				window.open('index.html','_self')
+		 				var data = response.data;
+		 				sessionStorage.setItem('uuid',data.uuid);
+		 				sessionStorage.setItem('userData',JSON.stringify(data));
+		 				window.open('index.html','_self');
 
 		 			}else if(response.code === 0){
-		 				layer.closeAll()
+		 				layer.closeAll();
 		 				
-		 				var errorMsg = response.error
-		 				layer.msg(errorMsg)
-		 				$('#password').val('')
-		 				if(errorMsg === '密码错误'){
-		 					$('#password').focus()
-		 				}else{
-		 					$('#username').focus()
-		 				}
-		 				
+		 				var errorMsg = response.error;
+		 				layer.msg(errorMsg);
 		 			}
 		 		},
  				errorFunc: function(xhr, status){
- 					layer.closeAll()
-	 				layer.msg(status)
+ 					layer.closeAll();
+	 				layer.msg(status);
  				}
- 			})
+ 			});
 
  		}
- 		
- 	})
+ 	});
 	
 	
 </script>

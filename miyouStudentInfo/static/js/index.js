@@ -1,16 +1,15 @@
 function ajax(dataObj, type){
 
-	$(document).unbind('ajaxStart')
+	$(document).unbind('ajaxStart');
     $(document).ajaxStart(function(){
-		layer.load()
-	})
-	// var type = type || ':8086/miyou/'
-	// var url = 'http://192.168.0.46' + type
-	// var url = 'http://192.168.10.67' + type
-    // var url = 'http://122.227.209.194:8086/miyou/'
+		layer.load();
+	});
+	// var type = type || ':9087/miyou/';
+	// var url = 'http://192.168.0.46' + type;
+	// var url = 'http://192.168.20.43' + type;
     // var type = type || ':28812/miyou/'
-    var url = 'http://218.204.254.209:28812/miyou/'
-    url += dataObj.url
+    var url = 'http://218.204.254.209:28812/miyou/';
+    url += dataObj.url;
 	var method = dataObj.method || dataObj.type || 'get',
 		async = dataObj.hasOwnProperty('async') ? dataObj.async : true,
 		timeout = dataObj.timeout || 5*1000,
@@ -18,7 +17,7 @@ function ajax(dataObj, type){
 		processData = dataObj.processData,
 	    contentType = dataObj.contentType,
 	    successFunc = function(res){
-	    	layer.closeAll()
+	    	layer.closeAll();
 	    	if(res.code === -2){
 	    		layer.open({
 	    			type: 0,
@@ -26,35 +25,35 @@ function ajax(dataObj, type){
 					title: '提示',
 					icon: 7,
 					content: '您没有权限'
-	    		})
+	    		});
 	    	}else if(res.code === -1){
-	    		relogin()
+	    		relogin();
 	    	}else{
 		    	// console.log('success',res)
-		    	dataObj.successFunc && dataObj.successFunc(res)
+		    	dataObj.successFunc && dataObj.successFunc(res);
 		    }
 	    },
 	    errorFunc = function(xhr, status){
-	    	layer.closeAll()
+	    	layer.closeAll();
 	    	// console.log('error',status)
-	    	dataObj.errorFunc && dataObj.errorFunc(xhr, status)
+	    	dataObj.errorFunc && dataObj.errorFunc(xhr, status);
 	    },
 	    beforeSendFunc = function(xhr, settings){
 	    	// console.log('beforeSend')
-	    	dataObj.beforeSendFunc && dataObj.beforeSendFunc(xhr, settings)	
-	    }
-	    var data = dataObj.data
+	    	dataObj.beforeSendFunc && dataObj.beforeSendFunc(xhr, settings);
+	    };
+	    var data = dataObj.data;
 
 	    if(data&&dataObj.z_type!=0){
-			data.page = data.page || 1
-			data.size = data.size || 12
+			data.page = data.page || 1;
+			data.size = data.size || 12;
 		}
 
-		var menuUrl = window.location.href.split('?')[0].replace('#','').split('/').reverse()[0]
+		var menuUrl = window.location.href.split('?')[0].replace('#','').split('/').reverse()[0];
 
 		if(menuUrl){
-			var reg = /(.+?html)/
-			menuUrl = reg.exec(menuUrl)[1]
+			var reg = /(.+?html)/;
+			menuUrl = reg.exec(menuUrl)[1];
 			// console.log(menuUrl);
 		}
 
@@ -80,7 +79,7 @@ function ajax(dataObj, type){
 }
 
 function cloudAjax(dataObj){
-	ajax(dataObj, ':8087/cloud/')
+	ajax(dataObj, ':8087/cloud/');
 }
 
 
@@ -99,19 +98,19 @@ Date.prototype.Format = function (fmt) { //author: meizz
         for (var k in o)
             if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
         return fmt;
-}
+};
 
 Array.prototype.remove = function(val){
-	var index = this.indexOf(val)
+	var index = this.indexOf(val);
 	if(index > -1){
 		this.splice(index, 1);
 		return val;
 	}
-	return null
-}
+	return null;
+};
 
 function removeRepeat(array){
-	var resultArray = []
+	var resultArray = [];
 	for(var i = 0; i < array.length; i++){
 		if(resultArray.indexOf(array[i]) == -1){
 			resultArray.push(array[i]);
@@ -124,9 +123,9 @@ var authLevelStatus = ["一级未审核","一级审核拒绝","一级审核通�
 
 
 function relogin(){
-	sessionStorage.removeItem('uuid')
-	sessionStorage.removeItem('login')
-	sessionStorage.removeItem('username')
+	sessionStorage.removeItem('uuid');
+	sessionStorage.removeItem('login');
+	sessionStorage.removeItem('username');
 	layer.open({
 		type: 0,
 		closeBtn: 0,
@@ -134,40 +133,40 @@ function relogin(){
 		title: '重新登录',
 		content: '超过30分钟未操作，已自动登出，请重新登录',
 		yes: function() {
-			top.open('login.html', '_self')
+			top.open('login.html', '_self');
 		}
-	})
+	});
 }
 
 function showNodata(){
-	$('#nodata').show()
-	$('tbody').children().remove()
-	$('#data-num').text(0)
+	$('#nodata').show();
+	$('tbody').children().remove();
+	$('#data-num').text(0);
 }
 
 //将时间戳转换为'yyyy-MM-dd hh:mm:ss'形式
 function timeFormat(time){
-	time = (time && time.toString().length == 10 )? time*1000 : time //若是10位，则转换为13位
-	return new Date(time).Format('yyyy-MM-dd hh:mm:ss')
+	time = (time && time.toString().length == 10 )? time*1000 : time; //若是10位，则转换为13位
+	return new Date(time).Format('yyyy-MM-dd hh:mm:ss');
 }
 
 function dateFormat(time){
-	time = (time && time.toString().length == 10 )? time*1000 : time //若是10位，则转换为13位
-	return new Date(time).Format('yyyy-MM-dd')
+	time = (time && time.toString().length == 10 )? time*1000 : time; //若是10位，则转换为13位
+	return new Date(time).Format('yyyy-MM-dd');
 }
 
 //取得10位时间戳
 function getTime10(timeStr){
-	return Date.parse(new Date(timeStr))/1000
+	return Date.parse(new Date(timeStr))/1000;
 }
 
 $('input').on('input', function(){
-	var val = $(this).val()
-	var jsReg = /.*(<script>).*(<\/script>)*.*/i
+	var val = $(this).val();
+	var jsReg = /.*(<script>).*(<\/script>)*.*/i;
 	if(jsReg.test(val)){
-		$(this).val('')
+		$(this).val('');
 	}
-})
+});
 
 //Ajax error函数
 function errorFunc(xhr, status){
@@ -177,6 +176,6 @@ function errorFunc(xhr, status){
 		icon:7, 
 		title: '出现错误',
 		content: status
-	})
+	});
 }
 
