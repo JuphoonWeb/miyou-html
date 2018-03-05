@@ -388,9 +388,13 @@
 
 		 			}else if(response.code === 0){
 		 				layer.closeAll();
-		 				
 		 				var errorMsg = response.error;
 		 				layer.msg(errorMsg);
+		 				if(errorMsg === '验证码不正确'){
+		 					$('#auth-code-img').click();
+		 					$('#auth-code').val('');
+
+		 				}
 		 			}
 		 		},
  				errorFunc: function(xhr, status){
